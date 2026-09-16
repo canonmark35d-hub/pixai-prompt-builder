@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PixAI Prompt Builder Mini v3</title>
+<style>
+:root{--bg:#0d0914;--panel:#171020;--panel2:#21152e;--text:#f7f1fb;--muted:#bca9ca;--accent:#9b6cff;--accent2:#6f42c1;--border:#3b2851}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#0b0710,#180d24);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:760px;margin:auto;padding:20px 14px 40px}
+h1{font-size:25px;margin:0}.sub{color:var(--muted);font-size:13px;margin:5px 0 18px}
+.card{background:rgba(23,16,32,.96);border:1px solid var(--border);border-radius:16px;padding:14px;margin:10px 0}
+label{display:block;font-weight:800;font-size:14px;margin-bottom:9px}
+select{width:100%;background:var(--panel2);color:var(--text);border:1px solid #55366f;border-radius:12px;padding:14px 12px;font-size:15px}
+button{width:100%;border:0;border-radius:12px;padding:14px;margin-top:10px;font-size:15px;font-weight:800;color:white}
+.primary{background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.secondary{background:#291a38;border:1px solid #4b3261}
+textarea{width:100%;min-height:330px;background:#09060d;color:#eee;border:1px solid var(--border);border-radius:12px;padding:13px;font-size:13px;line-height:1.5}
+.status{text-align:center;min-height:20px;color:#d4bfee;font-size:13px;margin:9px}
+.help{font-size:12px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<h1>🌙 PixAI Prompt Builder</h1>
+<div class="sub">Mini v3 — 選ぶだけで完成プロンプトを作ります。</div>
+
+<div class="card"><label>① 表情</label><select id="expression">
+<option>01 — 現在のマスター</option><option>02 — やわらかな微笑み</option><option>03 — クールな微笑み</option><option>04 — 驚きの表情</option></select></div>
+
+<div class="card"><label>② 髪型</label><select id="hairstyle">
+<option>01 — 現在のマスター</option><option>02 — ロングウェーブ</option><option>03 — 編み込みローバン</option><option>04 — サイドポニー</option></select></div>
+
+<div class="card"><label>③ 髪色</label><select id="haircolor">
+<option>01 — 現在のマスター</option><option>02 — シルバーホワイト</option><option>03 — ミッドナイトブルー</option><option>04 — ディープクリムゾン</option></select></div>
+
+<div class="card"><label>④ ポーズ</label><select id="pose">
+<option>01 — 現在のマスター：深い低姿勢のしゃがみ</option><option>02 — 優雅な立ち姿</option><option>03 — 片膝立ち</option><option>04 — 横座り</option></select></div>
+
+<div class="card"><label>⑤ 構図</label><select id="composition">
+<option>01 — 現在のマスター：ローアングル全身</option><option>02 — 正面・全身</option><option>03 — 斜め上から</option><option>04 — ダイナミックな斜め構図</option></select></div>
+
+<div class="card"><label>⑥ 背景</label><select id="background">
+<option>01 — 現在のマスター：深夜のゴシック港</option><option>02 — 古代ゴシック大聖堂</option><option>03 — ゴシック王宮ホール</option><option>04 — 深夜のダークフォレスト</option></select></div>
+
+<div class="card"><label>⑦ 衣装</label><select id="outfit">
+<option>01 — 現在のマスター</option><option>02 — ゴシック・アリストクラート</option><option>03 — ゴシック・セーラー</option><option>04 — ゴシック・スチームパンク</option></select></div>
+
+<button class="primary" onclick="generate()">✨ プロンプト生成</button>
+<button class="secondary" onclick="copyPrompt()">📋 完成プロンプトをコピー</button>
+<div id="status" class="status"></div>
+
+<div class="card">
+<label>完成プロンプト</label>
+<textarea id="output"></textarea>
+<div class="help">この欄は直接編集もできます。生成後に必要な部分だけ修正してからコピーできます。</div>
+</div>
+</main>
+
+<script>
+const V={
+expression:[
+"cute confident smile, mysterious expression",
+"soft gentle smile, calm expression",
+"confident smirk, slightly narrowed eyes",
+"surprised expression, slightly widened eyes, parted lips"
+],
+hairstyle:[
+"messy high bun, elaborate twisted strands, loose curls falling around the face, slightly disheveled elegant hairstyle",
+"long flowing wavy hair, soft cascading waves, loose strands framing the face",
+"elegant low braided bun, intricate twisted braids, delicate loose strands framing the face",
+"elegant side ponytail, long flowing waves, refined loose strands framing the face"
+],
+haircolor:[
+"(deep blue hair:1.2)",
+"(silver-white hair:1.2)",
+"(midnight blue hair:1.2)",
+"(deep crimson hair:1.2)"
+],
+pose:[
+"deep low crouching pose, body lowered close to the ground, both knees deeply bent, thighs clearly lowered, hips close to the heels, feet firmly grounded, torso upright, upper body slightly leaning forward, one knee slightly ahead of the other, arms naturally positioned close to the torso, compact lowered body posture",
+"elegant standing pose, upright posture, one leg slightly forward, natural weight distribution, arms naturally positioned close to the torso",
+"elegant kneeling pose, one knee resting on the ground, the other knee raised, torso upright, arms naturally positioned close to the torso",
+"elegant side-sitting pose, legs folded naturally to one side, torso upright, arms naturally positioned close to the body"
+],
+composition:[
+"slightly low-angle viewpoint, viewer positioned near ground level, large character in foreground, full body clearly visible, entire figure contained within the frame, head and face clearly visible, character occupying most of the frame",
+"front-facing viewpoint, eye-level perspective, large character in foreground, full body clearly visible, entire figure contained within the frame",
+"slightly elevated diagonal viewpoint, large character in foreground, full body clearly visible, entire figure contained within the frame",
+"dynamic diagonal composition, dramatic low-angle viewpoint, large character in foreground, full body clearly visible, entire figure contained within the frame"
+],
+background:[
+"dark fantasy gothic harbor at midnight, enormous black stone docks, ancient gothic warehouses, ornate iron bridges, dark calm ocean reflecting moonlight, crimson lanterns along the pier, distant gothic castle overlooking the sea, thick silver sea mist, dramatic cloudy sky, old stone architecture, mysterious elegant atmosphere",
+"ancient ruined gothic cathedral at night, towering stone arches, broken stained-glass windows, moonlight entering through the ruins, drifting mist, weathered statues, dark sacred atmosphere",
+"grand gothic royal hall, towering vaulted ceiling, black marble floor, ornate stone arches, crimson velvet banners, antique chandeliers, mysterious luxurious atmosphere",
+"ancient dark forest at midnight, twisted old trees, pale moonlight, thin silver mist, ruined stone path, mysterious gothic atmosphere"
+],
+outfit:[
+"dark fantasy gothic punk, gothic lolita, cathedral-inspired high fashion, sophisticated couture design, black, deep crimson, ivory, black leather, deep crimson velvet, ivory chiffon, black gothic lace, translucent black organza, antique silver hardware, ivory architectural corset bodice, high closed neckline, black leather structural side panels, deep crimson velvet center section, vertical corset boning, antique silver front fasteners, black gothic lace covering the upper torso, structured black lace shoulder panels, long fitted ivory chiffon sleeves, wide black lace cuffs, high black gothic lace collar, wide structured black leather waist belt, antique silver buckles, interconnected silver chains, long black fitted leather gloves, above-knee black leather gothic boots, matte leather surface, antique silver buckles",
+"dark fantasy gothic aristocratic couture, black and silver palette, structured velvet bodice, ornate silver embroidery, layered lace skirt, fitted long sleeves, elegant leather belt, antique silver details, black gothic boots",
+"dark fantasy gothic sailor couture, black, ivory and deep crimson, tailored sailor-inspired bodice, layered pleated skirt, lace panels, velvet accents, antique silver fasteners, elegant gothic boots",
+"dark fantasy gothic steampunk couture, black leather, deep crimson velvet and ivory fabric, structured corset, layered panels, antique silver hardware, intricate belts, refined gothic boots"
+]};
+
+const FIXED=`[STYLE]
+BUNBUN style,
+masterpiece,
+best quality,
+ultra detailed,
+high resolution,
+
+[CHARACTER]
+1girl,
+solo,
+single adult female character,
+perfect 8-head proportions,
+tall,
+slender fashion-model physique,
+elongated body proportions,
+
+[FACE]
+large soft expressive eyes,
+rounded almond-shaped eyes,
+defined natural eyelashes,
+natural iris texture,
+subtle natural eye highlights,
+
+[EYE COLOR]
+deep blue eyes,
+natural deep blue irises,
+soft realistic color variation,
+subtle reflected light,
+
+[HAIR ACCESSORIES]
+elegant hair clips,
+subtle decorative hair accessories,
+
+[DESIGN LANGUAGE]
+dark sacred architecture-inspired silhouette,
+solemn luxurious gothic couture,
+intricate layered construction,
+refined high-fashion detailing,
+dramatic dark fantasy presence,
+
+[LIGHTING]
+dramatic moonlight,
+soft silver rim lighting,
+cinematic lighting,
+subtle crimson ambient glow,
+
+[NEGATIVE]
+no animal features,
+no creature features,
+no fantasy anatomy,
+no extra appendages,
+no additional limbs,
+no wings,
+no feathers,
+no halo,
+no cross,
+no crown,
+no headpiece,
+no hat,
+no military cap,
+no beret,
+no extra character,
+no duplicate character,
+no glowing eyes,
+no luminous eyes,
+no neon eyes,
+no overly bright irises,
+no excessive eye highlights,
+no sparkling eyes`;
+
+const ids=["expression","hairstyle","haircolor","pose","composition","background","outfit"];
+const labels=["EXPRESSION","HAIRSTYLE","HAIR COLOR","POSE","VIEWPOINT & FRAMING","BACKGROUND","OUTFIT"];
+
+function generate(){
+ let parts=[FIXED];
+ ids.forEach((id,i)=>{
+   const index=document.getElementById(id).selectedIndex;
+   parts.push("["+labels[i]+"]\n"+V[id][index]);
+ });
+ parts.push("[GAZE]\nface looking upward toward the viewer,");
+ parts.push("[COMPOSITION]\nfashion editorial composition,\ncinematic depth of field,\nbalanced full-body composition,\n9:16 vertical composition,");
+ document.getElementById("output").value=parts.join("\n\n");
+ document.getElementById("status").textContent="生成しました ✨";
+}
+
+async function copyPrompt(){
+ const t=document.getElementById("output");
+ if(!t.value) generate();
+ try{
+   await navigator.clipboard.writeText(t.value);
+   document.getElementById("status").textContent="コピーしました 📋";
+ }catch(e){
+   t.focus();t.select();
+   document.execCommand("copy");
+   document.getElementById("status").textContent="コピーしました 📋";
+ }
+}
+generate();
+</script>
+</body>
+</html>
