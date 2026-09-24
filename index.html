@@ -1069,7 +1069,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 <section class="panel">
 <h2>🚫 ネガティブプロンプト</h2>
 <div class="fixed-negative-note">🔒 固定ネガティブ：色かぶり・全体色調変化・低解像度・画質低下を常時防止（ネガ選択をクリアしても固定部分は残ります）</div>
-<textarea id="negative" readonly="" spellcheck="false">global monochrome color cast, full-image color wash, unnatural global color grading, color bleeding from background or lighting, unnatural color spill on skin, unnatural color spill on hair, unnatural color spill on clothing, full-image cyan wash, full-image blue wash, full-image green wash, full-image purple wash, full-image red wash, full-image yellow wash, full-image orange wash, full-image pink wash, full-image magenta wash, full-image teal wash, full-image violet wash, low resolution, low image quality, low detail, pixelation, pixelated details, compression artifacts, blocky artifacts, jagged edges, muddy details, poorly defined details, loss of fine detail, loss of fine texture, excessive image noise, posterization, color banding, overall image blur, poorly rendered details, degraded image quality, crushed fine detail, washed-out fine detail</textarea>
+<textarea id="negative" readonly="" spellcheck="false"></textarea>
 <div class="actions">
 <button id="copyNegative" onclick="copyText('negative','ネガティブプロンプト')" type="button">📋 ネガティブをコピー</button>
 <button class="secondary" id="clearNegative" type="button">🧹 ネガをクリア</button>
@@ -1080,8 +1080,8 @@ button.secondary,button.dice{background:#eee;color:#333}
 <script>
 "use strict";
 
-const FIXED = ["[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.", "[CHARACTER] solo; single adult female character; adult woman; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.", "[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights."];
-const FIXED_NEGATIVE = "global monochrome color cast, full-image color wash, unnatural global color grading, color bleeding from background or lighting, unnatural color spill on skin, unnatural color spill on hair, unnatural color spill on clothing, full-image cyan wash, full-image blue wash, full-image green wash, full-image purple wash, full-image red wash, full-image yellow wash, full-image orange wash, full-image pink wash, full-image magenta wash, full-image teal wash, full-image violet wash, low resolution, low image quality, low detail, pixelation, pixelated details, compression artifacts, blocky artifacts, jagged edges, muddy details, poorly defined details, loss of fine detail, loss of fine texture, excessive image noise, posterization, color banding, overall image blur, poorly rendered details, degraded image quality, crushed fine detail, washed-out fine detail";
+const FIXED = ["[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution.", "[CHARACTER] 1girl; solo; single adult female character; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts.", "[BODY PROPORTION] narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.", "[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights."];
+const FIXED_NEGATIVE = "";
 const CAT_KEYS = ["EXPRESSION", "HAIRSTYLE", "HAIR COLOR", "EYE COLOR", "HAIR ACCESSORIES", "OUTFIT CONCEPT", "OUTFIT COLOR", "OUTFIT MATERIAL", "OUTFIT STRUCTURE", "SHOULDERS & SLEEVES", "COLLAR", "WAIST DESIGN", "SKIRT", "GLOVES", "SHOES", "DESIGN LANGUAGE", "POSE", "GAZE", "SUBJECT ORIENTATION", "CAMERA ANGLE", "SHOT TYPE", "FRAMING", "BACKGROUND", "LIGHTING", "COMPOSITION", "OUTFIT PATTERN"];
 const NEG_KEYS = ["人体・手", "顔・目", "髪・アクセ", "画角・構図", "衣装", "背景", "品質"];
 
@@ -1104,7 +1104,7 @@ function updatePrompt(){
     if(s && s.value) negative.push(s.value);
   });
   const randomNegativePart = negative.join(", ");
-  byId("negative").value = randomNegativePart ? FIXED_NEGATIVE + ", " + randomNegativePart : FIXED_NEGATIVE;
+  byId("negative").value = FIXED_NEGATIVE ? (randomNegativePart ? FIXED_NEGATIVE + ", " + randomNegativePart : FIXED_NEGATIVE) : randomNegativePart;
 
   let n = 0, nn = 0;
   CAT_KEYS.forEach(function(key){ const s=catSelect(key); if(s && s.value) n++; });
@@ -1188,7 +1188,7 @@ updatePrompt();
 </script>
 <script>
 (function(){
-  const FIXED_PROMPT_INITIAL = "[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.\n[CHARACTER] solo; single adult female character; adult woman; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.";
+  const FIXED_PROMPT_INITIAL = "[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.\n[CHARACTER] 1girl; solo; single adult female character; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts.\n[BODY PROPORTION] narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.";
   function ensureFixedPromptInitial(){
     const el = document.getElementById('prompt');
     if (el) {
