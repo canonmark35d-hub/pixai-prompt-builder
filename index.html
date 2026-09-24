@@ -1077,7 +1077,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 <script>
 "use strict";
 
-const FIXED = ["[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution.", "[CHARACTER] 1girl; solo; single adult female character; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts.", "[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights."];
+const FIXED = ["[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution.", "[CHARACTER] 1girl; solo; single adult female character; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.", "[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights."];
 const CAT_KEYS = ["EXPRESSION", "HAIRSTYLE", "HAIR COLOR", "EYE COLOR", "HAIR ACCESSORIES", "OUTFIT CONCEPT", "OUTFIT COLOR", "OUTFIT MATERIAL", "OUTFIT STRUCTURE", "SHOULDERS & SLEEVES", "COLLAR", "WAIST DESIGN", "SKIRT", "GLOVES", "SHOES", "DESIGN LANGUAGE", "POSE", "GAZE", "SUBJECT ORIENTATION", "CAMERA ANGLE", "SHOT TYPE", "FRAMING", "BACKGROUND", "LIGHTING", "COMPOSITION", "OUTFIT PATTERN"];
 const NEG_KEYS = ["人体・手", "顔・目", "髪・アクセ", "画角・構図", "衣装", "背景", "品質"];
 
@@ -1182,24 +1182,6 @@ function fallbackCopy(area,label){
 updatePrompt();
 </script>
 
-<script>
-(function(){
-  const FIXED_PROMPT_INITIAL = "[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution.\n[CHARACTER] 1girl; solo; single adult female character; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts.\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.";
-  function ensureFixedPromptInitial(){
-    const el = document.getElementById('prompt');
-    if (el) {
-      const current = el.value || '';
-      const fixed = FIXED_PROMPT_INITIAL;
-      if (!current.includes('[STYLE]') || !current.includes('[CHARACTER]') || !current.includes('[FACE]')) {
-        el.value = fixed;
-      }
-    }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureFixedPromptInitial);
-  else ensureFixedPromptInitial();
-  window.addEventListener('pageshow', ensureFixedPromptInitial);
-})();
-</script>
 
 </body>
 </html>
