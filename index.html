@@ -1287,6 +1287,58 @@ function getLinkedValue(key, value, genre){
   return profile[key] + "; " + value;
 }
 
+
+// 水着・リゾート専用の強制整合性レイヤー。
+// 一般衣装カテゴリの汎用語（mini skirt / v-neck / gloves 等）が
+// swimwear の意味を壊さないよう、生成プロンプトでは水着専用表現に置換する。
+const SWIMWEAR_PROMPT_OVERRIDES = {
+  "OUTFIT COLOR":"fresh coordinated swimwear color palette, turquoise, coral, aqua, white, soft pink and refined tropical tones",
+  "OUTFIT MATERIAL":"premium swimwear fabric, smooth stretch swim fabric, comfortable fitted texture, refined quick-drying material character",
+  "OUTFIT STRUCTURE":"authentic swimwear construction, fitted bikini or one-piece swimsuit silhouette, clean beachwear construction",
+  "SHOULDERS & SLEEVES":"swimwear-specific shoulder treatment, halter straps, slim shoulder straps, bandeau or clean sleeveless construction",
+  "COLLAR":"swimwear-specific neckline, halter neckline, sweetheart bikini neckline, bandeau neckline or clean scoop swimsuit neckline",
+  "WAIST DESIGN":"swimwear waist construction, high-waisted bikini option, natural swimsuit waist, side-tie or clean waist shaping",
+  "SKIRT":"swimwear lower-body construction, bikini bottom or one-piece swimsuit lower section, optional refined swim skirt or sarong only when appropriate",
+  "GLOVES":"no gloves, no hand accessories, unobstructed hands",
+  "SHOES":"barefoot beach styling, refined flat sandals, resort slides or elegant espadrille-style resort footwear",
+  "DESIGN LANGUAGE":"modern luxury swimwear, sophisticated resort fashion, elegant beach and poolside styling",
+  "OUTFIT PATTERN":"tasteful swimwear pattern, refined tropical floral, subtle wave, shell or geometric resort motif, controlled pattern scale"
+};
+
+function getOutfitPromptValue(key, selectedValue, genre, conceptValue){
+  if(genre === "水着・リゾート" && SWIMWEAR_PROMPT_OVERRIDES[key]){
+    const c=(conceptValue||"").toLowerCase();
+    let base=SWIMWEAR_PROMPT_OVERRIDES[key];
+    if(key === "OUTFIT STRUCTURE"){
+      if(c.includes("one-piece") || c.includes("one piece") || c.includes("swim dress")){
+        base="authentic one-piece swimsuit construction, fitted one-piece swimwear silhouette, clean resort swimwear construction";
+      }else if(c.includes("bikini") || c.includes("tankini") || c.includes("two-piece") || c.includes("two piece")){
+        base="authentic bikini swimwear construction, fitted bikini top with coordinated swim bottoms, clean resort swimwear silhouette";
+      }
+    }
+    if(key === "SKIRT"){
+      if(c.includes("skirt") || c.includes("sarong") || c.includes("pareo") || c.includes("wrap")){
+        base="refined swimwear lower-body styling with coordinated swim skirt, sarong or resort wrap over swimwear";
+      }else if(c.includes("one-piece") || c.includes("one piece")){
+        base="one-piece swimsuit lower section, fitted swimwear silhouette, no ordinary skirt";
+      }else{
+        base="coordinated bikini swim bottom, fitted swimwear lower section, no ordinary skirt";
+      }
+    }
+    if(key === "WAIST DESIGN" && (c.includes("high-waist") || c.includes("high-waisted"))){
+      base="high-waisted swimwear construction, high-rise bikini bottom or high-waist swimsuit shaping";
+    }
+    if(key === "SHOULDERS & SLEEVES" && c.includes("long-sleeve")){
+      base="long-sleeve swimwear construction, fitted rashguard or long-sleeve swimsuit treatment";
+    }
+    if(key === "COLLAR" && c.includes("high collar")){
+      base="high-collar swimwear neckline, fitted high-neck swimsuit construction";
+    }
+    return base;
+  }
+  return selectedValue;
+}
+
 function updatePrompt(){
   const selected = [];
   // 衣装コンセプトを選択した時点で常時連動する仕様
@@ -1299,6 +1351,7 @@ function updatePrompt(){
       if(linkMode && genre && key !== "OUTFIT CONCEPT" && Object.prototype.hasOwnProperty.call(OUTFIT_LINK_PROFILES[genre], key)){
         value = getLinkedValue(key, value, genre);
       }
+      value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       selected.push("[" + key + "] " + value);
     }
   });
