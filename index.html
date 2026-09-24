@@ -1287,66 +1287,6 @@ function getLinkedValue(key, value, genre){
   return profile[key] + "; " + value;
 }
 
-// 衣装コンセプト変更時の自動連動
-// 連動モードONの場合のみ、衣装に直接関係する11カテゴリを自動更新する。
-const OUTFIT_RELATED_KEYS = [
-  "OUTFIT COLOR", "OUTFIT MATERIAL", "OUTFIT STRUCTURE",
-  "SHOULDERS & SLEEVES", "COLLAR", "WAIST DESIGN", "SKIRT",
-  "GLOVES", "SHOES", "DESIGN LANGUAGE", "OUTFIT PATTERN"
-];
-
-const OUTFIT_GENRE_KEYWORDS = {
-  "現代テーラリング・ジャケパン": ["tailored", "blazer", "trouser", "suit", "jacket", "sharp", "structured", "minimal"],
-  "ドレス・イブニング": ["dress", "gown", "evening", "formal", "elegant", "satin", "silk", "draped", "corset"],
-  "着物・伝統和装": ["kimono", "obi", "traditional", "japanese", "yukata", "sash", "haori", "tome", "furisode"],
-  "浴衣・夏和装": ["yukata", "summer", "japanese", "obi", "traditional", "floral", "light", "cotton"],
-  "水着・リゾート": ["swim", "bikini", "resort", "beach", "halter", "one-piece", "summer", "tropical", "lace"],
-  "制服・スクール": ["school", "uniform", "pleated", "peter pan", "tie", "ribbon", "blazer", "preppy", "collar"],
-  "ロリータ・ガーリー": ["lolita", "lace", "ribbon", "puff", "peter pan", "mary jane", "frill", "ruffle", "floral", "corset"],
-  "ゴス・ダークファッション": ["gothic", "goth", "dark", "black", "lace", "velvet", "damask", "corset", "boot", "cross"],
-  "スポーツ・アスレジャー": ["sport", "athletic", "active", "jersey", "training", "track", "sneaker", "mesh", "performance"],
-  "バトル・戦士・騎士": ["battle", "warrior", "knight", "armor", "armored", "combat", "gauntlet", "plate", "leather", "tactical"],
-  "ファンタジー・魔法系": ["fantasy", "magic", "mage", "wizard", "sorceress", "enchanted", "mystical", "ornamental", "fairy", "arcane"],
-  "舞台・パフォーマンス": ["stage", "performance", "theatrical", "costume", "sparkle", "sequin", "show", "concert", "ornamental", "glamorous"]
-};
-
-function randomMatchingOption(select, genre){
-  if(!select || !select.options || select.options.length < 2) return false;
-  const keywords = OUTFIT_GENRE_KEYWORDS[genre] || [];
-  let best = [];
-  let bestScore = 0;
-  for(let i=1;i<select.options.length;i++){
-    const value = (select.options[i].value || "").toLowerCase();
-    let score = 0;
-    for(const kw of keywords){
-      if(value.includes(kw.toLowerCase())) score++;
-    }
-    if(score > bestScore){ bestScore = score; best = [i]; }
-    else if(score > 0 && score === bestScore){ best.push(i); }
-  }
-  let pool = bestScore > 0 ? best.slice() : Array.from({length:select.options.length-1}, (_,i)=>i+1);
-  if(pool.length > 1){
-    const filtered = pool.filter(function(i){ return i !== select.selectedIndex; });
-    if(filtered.length) pool = filtered;
-  }
-  select.selectedIndex = pool[Math.floor(Math.random()*pool.length)];
-  return true;
-}
-
-
-function handleOutfitConceptChange(){
-  const genre = getOutfitGenre();
-  if(genre){
-    OUTFIT_RELATED_KEYS.forEach(function(key){
-      randomMatchingOption(catSelect(key), genre);
-    });
-    updatePrompt();
-    showStatus("衣装コンセプト「" + genre + "」に合わせて衣装関連11カテゴリを自動連動しました");
-    return;
-  }
-  updatePrompt();
-}
-
 function updatePrompt(){
   const selected = [];
   // 衣装コンセプトを選択した時点で常時連動する仕様
@@ -1453,6 +1393,239 @@ function fallbackCopy(area,label){
     showStatus("コピーできませんでした。長押しでコピーしてください");
   }
 }
+
+// ============================================================
+// 衣装コンセプト自動連動（確実に11カテゴリを変更する版）
+// 連動ON/OFFの状態に依存せず、衣装コンセプト選択だけで実行する。
+// ============================================================
+const OUTFIT_AUTO_KEYS = [
+  "OUTFIT COLOR", "OUTFIT MATERIAL", "OUTFIT STRUCTURE",
+  "SHOULDERS & SLEEVES", "COLLAR", "WAIST DESIGN", "SKIRT",
+  "GLOVES", "SHOES", "DESIGN LANGUAGE", "OUTFIT PATTERN"
+];
+
+const OUTFIT_AUTO_WORDS = {
+  "現代テーラリング・ジャケパン": {
+    "OUTFIT COLOR":["neutral","navy","gray","grey","beige","white","charcoal"],
+    "OUTFIT MATERIAL":["suiting","wool","twill","tailoring","woven"],
+    "OUTFIT STRUCTURE":["blazer","tailored","jacket","trouser","trousers","wide-leg","cigarette"],
+    "SHOULDERS & SLEEVES":["tailored","structured","blazer","cuff","long sleeve"],
+    "COLLAR":["lapel","notched","peak","shirt collar","tailored"],
+    "WAIST DESIGN":["tailored","high-waisted","natural waist","belt","waistcoat"],
+    "SKIRT":["trouser","trousers","tailored","straight-leg","wide-leg","cigarette"],
+    "GLOVES":["minimal","leather","short gloves"],
+    "SHOES":["pumps","loafers","oxford","mules","heels"],
+    "DESIGN LANGUAGE":["tailoring","minimalist","sharp","structured","editorial"],
+    "OUTFIT PATTERN":["pinstripe","stripe","plaid","check","herringbone","solid"]
+  },
+  "ドレス・イブニング": {
+    "OUTFIT COLOR":["burgundy","wine","champagne","ivory","black","emerald","navy","rose"],
+    "OUTFIT MATERIAL":["silk","satin","velvet","chiffon","tulle","lace","crepe"],
+    "OUTFIT STRUCTURE":["dress","gown","corset","draped","fitted","wrap","mermaid"],
+    "SHOULDERS & SLEEVES":["off-shoulder","one-shoulder","sleeveless","puff","long sleeve","draped"],
+    "COLLAR":["sweetheart","v-neck","halter","square neck","off-shoulder","cowl"],
+    "WAIST DESIGN":["corset","cinched","empire","natural waist","sash","draped"],
+    "SKIRT":["gown","mermaid","ball gown","pleated","flowing","draped","flared"],
+    "GLOVES":["evening","lace","opera","sheer","satin"],
+    "SHOES":["evening","pumps","stiletto","satin","heels"],
+    "DESIGN LANGUAGE":["elegant","evening","luxury","feminine","ornamental","glamorous"],
+    "OUTFIT PATTERN":["floral","damask","lace","ornamental","jacquard","solid"]
+  },
+  "着物・伝統和装": {
+    "OUTFIT COLOR":["indigo","crimson","vermillion","ivory","white","black","gold","red"],
+    "OUTFIT MATERIAL":["silk","brocade","jacquard","chirimen","woven","satin"],
+    "OUTFIT STRUCTURE":["kimono","obi","haori","furisode","sleeve","wrap"],
+    "SHOULDERS & SLEEVES":["kimono sleeve","wide sleeve","long sleeve","furisode","sleeve"],
+    "COLLAR":["kimono collar","overlap collar","cross-over","traditional neckline"],
+    "WAIST DESIGN":["obi","sash","wrap waist","wide sash"],
+    "SKIRT":["kimono","hakama","pleated","wrap","traditional"],
+    "GLOVES":["traditional","lace","sheer","minimal"],
+    "SHOES":["geta","zori","traditional","wooden","sandals"],
+    "DESIGN LANGUAGE":["japanese","traditional","kimono","wafuku","ornamental"],
+    "OUTFIT PATTERN":["seigaiha","asanoha","sakura","chrysanthemum","wave","floral","japanese"]
+  },
+  "浴衣・夏和装": {
+    "OUTFIT COLOR":["indigo","white","navy","blue","pink","lavender","summer"],
+    "OUTFIT MATERIAL":["cotton","linen","lightweight","woven","summer"],
+    "OUTFIT STRUCTURE":["yukata","obi","wrap","summer kimono","light"],
+    "SHOULDERS & SLEEVES":["kimono sleeve","short sleeve","wide sleeve","summer"],
+    "COLLAR":["kimono collar","overlap collar","traditional neckline"],
+    "WAIST DESIGN":["obi","sash","wrap waist","summer"],
+    "SKIRT":["yukata","wrap","pleated","lightweight"],
+    "GLOVES":["no gloves","minimal","lace"],
+    "SHOES":["geta","zori","sandals","summer"],
+    "DESIGN LANGUAGE":["summer","yukata","japanese","traditional","light"],
+    "OUTFIT PATTERN":["floral","asanoha","wave","sakura","firework","summer"]
+  },
+  "水着・リゾート": {
+    "OUTFIT COLOR":["turquoise","coral","aqua","white","blue","pink","tropical"],
+    "OUTFIT MATERIAL":["swim","stretch","mesh","lace","ribbed","quick-dry"],
+    "OUTFIT STRUCTURE":["bikini","swimwear","one-piece","halter","cutout","wrap","resort"],
+    "SHOULDERS & SLEEVES":["halter","strapless","thin straps","off-shoulder","sleeveless"],
+    "COLLAR":["halter","v-neck","scoop neck","sweetheart"],
+    "WAIST DESIGN":["high-waisted","tie waist","wrap","side-tie","cutout"],
+    "SKIRT":["swim skirt","sarong","wrap skirt","mini skirt","resort"],
+    "GLOVES":["no gloves","sheer","mesh"],
+    "SHOES":["sandals","slides","espadrilles","barefoot","resort"],
+    "DESIGN LANGUAGE":["resort","beach","tropical","summer","swimwear"],
+    "OUTFIT PATTERN":["tropical","floral","stripe","wave","shell","fruit"]
+  },
+  "制服・スクール": {
+    "OUTFIT COLOR":["navy","white","gray","grey","burgundy","school"],
+    "OUTFIT MATERIAL":["wool","cotton","twill","knit","woven"],
+    "OUTFIT STRUCTURE":["uniform","blazer","pleated","school","pinafore"],
+    "SHOULDERS & SLEEVES":["blazer","long sleeve","short sleeve","cuff"],
+    "COLLAR":["peter pan","sailor","shirt collar","rounded collar","tie collar"],
+    "WAIST DESIGN":["high-waisted","belt","natural waist","uniform"],
+    "SKIRT":["pleated skirt","school skirt","pinafore","A-line"],
+    "GLOVES":["no gloves","white gloves","minimal"],
+    "SHOES":["loafers","mary jane","school shoes","oxford"],
+    "DESIGN LANGUAGE":["school","uniform","preppy","classic","collegiate"],
+    "OUTFIT PATTERN":["plaid","tartan","stripe","argyle","solid","check"]
+  },
+  "ロリータ・ガーリー": {
+    "OUTFIT COLOR":["ivory","pink","rose","lavender","mint","black","cream"],
+    "OUTFIT MATERIAL":["lace","matte silk","tulle","cotton","velvet","jacquard"],
+    "OUTFIT STRUCTURE":["lolita","corset","tiered","ruffle","frill","pinafore"],
+    "SHOULDERS & SLEEVES":["puff sleeve","bishop sleeve","frilled sleeve","short sleeve","lace sleeve"],
+    "COLLAR":["peter pan","rounded collar","lace collar","ribbon collar"],
+    "WAIST DESIGN":["corset","ribbon waist","high-waisted","sash","lace-up"],
+    "SKIRT":["tiered skirt","bell skirt","flared skirt","pleated skirt","puffy skirt"],
+    "GLOVES":["lace gloves","frilled gloves","short gloves","ribbon gloves"],
+    "SHOES":["mary jane","platform mary jane","ribbon shoes","lace-up boots"],
+    "DESIGN LANGUAGE":["sweet lolita","lolita","girly","romantic","cute","ornamental"],
+    "OUTFIT PATTERN":["ribbon","floral","rose","lace","polka dot","heart"]
+  },
+  "ゴス・ダークファッション": {
+    "OUTFIT COLOR":["black","burgundy","dark red","charcoal","deep purple","dark blue"],
+    "OUTFIT MATERIAL":["velvet","lace","leather","matte satin","jacquard","mesh"],
+    "OUTFIT STRUCTURE":["gothic","corset","fitted","layered","asymmetric","dark"],
+    "SHOULDERS & SLEEVES":["bishop sleeve","bell sleeve","lace sleeve","long sleeve","off-shoulder"],
+    "COLLAR":["high collar","choker collar","lace collar","stand collar","victorian"],
+    "WAIST DESIGN":["corset","cinched","lace-up","belt","high-waisted"],
+    "SKIRT":["layered skirt","asymmetric skirt","pleated skirt","flared skirt","mini skirt"],
+    "GLOVES":["lace gloves","fishnet gloves","leather gloves","long gloves"],
+    "SHOES":["platform boots","lace-up boots","ankle boots","mary jane","gothic boots"],
+    "DESIGN LANGUAGE":["gothic","dark","victorian","dramatic","occult","ornamental"],
+    "OUTFIT PATTERN":["damask","lace","cross","rose","floral","baroque"]
+  },
+  "スポーツ・アスレジャー": {
+    "OUTFIT COLOR":["black","white","gray","grey","blue","red","neon"],
+    "OUTFIT MATERIAL":["jersey","mesh","nylon","stretch","technical","ribbed"],
+    "OUTFIT STRUCTURE":["athletic","sports","track","jersey","training","activewear"],
+    "SHOULDERS & SLEEVES":["raglan","sleeveless","short sleeve","sport","mesh"],
+    "COLLAR":["crew neck","mock neck","zip neck","hooded","sport collar"],
+    "WAIST DESIGN":["elastic waist","drawstring","high-waisted","sport waist"],
+    "SKIRT":["tennis skirt","track pants","jogger","shorts","athletic skirt"],
+    "GLOVES":["sport gloves","fingerless gloves","no gloves","training gloves"],
+    "SHOES":["sneakers","running shoes","training shoes","athletic shoes"],
+    "DESIGN LANGUAGE":["sport","athletic","activewear","performance","athleisure"],
+    "OUTFIT PATTERN":["stripe","color block","number","logo-like geometric","mesh panel"]
+  },
+  "バトル・戦士・騎士": {
+    "OUTFIT COLOR":["black","silver","steel","red","navy","charcoal","gold"],
+    "OUTFIT MATERIAL":["leather","metal","chainmail","armor","suede","matte"],
+    "OUTFIT STRUCTURE":["armor","armored","battle","warrior","knight","combat"],
+    "SHOULDERS & SLEEVES":["armor shoulders","pauldron","armored sleeve","gauntlet","long sleeve"],
+    "COLLAR":["high collar","armor collar","stand collar","gorget"],
+    "WAIST DESIGN":["belt","armor waist","corset","utility belt","cinched"],
+    "SKIRT":["armor skirt","battle skirt","tabard","pleated","layered"],
+    "GLOVES":["gauntlet","armored gloves","leather gloves","combat gloves"],
+    "SHOES":["armored boots","combat boots","knee boots","warrior boots"],
+    "DESIGN LANGUAGE":["warrior","knight","battle","armor","combat","heroic"],
+    "OUTFIT PATTERN":["engraved","rune","heraldic","geometric","metallic","ornamental"]
+  },
+  "ファンタジー・魔法系": {
+    "OUTFIT COLOR":["violet","lavender","teal","emerald","midnight","ivory","gold"],
+    "OUTFIT MATERIAL":["silk","velvet","chiffon","tulle","brocade","lace"],
+    "OUTFIT STRUCTURE":["fantasy","mage","wizard","sorceress","enchanted","layered"],
+    "SHOULDERS & SLEEVES":["bell sleeve","bishop sleeve","flowing sleeve","cape sleeve","puff sleeve"],
+    "COLLAR":["high collar","mandarin collar","ornate collar","cape collar"],
+    "WAIST DESIGN":["corset","sash","cinched","ornamental belt","high-waisted"],
+    "SKIRT":["layered skirt","flowing skirt","asymmetric skirt","tiered skirt","draped"],
+    "GLOVES":["lace gloves","sheer gloves","ornamental gloves","long gloves"],
+    "SHOES":["ornamental boots","ankle boots","heeled boots","fantasy shoes"],
+    "DESIGN LANGUAGE":["fantasy","magic","mystical","enchanted","ornamental","arcane"],
+    "OUTFIT PATTERN":["rune","star","moon","celestial","floral","arcane","ornamental"]
+  },
+  "舞台・パフォーマンス": {
+    "OUTFIT COLOR":["black","silver","gold","red","purple","white","metallic"],
+    "OUTFIT MATERIAL":["sequin","velvet","satin","metallic","mesh","rhinestone"],
+    "OUTFIT STRUCTURE":["stage","performance","costume","concert","show","bodysuit"],
+    "SHOULDERS & SLEEVES":["dramatic sleeve","one-shoulder","off-shoulder","puff sleeve","sleeveless"],
+    "COLLAR":["high collar","halter","sweetheart","v-neck","ornamental collar"],
+    "WAIST DESIGN":["corset","cinched","belt","ornamental waist","high-waisted"],
+    "SKIRT":["stage skirt","fringed skirt","layered skirt","mini skirt","performance skirt"],
+    "GLOVES":["opera gloves","performance gloves","sheer gloves","rhinestone gloves"],
+    "SHOES":["stage boots","platform boots","high heels","performance shoes"],
+    "DESIGN LANGUAGE":["stage","performance","theatrical","glamorous","show","concert"],
+    "OUTFIT PATTERN":["sequin","sparkle","star","geometric","rhinestone","metallic"]
+  }
+};
+
+function outfitAutoScore(value, words){
+  const v = String(value || "").toLowerCase();
+  let score = 0;
+  for(const word of (words || [])){
+    if(v.indexOf(String(word).toLowerCase()) !== -1) score++;
+  }
+  return score;
+}
+
+function outfitAutoHash(text){
+  let h = 2166136261;
+  for(let i=0;i<text.length;i++){
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h,16777619);
+  }
+  return (h >>> 0);
+}
+
+function selectOutfitAutoOption(key, genre, conceptValue){
+  const sel = catSelect(key);
+  if(!sel || sel.options.length < 2) return false;
+  const words = OUTFIT_AUTO_WORDS[genre] && OUTFIT_AUTO_WORDS[genre][key] || [];
+  let bestScore = -1;
+  let candidates = [];
+  for(let i=1;i<sel.options.length;i++){
+    const score = outfitAutoScore(sel.options[i].value, words);
+    if(score > bestScore){ bestScore = score; candidates = [i]; }
+    else if(score === bestScore) candidates.push(i);
+  }
+  // キーワード一致がないカテゴリでも、必ず別候補へ変更する。
+  if(bestScore <= 0){
+    const available = [];
+    for(let i=1;i<sel.options.length;i++) if(i !== sel.selectedIndex) available.push(i);
+    if(!available.length) return false;
+    const idx = outfitAutoHash(genre + "|" + key + "|" + conceptValue) % available.length;
+    sel.selectedIndex = available[idx];
+    return true;
+  }
+  const pool = candidates.filter(function(i){ return i !== sel.selectedIndex; });
+  const use = pool.length ? pool : candidates;
+  const idx = outfitAutoHash(genre + "|" + key + "|" + conceptValue) % use.length;
+  sel.selectedIndex = use[idx];
+  return true;
+}
+
+function handleOutfitConceptChange(){
+  const concept = catSelect("OUTFIT CONCEPT");
+  if(!concept || !concept.value){ updatePrompt(); return; }
+  const opt = concept.options[concept.selectedIndex];
+  const group = opt && opt.parentElement && opt.parentElement.tagName === "OPTGROUP" ? opt.parentElement : null;
+  const label = group ? (group.getAttribute("label") || "") : "";
+  const genre = Object.keys(OUTFIT_AUTO_WORDS).find(function(k){ return label.indexOf(k) === 0; });
+  if(!genre){ updatePrompt(); return; }
+  OUTFIT_AUTO_KEYS.forEach(function(key){ selectOutfitAutoOption(key, genre, concept.value); });
+  updatePrompt();
+  showStatus("「" + genre + "」に合わせて衣装関連11カテゴリを自動変更しました");
+}
+
+// 初期状態でも既存選択がある場合は整合性を取る。
+(function(){
+  const concept = catSelect("OUTFIT CONCEPT");
+  if(concept && concept.value) handleOutfitConceptChange();
+})();
 
 updatePrompt();
 </script>
