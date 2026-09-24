@@ -68,10 +68,9 @@ button.secondary,button.dice{background:#eee;color:#333}
 <div class="status" id="status">選択内容から自動更新</div>
 </section>
 <section class="panel">
-<h2>👗 衣装コンセプト連動</h2>
+<h2>👗 衣装コンセプト自動連動</h2>
 <div class="link-mode-row">
-<label class="switch-label"><input type="checkbox" id="outfitLinkMode" onchange="handleOutfitLinkModeChange()"> <strong>衣装コンセプト連動モード</strong></label>
-<span class="link-mode-note">ONにすると、選択した衣装コンセプトを基準に衣装カラー・素材・構造・袖・襟・ウエスト・スカート・手袋・靴・デザイン系統・柄へジャンル補正を自動付与します。個別選択はそのまま活かします。</span>
+<span class="link-mode-note">衣装コンセプトを選択すると、衣装カラー・素材・構造・袖・襟・ウエスト・スカート・手袋・靴・デザイン系統・柄の11カテゴリが自動的に連動します。連動は常時ONです。</span>
 </div>
 </section>
 <section class="panel">
@@ -1325,40 +1324,34 @@ function randomMatchingOption(select, genre){
     if(score > bestScore){ bestScore = score; best = [i]; }
     else if(score > 0 && score === bestScore){ best.push(i); }
   }
-  const pool = bestScore > 0 ? best : Array.from({length:select.options.length-1}, (_,i)=>i+1);
+  let pool = bestScore > 0 ? best.slice() : Array.from({length:select.options.length-1}, (_,i)=>i+1);
+  if(pool.length > 1){
+    const filtered = pool.filter(function(i){ return i !== select.selectedIndex; });
+    if(filtered.length) pool = filtered;
+  }
   select.selectedIndex = pool[Math.floor(Math.random()*pool.length)];
   return true;
 }
 
-function handleOutfitLinkModeChange(){
-  if(byId("outfitLinkMode") && byId("outfitLinkMode").checked){
-    handleOutfitConceptChange();
-  }else{
-    updatePrompt();
-    showStatus("衣装コンセプト連動モードをOFFにしました");
-  }
-}
 
 function handleOutfitConceptChange(){
-  const linkMode = byId("outfitLinkMode") && byId("outfitLinkMode").checked;
-  if(linkMode){
-    const genre = getOutfitGenre();
-    if(genre){
-      OUTFIT_RELATED_KEYS.forEach(function(key){
-        randomMatchingOption(catSelect(key), genre);
-      });
-      updatePrompt();
-      showStatus("衣装コンセプト「" + genre + "」に合わせて衣装関連11カテゴリを自動連動しました");
-      return;
-    }
+  const genre = getOutfitGenre();
+  if(genre){
+    OUTFIT_RELATED_KEYS.forEach(function(key){
+      randomMatchingOption(catSelect(key), genre);
+    });
+    updatePrompt();
+    showStatus("衣装コンセプト「" + genre + "」に合わせて衣装関連11カテゴリを自動連動しました");
+    return;
   }
   updatePrompt();
 }
 
 function updatePrompt(){
   const selected = [];
-  const linkMode = byId("outfitLinkMode") && byId("outfitLinkMode").checked;
-  const genre = linkMode ? getOutfitGenre() : null;
+  // 衣装コンセプトを選択した時点で常時連動する仕様
+  const linkMode = true;
+  const genre = getOutfitGenre();
   CAT_KEYS.forEach(function(key){
     const s = catSelect(key);
     if(s && s.value){
