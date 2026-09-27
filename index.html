@@ -1339,7 +1339,49 @@ function getOutfitPromptValue(key, selectedValue, genre, conceptValue){
   return selectedValue;
 }
 
+function getShotFramingFamily(value){
+  const v = (value || '').toLowerCase();
+  if(v.includes('extreme close up') || v.includes('目のクローズアップ') || v.includes('face close up')) return 'close';
+  if(v.includes('cowboy shot') || v.includes('upper body') || v.includes('portrait') || v.includes('chest-up')) return 'upper';
+  if(v.includes('full body') || v.includes('feet out of frame')) return 'full';
+  return 'general';
+}
+
+function isFramingCompatible(value, family){
+  if(!value) return false;
+  const v = value.toLowerCase();
+  // 環境優先・大きな余白は、人物を画面いっぱいに見せる今回の基本方針と衝突するため自動修正。
+  if(v.includes('environment priority') || v.includes('large negative space')) return false;
+  // close系でも「subject priority」は画角そのものを変えず、人物の占有を優先するため互換扱い。
+  return v.includes('subject priority');
+}
+
+function syncFramingWithShotType(){
+  const shot = catSelect('SHOT TYPE');
+  const framing = catSelect('FRAMING');
+  if(!shot || !framing || !shot.value) return;
+
+  const family = getShotFramingFamily(shot.value);
+  const current = framing.value;
+  if(isFramingCompatible(current, family)) return;
+
+  // 全画角共通で、ユーザーが確認済みの「人物占有率が上がる」FRAMINGを優先。
+  const preferred = 'centered, minimal negative space, subject priority';
+  const option = Array.from(framing.options).find(function(o){ return o.value === preferred; });
+  if(option){
+    framing.value = preferred;
+    return;
+  }
+  // 念のため、同条件の候補を検索。
+  const fallback = Array.from(framing.options).find(function(o){
+    const v = (o.value || '').toLowerCase();
+    return v.includes('centered') && v.includes('minimal negative space') && v.includes('subject priority');
+  });
+  if(fallback) framing.value = fallback.value;
+}
+
 function updatePrompt(){
+  syncFramingWithShotType();
   const selected = [];
   // 衣装コンセプトを選択した時点で常時連動する仕様
   const linkMode = true;
