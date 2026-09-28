@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 
 <html lang="ja">
+<!-- PIXAI Prompt Builder build: 2026-09-28-final -->
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder 960 / 27カテゴリ / 27,000選択肢 - Safari対応</title>
+<title>PIXAI Prompt Builder 960 / 27カテゴリ / 27,000選択肢 - Safari対応 - BUILD 2026-09-28</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -45,6 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 <body>
 <div class="wrap">
 <h1>PIXAI Prompt Builder 960 / 27カテゴリ / 27,000選択肢</h1>
+<p class="badge">BUILD 2026-09-28 / GitHub用統合版</p>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。衣装コンセプトは960種類、HAIRSTYLEは1040種類、その他の可変カテゴリは各1000種類、全27カテゴリで27,000選択肢です。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -1487,26 +1489,9 @@ const LEGS_HOSIERY_OPTIONS = [
 ];
 
 function injectLegsHosieryCategory(){
-  return;
-  const key = "LEGS & HOSIERY";
-  const existing = catSelect(key);
-  if(existing) return;
-  const grids = document.querySelectorAll("section.cat, section.category, .cat");
-  let anchor = catSelect("SKIRT");
-  if(!anchor) return;
-  const section = anchor.closest("section.cat, section.category, .cat");
-  if(!section) return;
-  const clone = section.cloneNode(true);
-  const label = clone.querySelector("label");
-  const select = clone.querySelector("select");
-  if(!select) return;
-  select.id = "cat-" + key;
-  select.setAttribute("data-cat", key);
-  select.innerHTML = '<option value="">選択しない</option>' + LEGS_HOSIERY_OPTIONS.map((v,i)=>'<option value="'+v.replace(/"/g,'&quot;')+'">'+String(i+1).padStart(3,'0')+'｜'+v+'</option>').join("");
-  if(label){ label.setAttribute("for", "cat-" + key); label.textContent = "LEGS & HOSIERY（ストッキング・ガーターデザイン）"; }
-  const dice = clone.querySelector("button");
-  if(dice){ dice.setAttribute("aria-label", key + "をランダム"); dice.setAttribute("data-key", key); }
-  section.parentNode.insertBefore(clone, section.nextSibling);
+  // LEGS & HOSIERY is embedded directly in the HTML.
+  // Runtime injection is intentionally disabled to keep the builder stable.
+  return false;
 }
 
 
@@ -1883,6 +1868,27 @@ function handleOutfitConceptChange(){
 })();
 
 updatePrompt();</script>
+<script>
+(function(){
+  const expected = {
+    hairstyle: 1040,
+    categories: 27
+  };
+  function builderHealthCheck(){
+    const hairstyle = document.querySelector('#cat-HAIRSTYLE');
+    const categories = document.querySelectorAll('.cat-select').length;
+    const hairstyleCount = hairstyle ? Math.max(0, hairstyle.options.length - 1) : 0;
+    const ok = !!hairstyle && hairstyleCount === expected.hairstyle && categories === expected.categories;
+    document.documentElement.dataset.builderBuild = '2026-09-28';
+    document.documentElement.dataset.builderHealth = ok ? 'ok' : 'check';
+    if(!ok){
+      console.warn('PIXAI Prompt Builder health check:', {expected, categories, hairstyleCount});
+    }
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', builderHealthCheck);
+  else builderHealthCheck();
+})();
+</script>
 <script>
 (function(){
   const FIXED_PROMPT_INITIAL = "[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.\n[CHARACTER] solo; single adult female character; adult woman; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.";
