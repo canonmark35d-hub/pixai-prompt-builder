@@ -1000,19 +1000,54 @@ function choosePoseLinked(sel,terms){
   if(!sel || sel.options.length<2) return false;
   const arr=(terms||[]).map(normalizeAutoText).filter(Boolean);
   if(!arr.length) return false;
-  let best=-1,bestIndexes=[];
+
+  // 現在値を記憶し、まず「ポーズに合う候補」の中から現在値以外を優先する。
+  const currentValue=normalizeAutoText(sel.value);
+  let best=-Infinity;
+  let bestIndexes=[];
+  let bestDifferent=-Infinity;
+  let bestDifferentIndexes=[];
+
   for(let i=1;i<sel.options.length;i++){
     const txt=optionText(sel.options[i]);
     let score=0;
-    arr.forEach(t=>{ if(txt.includes(t)) score += t.length>=8 ? 5 : 2; });
-    if(score>best){best=score;bestIndexes=[i];}
-    else if(score===best) bestIndexes.push(i);
-  }
-  if(best<=0) return false;
-  sel.selectedIndex=bestIndexes[(sel.options.length+arr.length)%bestIndexes.length];
-  return true;
-}
+    arr.forEach(t=>{
+      if(txt.includes(t)) score += t.length>=8 ? 5 : 2;
+    });
+    if(score<=0) continue;
 
+    if(score>best){
+      best=score;
+      bestIndexes=[i];
+    }else if(score===best){
+      bestIndexes.push(i);
+    }
+
+    // 現在の選択肢と同じものは、可能な限り除外する。
+    if(normalizeAutoText(sel.options[i].value)!==currentValue){
+      if(score>bestDifferent){
+        bestDifferent=score;
+        bestDifferentIndexes=[i];
+      }else if(score===bestDifferent){
+        bestDifferentIndexes.push(i);
+      }
+    }
+  }
+
+  if(best<=0) return false;
+
+  // 同じ値を避けられる場合は必ず別候補から選ぶ。
+  const candidates=bestDifferentIndexes.length ? bestDifferentIndexes : bestIndexes;
+  if(!candidates.length) return false;
+
+  // 同点候補は毎回同じ先頭候補にならないよう、現在選択位置を基準に回す。
+  const currentIndex=Math.max(1,sel.selectedIndex);
+  const offset=(currentIndex + arr.length + sel.options.length) % candidates.length;
+  const idx=candidates[offset];
+  const changed=normalizeAutoText(sel.options[idx].value)!==currentValue;
+  sel.selectedIndex=idx;
+  return changed;
+}
 function poseFallback(sel,terms){
   if(choosePoseLinked(sel,terms)) return true;
   return false;
@@ -1057,11 +1092,9 @@ function handlePoseChange(){
     if(/looking up|upward|見上げ|上を向/.test(p)) { if(poseFallback(gaze,['looking upward'])) changed++; }
   }
 
-  // ポーズ変更時には、画角とFRAMINGの整合性も最後に確定する。
-  const st=shot && normalizeAutoText(shot.value);
-  if(st && framing && /full body/.test(st)) choosePoseLinked(framing,['centered, minimal negative space, subject priority','centered, moderate negative space, subject priority']);
-  if(st && framing && /portrait|upper body|close-up/.test(st)) choosePoseLinked(framing,['centered, minimal negative space, subject priority']);
-
+  // 5カテゴリを再評価した結果をそのまま採用する。
+  // ここでFRAMINGを再上書きすると、せっかくPOSEごとに選んだ値が
+  // 同じ候補へ戻ってしまうため、追加の強制変更は行わない。
   updatePrompt();
   showStatus(rule ? 'ポーズに合わせて画角・構図・カメラ角度・人物方向・視線を自動連動しました（'+changed+'項目）' : 'ポーズから取得できる範囲で画角・構図関連を自動連動しました（'+changed+'項目）');
 }
@@ -1077,11 +1110,6 @@ function handlePoseChange(){
   if(pose && pose.value) handlePoseChange();
 })();
 
-// 初期状態でも既存選択がある場合は整合性を取る。
-(function(){
-  const concept = catSelect("OUTFIT CONCEPT");
-  if(concept && concept.value) handleOutfitConceptChange();
-})();
 
 updatePrompt();</script>
 <script>
