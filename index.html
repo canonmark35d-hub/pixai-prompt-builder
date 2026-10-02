@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder 960 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder 強化版 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -44,8 +44,8 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder 960 + 1カテゴリ</h1>
-<p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。衣装コンセプトは960種類、HAIRSTYLEは1040種類、その他の可変カテゴリは各1000種類、全27カテゴリで27,000選択肢です。</p>
+<h1>PIXAI Prompt Builder 強化版 / 27カテゴリ</h1>
+<p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
 <textarea id="prompt" readonly="" spellcheck="false">[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.
@@ -9716,21 +9716,110 @@ SEASONAL_EVENT_OPTIONS["OUTFIT PATTERN"] = [
   'lace pattern built from event symbols, Golden Week theme, gold and sunny yellow palette, featuring celebratory bunting, linen details',
 ];
 
+// ============================================================
+// 強化版・季節イベントデザインエンジン
+// 各イベントに「追加200種類」＝20デザインファミリー×10変奏を用意。
+// 既存300種類（20イベント×15）を変更せず、追加分は必要時に遅延生成する。
+// これによりDOMを巨大化させず、iPhone/Safariでも扱いやすくする。
+// ============================================================
+const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week"];
+const EVENT_SILHOUETTES = [
+  "structured corset mini dress", "cropped jacket + pleated mini skirt", "fitted blouse + high-waisted tailored shorts", "fitted vest + wide-leg trousers", "cape + fitted mini dress", "peplum top + flared mini skirt", "off-shoulder top + layered mini skirt", "asymmetric tunic + slim trousers", "cropped bolero + tiered mini skirt", "fitted fashion jumpsuit", "bustier top + tailored trousers", "structured collar top + A-line mini skirt", "babydoll mini dress", "longline coat + fitted mini dress", "cropped jacket + high-waisted mini skirt", "halter top + wrap mini skirt", "tailored blazer mini dress", "fitted knit top + pleated mini skirt", "draped fitted top + flared mini skirt", "ornamental bodice + tailored shorts"
+];
+const EVENT_VARIATIONS = [
+  "signature statement version", "delicate couture version", "bold graphic version", "romantic embellished version", "dramatic layered version", "minimal refined version", "ornate decorative version", "playful youthful version", "luxury editorial version", "mysterious night version"
+];
+const EVENT_THEME_LIBRARY = {
+  "Halloween": {palette:"black, pumpkin orange, blood red, antique gold",materials:"velvet, lace, matte satin, jacquard",motifs:"witch hat, bat, black cat, spiderweb, pumpkin, crescent moon, skull",hair:"witchy high ponytail, loose gothic waves, braided crown, elegant messy updo",accessory:"witch hat, mini witch hat, bat hair clip, black ribbon, spiderweb hair ornament",shoes:"lace-up boots, platform Mary Janes, pointed ankle boots",pattern:"spiderweb, bat, pumpkin, occult emblem, black rose",background:"haunted mansion, candlelit gothic hall, moonlit forest, old castle",lighting:"candlelight, eerie moonlight, orange rim light",language:"gothic Halloween couture, witchy fashion, theatrical dark fantasy"},
+  "Christmas": {palette:"deep red, forest green, ivory, champagne gold",materials:"velvet, satin, faux fur, knit, lace",motifs:"holly, snowflake, ribbon, bell, ornament, gift box, star",hair:"soft curled ponytail, ribboned half-up hair, elegant winter waves, braided updo",accessory:"holly hair ornament, velvet ribbon, pearl snowflake clip, mini gift bow",shoes:"fur-trimmed boots, velvet pumps, elegant ankle boots",pattern:"holly, snowflake, ribbon, ornament, tartan, star",background:"luxury Christmas salon, grand tree room, snowy palace terrace, candlelit winter room",lighting:"warm golden tree lights, candlelight, soft snowfall glow",language:"luxury Christmas couture, festive winter fashion, elegant holiday styling"},
+  "New Year": {palette:"vermilion, ivory, black, gold, deep red",materials:"silk, brocade, jacquard, satin, metallic thread",motifs:"plum blossom, fan, mizuhiki cord, knot, gold leaf, fireworks",hair:"traditional-inspired updo, sleek bun, ornate braided updo, elegant low bun",accessory:"gold hairpin, mizuhiki ornament, decorative comb, plum blossom clip",shoes:"zori-inspired heels, elegant pumps, ornamental sandals",pattern:"plum blossom, mizuhiki, fan, gold leaf, seigaiha",background:"New Year palace garden, shrine-inspired courtyard, gold tatami salon, festive city lights",lighting:"soft gold illumination, lantern glow, refined evening light",language:"modern Japanese New Year couture, ceremonial luxury fashion"},
+  "Valentine's Day": {palette:"ruby red, blush pink, cream, chocolate brown, champagne",materials:"velvet, satin, lace, chiffon, tulle",motifs:"heart, rose, ribbon, cupid, chocolate, bow",hair:"romantic loose curls, ribboned ponytail, soft half-up waves, elegant braided hair",accessory:"heart clip, velvet bow, rose hair ornament, pearl ribbon",shoes:"heart-detail pumps, ribbon heels, ankle boots, Mary Janes",pattern:"heart, rose, ribbon, cupid, chocolate motif",background:"romantic patisserie, candlelit salon, rose-filled lounge, elegant Valentine cafe",lighting:"warm candlelight, soft pink glow, romantic window light",language:"romantic Valentine couture, sweet luxury fashion, refined feminine styling"},
+  "White Day": {palette:"pure white, pearl, powder blue, silver, icy lavender",materials:"silk, satin, lace, chiffon, tulle, pearl embellishment",motifs:"white rose, pearl, ribbon, candy, crystal, bow",hair:"pearl half-up hair, soft waves, elegant side braid, refined low ponytail",accessory:"pearl clip, white rose ornament, crystal bow, silver ribbon",shoes:"pearl pumps, satin heels, white Mary Janes, crystal sandals",pattern:"white rose, pearl, ribbon, crystal, candy motif",background:"white floral salon, pearl-toned tea room, elegant spring boutique, luminous garden",lighting:"pearl-white glow, cool silver light, soft daylight",language:"white romantic couture, pearl elegance, refined White Day fashion"},
+  "Hinamatsuri": {palette:"peach pink, sakura pink, lavender, ivory, vermilion",materials:"silk, brocade, jacquard, satin, delicate lace",motifs:"peach blossom, hina doll, traditional cord, fan, layered ribbon",hair:"ornate traditional-inspired bun, braided updo, ribboned half-up style",accessory:"peach blossom hairpiece, mizuhiki ornament, traditional comb, ribbon clip",shoes:"zori-inspired sandals, elegant pumps, ornamental Mary Janes",pattern:"peach blossom, traditional cord, fan, layered Japanese motif",background:"Hinamatsuri display room, elegant Japanese salon, spring tatami room, peach blossom alcove",lighting:"soft spring daylight, warm lantern glow, delicate pink illumination",language:"modern Hinamatsuri couture, refined Japanese feminine fashion"},
+  "Tanabata": {palette:"indigo, midnight blue, deep violet, silver, celestial teal",materials:"silk, satin, sheer chiffon, metallic thread, jacquard",motifs:"star, constellation, bamboo leaf, tanzaku, galaxy, crescent",hair:"celestial braided hair, long soft waves, starry half-up hair, elegant high ponytail",accessory:"star hairpin, tanzaku ribbon, celestial clip, silver constellation ornament",shoes:"metallic sandals, star-detail heels, elegant ankle boots",pattern:"constellation, star, galaxy, bamboo leaf, tanzaku",background:"bamboo wish garden, starry festival terrace, Milky Way night garden, celestial shrine courtyard",lighting:"starlight, blue moonlight, silver lantern glow",language:"celestial Tanabata couture, Japanese night-sky fashion, starry elegance"},
+  "Cherry Blossom Season": {palette:"sakura pink, blush, ivory, pale green, soft rose",materials:"silk, chiffon, matte satin, lace, lightweight jacquard",motifs:"cherry blossom, petals, branch, ribbon, spring flower",hair:"soft sakura waves, floral half-up hair, braided crown, loose ponytail",accessory:"sakura hairpin, blossom clip, floral ribbon, petal ornament",shoes:"floral pumps, ribbon Mary Janes, pastel sandals, elegant flats",pattern:"cherry blossom, petals, branch, spring floral motif",background:"cherry blossom garden, petal-filled avenue, elegant spring cafe, riverside sakura path",lighting:"soft spring sunlight, petal-filtered light, blush sunset glow",language:"sakura spring couture, delicate Japanese seasonal fashion, romantic floral styling"},
+  "Summer Festival": {palette:"indigo, crimson, ivory, festival blue, gold",materials:"cotton, linen, lightweight woven fabric, satin accents",motifs:"lantern, goldfish, fan, wind chime, festival ribbon, fireworks",hair:"summer festival updo, braided ponytail, ribboned bun, loose side braid",accessory:"festival fan hairpin, ribbon ornament, goldfish clip, wind-chime ornament",shoes:"geta-inspired sandals, platform sandals, ribbon sandals",pattern:"festival fan, goldfish, lantern, fireworks, wave",background:"Japanese summer festival street, lantern avenue, festival stalls, riverside night fair",lighting:"paper lantern glow, warm festival lights, twilight blue",language:"modern summer festival fashion, refined yukata-inspired styling, festive Japanese couture"},
+  "Fireworks Night": {palette:"midnight navy, violet, magenta, electric blue, silver",materials:"silk, satin, metallic textile, chiffon, sequins",motifs:"firework burst, spark, star, smoke, glitter, crescent",hair:"glittering waves, high ponytail with ribbon, celestial braid, sleek half-up hair",accessory:"spark hair clip, metallic ribbon, star ornament, crystal fireworks pin",shoes:"metallic heels, glitter pumps, strappy sandals, ankle boots",pattern:"firework burst, spark, star, glitter, radial motif",background:"fireworks over river, rooftop fireworks view, festival bridge, night city terrace",lighting:"firework flashes, cool blue rim light, magenta night glow",language:"fireworks couture, glamorous night fashion, luminous festival styling"},
+  "Moon Viewing": {palette:"midnight blue, silver, ivory, muted gold, smoky lavender",materials:"velvet, silk, satin, chiffon, jacquard",motifs:"full moon, crescent, pampas grass, rabbit, cloud, silver glow",hair:"moonlit loose waves, low bun, elegant braided hair, silver-accented ponytail",accessory:"moon hairpin, rabbit ornament, silver comb, pampas-inspired clip",shoes:"silver pumps, velvet heels, elegant ankle boots, metallic sandals",pattern:"moon, rabbit, cloud, pampas grass, celestial motif",background:"moon-viewing garden, pampas grass terrace, moonlit Japanese garden, elegant night pavilion",lighting:"moonlight, silver rim light, soft lantern glow",language:"moon-viewing couture, poetic Japanese night fashion, refined celestial elegance"},
+  "Autumn Leaves Season": {palette:"crimson, burnt orange, amber, olive, warm brown",materials:"velvet, wool, suede, matte silk, jacquard",motifs:"maple leaf, ginkgo, acorn, fallen leaves, branch",hair:"autumn waves, braided crown, low ponytail, loose textured bun",accessory:"maple hairpin, ginkgo clip, acorn ornament, velvet ribbon",shoes:"suede ankle boots, loafers, heeled boots, Mary Janes",pattern:"maple leaf, ginkgo, acorn, autumn branch, fallen leaves",background:"maple garden, ginkgo avenue, autumn palace grounds, leaf-covered path",lighting:"golden-hour light, amber backlight, soft autumn afternoon",language:"autumn couture, refined seasonal fashion, rich foliage-inspired styling"},
+  "Harvest Season": {palette:"wheat gold, burgundy, cream, olive, terracotta",materials:"linen, cotton, wool, tweed, rustic silk",motifs:"wheat, grain, apple, pumpkin, basket, harvest ribbon",hair:"braided harvest hair, loose waves, rustic ponytail, woven updo",accessory:"wheat hairpiece, berry clip, harvest ribbon, small flower ornament",shoes:"brown ankle boots, loafers, lace-up boots, rustic pumps",pattern:"wheat, grain, pumpkin, apple, harvest stripe",background:"golden field, harvest market, rustic orchard, country estate garden",lighting:"warm harvest sunlight, amber sunset, soft rustic glow",language:"harvest-inspired couture, refined countryside fashion, artisanal seasonal styling"},
+  "Snow Season": {palette:"snow white, ice blue, silver, pale lavender, frosted mint",materials:"cashmere, velvet, faux fur, satin, knitted textile",motifs:"snowflake, icicle, crystal, frosted branch, snow globe",hair:"soft winter waves, braided crown, elegant bun, snowflake-accented ponytail",accessory:"crystal hairpin, snowflake clip, pearl ornament, faux-fur ribbon",shoes:"fur boots, white ankle boots, crystal heels, winter Mary Janes",pattern:"snowflake, crystal, icicle, frosted branch",background:"snow palace, snowy garden, glass winter conservatory, illuminated snow street",lighting:"soft snowfall light, icy blue glow, warm winter window light",language:"winter snow couture, crystalline fashion, luxurious cold-season styling"},
+  "Rainy Season": {palette:"lavender, slate blue, mist gray, soft teal, pearl",materials:"water-repellent satin, chiffon, lace, matte silk, translucent textile",motifs:"umbrella, raindrop, hydrangea, puddle reflection, rainy cloud",hair:"soft rain waves, low ponytail, braided side hair, sleek wet-look-inspired styling",accessory:"mini umbrella hair clip, hydrangea pin, pearl raindrop ornament",shoes:"waterproof ankle boots, glossy pumps, elegant rain boots, loafers",pattern:"hydrangea, raindrop, umbrella, ripple, rainy cloud",background:"rainy hydrangea garden, wet city street, covered terrace, reflective rainy alley",lighting:"soft overcast light, wet reflective glow, cool misty illumination",language:"rainy-season couture, elegant wet-weather fashion, poetic hydrangea styling"},
+  "Spring Season": {palette:"mint, butter yellow, ivory, soft pink, fresh green",materials:"cotton, linen, chiffon, matte silk, lace",motifs:"daisy, fresh leaves, butterfly, ribbon, spring flower",hair:"fresh spring waves, floral ponytail, braided half-up hair, airy bun",accessory:"daisy clip, butterfly pin, spring ribbon, floral comb",shoes:"pastel pumps, ribbon flats, Mary Janes, delicate sandals",pattern:"daisy, leaves, butterfly, spring floral motif",background:"fresh spring garden, botanical conservatory, sunny park, floral cafe terrace",lighting:"clear spring daylight, soft fresh glow, morning sunlight",language:"fresh spring couture, airy feminine fashion, botanical elegance"},
+  "Easter": {palette:"lavender, mint, butter yellow, blush pink, ivory",materials:"tulle, satin, cotton, lace, soft knit",motifs:"rabbit, egg, tulip, ribbon, carrot, spring flower",hair:"rabbit-ear-inspired ribbon styling, pastel braids, soft curls, playful half-up hair",accessory:"rabbit clip, pastel bow, egg ornament, flower crown accent",shoes:"pastel Mary Janes, ribbon pumps, ankle boots, spring sandals",pattern:"rabbit, decorated egg, tulip, ribbon, spring floral motif",background:"Easter garden, pastel tea party room, flower meadow, decorated spring salon",lighting:"soft pastel daylight, cheerful spring glow, warm garden light",language:"Easter couture, playful pastel fashion, refined spring celebration styling"},
+  "Birthday Celebration": {palette:"lilac, champagne, pastel blue, hot pink, ivory",materials:"satin, tulle, sequins, silk, chiffon",motifs:"cake, candle, balloon, ribbon, confetti, gift",hair:"party curls, ribboned ponytail, elegant half-up hair, playful bun",accessory:"birthday bow, crystal clip, mini crown, ribbon ornament",shoes:"party pumps, glitter heels, ribbon Mary Janes, crystal sandals",pattern:"confetti, candle, balloon, gift ribbon, cake motif",background:"luxury birthday salon, decorated party room, elegant cake table, rooftop celebration",lighting:"soft party lights, champagne glow, sparkling bokeh",language:"luxury birthday couture, celebratory fashion, glamorous party styling"},
+  "Anniversary Celebration": {palette:"ruby, ivory, champagne gold, rose pink, black",materials:"velvet, silk, satin, lace, sequins",motifs:"rose, ribbon, crystal, champagne motif, anniversary seal",hair:"elegant anniversary waves, polished bun, rose-adorned half-up hair, refined ponytail",accessory:"rose hair ornament, crystal clip, gold ribbon, pearl comb",shoes:"luxury pumps, satin heels, crystal sandals, elegant ankle boots",pattern:"rose, ribbon, crystal, champagne motif, ornamental seal",background:"luxury anniversary salon, candlelit dining room, grand ballroom, rose-filled terrace",lighting:"champagne golden light, candlelight, romantic evening glow",language:"anniversary luxury couture, elegant celebration fashion, refined romantic styling"},
+  "Golden Week": {palette:"sunny yellow, red, white, blue, gold",materials:"linen, cotton, satin, lightweight twill, woven textile",motifs:"sun, travel badge, ribbon, bunting, landmark-inspired emblem",hair:"travel-ready ponytail, casual waves, braided half-up hair, cheerful bun",accessory:"travel ribbon, sun clip, small badge ornament, floral clip",shoes:"comfortable fashion sneakers, loafers, sandals, ankle boots",pattern:"sun, bunting, travel emblem, stripe, celebratory graphic",background:"Japanese travel destination, sunny landmark plaza, scenic garden, lively holiday street",lighting:"bright holiday daylight, clear blue-sky light, warm sunset",language:"Golden Week travel couture, polished holiday fashion, modern Japanese leisure styling"}
+};
+
+const EVENT_EXTRA_VARIANTS = 200;
+const EVENT_EXISTING_VARIANTS = 15;
+const EVENT_TOTAL_VARIANTS = EVENT_EXISTING_VARIANTS + EVENT_EXTRA_VARIANTS;
+
+function eventExtraValue(eventName, key, familyIndex, variantIndex){
+  const t = EVENT_THEME_LIBRARY[eventName];
+  const silhouette = EVENT_SILHOUETTES[familyIndex];
+  const variation = EVENT_VARIATIONS[variantIndex % EVENT_VARIATIONS.length];
+  const n = familyIndex + 1;
+  const v = variantIndex + 1;
+  const motif = t.motifs.split(", ")[familyIndex % t.motifs.split(", ").length];
+  const material = t.materials.split(", ")[variantIndex % t.materials.split(", ").length];
+  const palette = t.palette;
+  const common = "event-specific design family " + n + "/20, variation " + v + "/10";
+  const map = {
+    "EXPRESSION": "confident " + (variantIndex%3===0?"mysterious":"celebratory") + " expression, " + eventName + " atmosphere, " + motif + " motif",
+    "HAIRSTYLE": t.hair.split(", ")[familyIndex % t.hair.split(", ").length] + ", " + variation + ", coordinated with " + eventName,
+    "HAIR COLOR": ["natural black","deep brown","dark espresso","soft chestnut","warm brown"][variantIndex%5] + ", refined " + eventName + " styling",
+    "EYE COLOR": "deep dark brown eyes, natural iris texture, coordinated " + eventName + " styling",
+    "HAIR ACCESSORIES": t.accessory.split(", ")[familyIndex % t.accessory.split(", ").length] + ", event-specific " + eventName + " hair ornament",
+    "OUTFIT CONCEPT": t.language + ", " + silhouette + ", " + motif + " focus, " + common,
+    "OUTFIT COLOR": palette + ", coordinated event-specific color placement",
+    "OUTFIT MATERIAL": material + ", " + t.materials + ", premium event textile treatment",
+    "OUTFIT STRUCTURE": silhouette + ", " + motif + " integrated construction, clearly distinct event silhouette",
+    "SHOULDERS & SLEEVES": ["structured shoulders and fitted long sleeves","dramatic cape sleeves","puff sleeves with fitted cuffs","off-shoulder construction","bishop sleeves","short structured sleeves","detached statement sleeves","halter shoulder treatment","asymmetric sleeve construction","sleeveless sculpted shoulders"][familyIndex%10] + ", " + eventName + " detailing",
+    "COLLAR": ["high ornamental collar","soft rounded collar","structured lapel collar","ribbon collar","square neckline","stand collar","decorative V neckline","sweetheart neckline","cape collar","jewel neckline"][familyIndex%10] + ", " + eventName + " ornament",
+    "WAIST DESIGN": ["defined corset waist","wide decorative sash","tailored high waist","ribbon-laced waist","ornamental belt waist","peplum waist","cinched natural waist","asymmetric wrap waist","structured waist panel","jewel waist accent"][familyIndex%10] + ", coordinated " + eventName + " treatment",
+    "SKIRT": silhouette.indexOf("trousers")>=0 || silhouette.indexOf("shorts")>=0 || silhouette.indexOf("jumpsuit")>=0 ? "coordinated lower-body construction integrated with " + silhouette : ["pleated mini skirt","layered mini skirt","flared mini skirt","tiered mini skirt","asymmetric mini skirt","structured A-line mini skirt","ruffled mini skirt","wrap mini skirt","panelled mini skirt","sculpted mini skirt"][familyIndex%10] + ", " + eventName + " detailing",
+    "LEGS & HOSIERY": ["sheer tights","opaque tights","patterned tights","lace thigh-high stockings","ribbed over-knee socks","fine ankle socks","decorative stockings","fitted thigh-high boots","sheer patterned stockings","bare legs with elegant footwear"][variantIndex%10] + ", coordinated " + eventName + " styling",
+    "GLOVES": ["short lace gloves","fitted satin gloves","fingerless gloves","sheer gloves","ornamental wrist gloves","long elegant gloves","ribbon-trimmed gloves","minimal fitted gloves","decorative mesh gloves","event motif gloves"][variantIndex%10] + ", " + eventName,
+    "SHOES": t.shoes.split(", ")[familyIndex % t.shoes.split(", ").length] + ", " + variation + ", " + eventName + " detailing",
+    "DESIGN LANGUAGE": t.language + ", " + variation + ", silhouette-first coordinated design",
+    "POSE": ["standing with one hand presenting the event accessory","standing with both hands lightly framing the outfit","elegant three-quarter standing pose","walking pose with controlled garment movement","seated elegant fashion pose","one-knee editorial pose","slight turn showing the silhouette","hand near hair ornament, poised posture","holding a thematic accessory","confident fashion-editorial pose"][familyIndex%10] + ", " + eventName + " atmosphere",
+    "GAZE": ["direct confident gaze","soft warm gaze","playful gaze","mysterious side gaze","calm elegant gaze"][variantIndex%5] + ", event-aware mood",
+    "SUBJECT ORIENTATION": ["front-facing","three-quarter left","three-quarter right","slight side-facing","dynamic three-quarter"][familyIndex%5] + ", emphasizing the " + eventName + " silhouette",
+    "CAMERA ANGLE": ["eye-level","slightly low angle","slightly high angle","fashion-editorial three-quarter angle","subtle low angle"][variantIndex%5] + ", coordinated with event styling",
+    "SHOT TYPE": ["full body fashion shot","three-quarter body shot","cowboy shot","full body editorial portrait","knee-up fashion portrait"][familyIndex%5] + ", preserving the complete event silhouette",
+    "FRAMING": ["full silhouette visible","centered fashion framing","environmental fashion framing","balanced full-body composition","slightly wider fashion framing"][variantIndex%5] + ", event details clearly visible",
+    "BACKGROUND": t.background.split(", ")[familyIndex % t.background.split(", ").length] + ", " + eventName + " setting, fully integrated with the outfit",
+    "LIGHTING": t.lighting.split(", ")[variantIndex % t.lighting.split(", ").length] + ", coordinated " + eventName + " illumination",
+    "COMPOSITION": ["silhouette-first centered composition","event accessory and outfit both clearly visible","fashion editorial composition with environmental context","balanced character-and-background composition","dynamic event fashion composition"][familyIndex%5] + ", " + eventName + " visual hierarchy",
+    "OUTFIT PATTERN": t.pattern.split(", ")[familyIndex % t.pattern.split(", ").length] + " motif, " + material + " texture, " + eventName + " event pattern"
+  };
+  return map[key] || (t.language + ", " + silhouette + ", " + motif + ", " + variation);
+}
+
+function buildEventExtraOptionsFor(key,eventIndex){
+  const name=SEASON_EVENT_NAMES[eventIndex];
+  const out=[];
+  for(let family=0;family<20;family++){
+    for(let variant=0;variant<10;variant++){
+      const globalIndex=family*10+variant;
+      out.push({value:eventExtraValue(name,key,family,variant),label:"EVENT+｜"+String(globalIndex+1).padStart(3,"0")+"｜"+eventExtraValue(name,key,family,variant),eventIndex:eventIndex,extra:true,family:family,variant:variant});
+    }
+  }
+  return out;
+}
+
 function addSeasonalEventOptions(){
   if(window.__seasonalEventOptionsAdded) return;
   CAT_KEYS.forEach(function(key){
-    const s = catSelect(key);
-    const list = SEASONAL_EVENT_OPTIONS[key];
-    if(!s || !Array.isArray(list) || list.length !== 300) return;
-    // Existing seasonal 100 + new 200 are grouped as 20 events × 15 variants.
+    const s=catSelect(key); const list=SEASONAL_EVENT_OPTIONS[key];
+    if(!s || !Array.isArray(list) || list.length!==300) return;
     list.forEach(function(v,i){
-      const eventIndex = Math.floor(i / 15);
-      const variantIndex = i % 15;
+      const eventIndex=Math.floor(i/15), variantIndex=i%15;
       const o=document.createElement("option");
-      o.value=v;
-      o.textContent="EVENT｜"+String(i+1).padStart(3,"0")+"｜"+v;
-      o.dataset.seasonEvent=String(eventIndex);
-      o.dataset.seasonVariant=String(variantIndex);
+      o.value=v; o.textContent="EVENT｜"+String(i+1).padStart(3,"0")+"｜"+v;
+      o.dataset.seasonEvent=String(eventIndex); o.dataset.seasonVariant=String(variantIndex); o.dataset.seasonBase="1";
       s.appendChild(o);
     });
     s.dataset.seasonalEventAdded="1";
@@ -9738,6 +9827,46 @@ function addSeasonalEventOptions(){
   });
   window.__seasonalEventOptionsAdded=true;
 }
+
+function getSeasonExtraOptions(key,eventIndex){
+  const cache=window.__seasonExtraCache || (window.__seasonExtraCache={});
+  const cacheKey=eventIndex+"|"+key;
+  if(!cache[cacheKey]) cache[cacheKey]=buildEventExtraOptionsFor(key,eventIndex);
+  return cache[cacheKey];
+}
+
+function ensureSeasonExtraOptionsInSelect(key,eventIndex){
+  const s=catSelect(key); if(!s || eventIndex<0) return;
+  Array.from(s.options).forEach(function(o){ if(o.dataset.seasonExtra==='1') o.remove(); });
+  getSeasonExtraOptions(key,eventIndex).forEach(function(item){
+    const o=document.createElement("option");
+    o.value=item.value; o.textContent=item.label; o.dataset.seasonEvent=String(eventIndex); o.dataset.seasonExtra="1"; o.dataset.seasonFamily=String(item.family); o.dataset.seasonVariant=String(item.variant);
+    s.appendChild(o);
+  });
+}
+
+function chooseSeasonalOption(key,eventIndex,avoidValue){
+  const s=catSelect(key); if(!s || eventIndex<0) return false;
+  const extra=getSeasonExtraOptions(key,eventIndex);
+  const existing=seasonalOptionsFor(key,eventIndex);
+  const pool=extra.length ? extra : existing;
+  let usable=pool.filter(function(o){ return !avoidValue || o.value!==avoidValue; });
+  if(!usable.length) usable=pool;
+  if(!usable.length) return false;
+  const chosen=usable[Math.floor(Math.random()*usable.length)];
+  s.value=chosen.value; return true;
+}
+
+function chooseCoordinatedEventFamily(eventIndex){
+  const family=Math.floor(Math.random()*20), variant=Math.floor(Math.random()*10);
+  CAT_KEYS.forEach(function(key){
+    const s=catSelect(key); if(!s) return;
+    ensureSeasonExtraOptionsInSelect(key,eventIndex);
+    const opts=Array.from(s.options).filter(function(o){return o.dataset.seasonExtra==='1' && Number(o.dataset.seasonFamily)===family && Number(o.dataset.seasonVariant)===variant;});
+    if(opts.length) s.value=opts[0].value;
+  });
+}
+
 
 function getSeasonBulkIndex(){
   const el=byId("seasonEventBulk");
@@ -9750,26 +9879,18 @@ function seasonalOptionsFor(key,eventIndex){
   return Array.from(s.options).filter(function(o){ return o.dataset.seasonEvent===String(eventIndex); });
 }
 
-function chooseSeasonalOption(key,eventIndex,avoidValue){
-  const s=catSelect(key);
-  const opts=seasonalOptionsFor(key,eventIndex);
-  if(!s || !opts.length) return false;
-  let pool=opts.filter(function(o){ return !avoidValue || o.value!==avoidValue; });
-  if(!pool.length) pool=opts;
-  const chosen=pool[Math.floor(Math.random()*pool.length)];
-  s.value=chosen.value;
-  return true;
-}
-
 function applySeasonEventBulk(eventIndex){
   const status=byId("seasonEventStatus");
   if(eventIndex<0){
     if(status) status.textContent="季節・イベント一括設定：OFF（個別設定）";
-    updatePrompt();
-    return;
+    // Extra options are removed; existing 300 seasonal options remain intact.
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(s) Array.from(s.options).forEach(function(o){if(o.dataset.seasonExtra==='1') o.remove();});
+    });
+    updatePrompt(); return;
   }
-  CAT_KEYS.forEach(function(key){ chooseSeasonalOption(key,eventIndex); });
-  if(status) status.textContent="季節・イベント一括設定：ON｜" + ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week"][eventIndex] + "｜各カテゴリ15種類から適用";
+  chooseCoordinatedEventFamily(eventIndex);
+  if(status) status.textContent="季節・イベント一括設定：ON｜"+SEASON_EVENT_NAMES[eventIndex]+"｜追加200種類（20デザイン系統×10変奏）＋既存15種類";
   updatePrompt();
 }
 
@@ -9808,7 +9929,7 @@ function updatePrompt(){
   let n = 0, nn = 0;
   CAT_KEYS.forEach(function(key){ const s=catSelect(key); if(s && s.value) n++; });
   NEG_KEYS.forEach(function(key){ const s=negSelect(key); if(s && s.value) nn++; });
-  byId("count").textContent = "可変 " + n + "/27 選択中 ｜ 固定ネガ " + FIXED_NEGATIVE.split(", ").length + "項目 ｜ ランダムネガ " + nn + "/7 選択中 ｜ 可変選択肢 35,100" + (getSeasonBulkIndex()>=0 ? " ｜ 季節イベント一括: ON" : (linkMode && genre ? " ｜ 連動: " + genre : ""));
+  byId("count").textContent = "可変 " + n + "/27 選択中 ｜ 固定ネガ " + FIXED_NEGATIVE.split(", ").length + "項目 ｜ ランダムネガ " + nn + "/7 選択中 ｜ 可変選択肢 27,000＋季節イベント拡張" + (getSeasonBulkIndex()>=0 ? " ｜ 季節イベント一括: ON" : (linkMode && genre ? " ｜ 連動: " + genre : ""));
 }
 
 function randomSelect(s){
@@ -9821,6 +9942,7 @@ function randomSelect(s){
 function randomSeasonAwareCategory(key){
   const eventIndex=getSeasonBulkIndex();
   if(eventIndex>=0){
+    ensureSeasonExtraOptionsInSelect(key,eventIndex);
     const current=catSelect(key) ? catSelect(key).value : "";
     return chooseSeasonalOption(key,eventIndex,current);
   }
@@ -9828,16 +9950,20 @@ function randomSeasonAwareCategory(key){
 }
 
 function randomVariables(){
-  CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
+  const eventIndex=getSeasonBulkIndex();
+  if(eventIndex>=0) chooseCoordinatedEventFamily(eventIndex);
+  else CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
   updatePrompt();
-  showStatus(getSeasonBulkIndex()>=0 ? "選択中の季節イベント内で可変27カテゴリをランダム設定しました" : "可変27カテゴリをランダム設定しました");
+  showStatus(eventIndex>=0 ? "選択中の季節イベント内で20デザイン系統×10変奏からランダム設定しました" : "可変27カテゴリをランダム設定しました");
 }
 
 function randomAll(){
-  CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
+  const eventIndex=getSeasonBulkIndex();
+  if(eventIndex>=0) chooseCoordinatedEventFamily(eventIndex);
+  else CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
   NEG_KEYS.forEach(function(key){ randomSelect(negSelect(key)); });
   updatePrompt();
-  showStatus(getSeasonBulkIndex()>=0 ? "選択中の季節イベントを維持して全カテゴリをランダム設定しました" : "全カテゴリをランダム設定しました");
+  showStatus(eventIndex>=0 ? "選択中の季節イベントを維持して全カテゴリをランダム設定しました" : "全カテゴリをランダム設定しました");
 }
 
 function randomNegative(){
