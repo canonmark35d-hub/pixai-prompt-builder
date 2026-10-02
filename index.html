@@ -4337,8 +4337,10 @@ SEASONAL_EVENT_OPTIONS['OUTFIT PATTERN'] = [
 ];
 
 
-// Expanded seasonal/event bank: preserve the original 100 options and add 200 more per category.
-// 20 themes × 10 additional category-specific variants = +200, for 300 seasonal options/category.
+// Expanded seasonal/event bank — strong event identity.
+// The original 100 seasonal options remain untouched. The additional 200 options
+// are generated from event-specific visual profiles: motif, palette, material,
+// silhouette, accessories, pattern, environment and lighting.
 const SEASONAL_EVENT_EXPANSION_THEMES = [
   "Halloween", "Christmas", "New Year", "Valentine's Day", "White Day",
   "Hinamatsuri", "Tanabata", "Cherry Blossom Season", "Summer Festival",
@@ -4346,345 +4348,76 @@ const SEASONAL_EVENT_EXPANSION_THEMES = [
   "Snow Season", "Rainy Season", "Spring Season", "Easter",
   "Birthday Celebration", "Anniversary Celebration", "Golden Week"
 ];
-const SEASONAL_EVENT_VARIATION_BANKS = {
-  "EXPRESSION": [
-    "mischievous knowing smile, {event} event theme, playful seasonal emotion",
-    "soft surprised expression, {event} event theme, bright festive reaction",
-    "confident playful grin, {event} event theme, lively seasonal mood",
-    "gentle dreamy expression, {event} event theme, romantic seasonal atmosphere",
-    "calm elegant expression, {event} event theme, sophisticated celebration mood",
-    "joyful open smile, {event} event theme, energetic festive emotion",
-    "slightly bashful smile, {event} event theme, charming seasonal mood",
-    "cool composed expression, {event} event theme, polished event atmosphere",
-    "bright sparkling smile, {event} event theme, vivid celebration mood",
-    "serene content expression, {event} event theme, refined seasonal warmth"
-  ],
-  "HAIRSTYLE": [
-    "long flowing side braid, {event} event theme, coordinated seasonal ornaments",
-    "voluminous soft curls, {event} event theme, elegant event-inspired finish",
-    "sleek straight hair with delicate side styling, {event} event theme, refined accents",
-    "high braided ponytail, {event} event theme, polished festive details",
-    "low textured bun with loose tendrils, {event} event theme, graceful seasonal styling",
-    "twin face-framing braids with loose lengths, {event} event theme, playful details",
-    "side-swept waves with a decorative accent, {event} event theme, sophisticated styling",
-    "half-up twisted crown with flowing hair, {event} event theme, refined ornamentation",
-    "messy elegant updo with soft strands, {event} event theme, fashionable seasonal finish",
-    "long layered hair with curled ends, {event} event theme, subtle festive styling"
-  ],
-  "HAIR COLOR": [
-    "near-black hair with subtle seasonal sheen, {event} event theme, natural tonal depth",
-    "dark chocolate-brown hair with soft reflected highlights, {event} event theme",
-    "espresso hair with restrained warm undertones, {event} event theme, natural dimensional color",
-    "deep cool brown hair with delicate seasonal reflections, {event} event theme",
-    "rich walnut-brown hair with low-contrast highlights, {event} event theme",
-    "soft black-brown hair with luminous edge highlights, {event} event theme",
-    "deep chestnut hair with refined seasonal warmth, {event} event theme",
-    "dark mocha hair with subtle multidimensional sheen, {event} event theme",
-    "natural black hair with gentle event-colored reflected light, {event} event theme",
-    "deep brown hair with understated glossy dimension, {event} event theme"
-  ],
-  "EYE COLOR": [
-    "deep brown eyes with delicate seasonal catchlights, {event} event theme",
-    "dark chocolate-brown eyes with warm reflected light, {event} event theme",
-    "rich espresso eyes with subtle event-inspired highlights, {event} event theme",
-    "natural dark brown eyes with luminous atmospheric reflections, {event} event theme",
-    "deep amber-brown eyes with restrained seasonal sparkle, {event} event theme",
-    "soft walnut-brown eyes with elegant catchlights, {event} event theme",
-    "dark coffee-brown eyes with polished reflective depth, {event} event theme",
-    "deep brown irises with fine luminous accents, {event} event theme",
-    "warm dark-brown eyes with subtle festive reflections, {event} event theme",
-    "natural espresso-brown irises with refined seasonal light, {event} event theme"
-  ],
-  "HAIR ACCESSORIES": [
-    "delicate seasonal hair ribbons, {event} event theme, refined placement",
-    "small jeweled hair pins, {event} event theme, elegant event symbolism",
-    "slim decorative hair comb, {event} event theme, understated ornamentation",
-    "fine lace hair bow, {event} event theme, sophisticated seasonal accent",
-    "tiny floral hair ornaments, {event} event theme, delicate arrangement",
-    "minimal metallic hair clips, {event} event theme, polished festive detail",
-    "small pearl hair accents, {event} event theme, refined celebration styling",
-    "delicate crystal hair ornament, {event} event theme, subtle sparkle",
-    "narrow satin hair ribbon, {event} event theme, graceful seasonal finish",
-    "ornamental side hairpiece, {event} event theme, elegant visual balance"
-  ],
-  "OUTFIT CONCEPT": [
-    "structured seasonal cocktail mini dress, {event} event theme, distinctive silhouette",
-    "fashion-forward tailored celebration ensemble, {event} event theme, unique styling",
-    "ornate feminine mini dress with statement detailing, {event} event theme",
-    "luxury editorial event outfit with sculpted lines, {event} event theme",
-    "romantic layered celebration ensemble, {event} event theme, refined silhouette",
-    "modern seasonal couture-inspired mini outfit, {event} event theme",
-    "elegant fitted event dress with decorative construction, {event} event theme",
-    "playful premium celebration look with coordinated separates, {event} event theme",
-    "refined festive two-piece fashion ensemble, {event} event theme",
-    "dramatic yet elegant seasonal statement outfit, {event} event theme"
-  ],
-  "OUTFIT COLOR": [
-    "deep jewel-tone seasonal palette, {event} event theme, balanced accent color",
-    "soft pastel celebration palette, {event} event theme, refined tonal harmony",
-    "rich dark-and-metallic seasonal palette, {event} event theme",
-    "warm neutral palette with a festive accent, {event} event theme",
-    "ivory and muted accent-color palette, {event} event theme",
-    "monochrome seasonal palette with subtle contrast, {event} event theme",
-    "dusty romantic color palette with luminous accents, {event} event theme",
-    "deep berry-inspired palette with restrained highlights, {event} event theme",
-    "cool elegant palette with one vivid seasonal accent, {event} event theme",
-    "warm champagne-inspired palette with delicate contrast, {event} event theme"
-  ],
-  "OUTFIT MATERIAL": [
-    "matte silk with refined seasonal detailing, {event} event theme",
-    "soft velvet accents with elegant seasonal texture, {event} event theme",
-    "lustrous satin with restrained event embellishment, {event} event theme",
-    "fine lace layered over smooth fabric, {event} event theme",
-    "delicate chiffon with polished seasonal trim, {event} event theme",
-    "textured jacquard with subtle celebration motifs, {event} event theme",
-    "soft organza panels with refined event detailing, {event} event theme",
-    "fine knit texture combined with elegant smooth fabric, {event} event theme",
-    "embroidered textile with restrained seasonal accents, {event} event theme",
-    "silky crepe with sophisticated event-inspired texture, {event} event theme"
-  ],
-  "OUTFIT STRUCTURE": [
-    "fitted bodice with layered mini skirt, {event} event theme, distinct construction",
-    "corset-inspired waist with flared skirt, {event} event theme",
-    "tailored cropped jacket over a fitted dress, {event} event theme",
-    "asymmetric layered silhouette, {event} event theme, fashion-editorial structure",
-    "square-neck fitted bodice with gathered skirt, {event} event theme",
-    "structured peplum waist with compact skirt, {event} event theme",
-    "ribbon-laced bodice with tiered mini skirt, {event} event theme",
-    "off-shoulder structured top with fitted lower silhouette, {event} event theme",
-    "sculpted sleeveless bodice with detachable overskirt, {event} event theme",
-    "tailored two-piece silhouette with coordinated proportions, {event} event theme"
-  ],
-  "SHOULDERS & SLEEVES": [
-    "detached sheer puff sleeves, {event} event theme, refined seasonal detailing",
-    "slim off-shoulder sleeves, {event} event theme, elegant finish",
-    "short gathered sleeves with delicate trim, {event} event theme",
-    "long fitted sleeves with decorative cuffs, {event} event theme",
-    "asymmetric one-sleeve styling, {event} event theme",
-    "bell sleeves with restrained event ornament, {event} event theme",
-    "cap sleeves with fine lace edging, {event} event theme",
-    "shoulder straps with removable ribbon accents, {event} event theme",
-    "structured short sleeves with sculpted shoulders, {event} event theme",
-    "soft draped sleeves with polished seasonal trim, {event} event theme"
-  ],
-  "COLLAR": [
-    "delicate lace-trimmed sweetheart neckline, {event} event theme",
-    "refined square neckline with decorative edging, {event} event theme",
-    "slim jewel neckline with subtle event ornament, {event} event theme",
-    "elegant standing collar with fine trim, {event} event theme",
-    "soft rounded neckline with ribbon detail, {event} event theme",
-    "off-shoulder neckline with delicate lace, {event} event theme",
-    "high neckline with small ornamental clasp, {event} event theme",
-    "scalloped neckline with refined seasonal trim, {event} event theme",
-    "asymmetric neckline with elegant finishing detail, {event} event theme",
-    "v-neckline with narrow decorative border, {event} event theme"
-  ],
-  "WAIST DESIGN": [
-    "slim satin waist sash, {event} event theme, refined accent",
-    "delicate corset waist panel, {event} event theme",
-    "ornamental waist belt with small event charm, {event} event theme",
-    "layered ribbon waist treatment, {event} event theme",
-    "subtle peplum waist construction, {event} event theme",
-    "fine lace waist overlay, {event} event theme",
-    "structured high waist with decorative seamwork, {event} event theme",
-    "narrow jeweled waist accent, {event} event theme",
-    "double-ribbon waist detail, {event} event theme",
-    "tailored waistline with contrasting trim, {event} event theme"
-  ],
-  "SKIRT": [
-    "layered ruffle mini skirt with delicate trim, {event} event theme",
-    "structured A-line mini skirt with decorative panels, {event} event theme",
-    "asymmetric tiered mini skirt, {event} event theme",
-    "pleated mini skirt with refined seasonal edging, {event} event theme",
-    "soft gathered mini skirt with ribbon accents, {event} event theme",
-    "flared mini skirt with lace inserts, {event} event theme",
-    "wrap-style mini skirt with ornamental fastening, {event} event theme",
-    "sculpted mini skirt with subtle overskirt layer, {event} event theme",
-    "tiered chiffon mini skirt with polished trim, {event} event theme",
-    "high-waisted pleated mini skirt with event-inspired details, {event} event theme"
-  ],
-  "LEGS & HOSIERY": [
-    "sheer thigh-high stockings with delicate seasonal trim, {event} event theme",
-    "opaque thigh-highs with subtle event accent, {event} event theme",
-    "lace-top thigh-high stockings, {event} event theme",
-    "fine patterned tights with restrained seasonal motif, {event} event theme",
-    "translucent stockings with elegant ribbon detail, {event} event theme",
-    "matte thigh-high stockings with decorative cuffs, {event} event theme",
-    "soft over-the-knee socks with refined trim, {event} event theme",
-    "sheer tights with tiny event-inspired pattern, {event} event theme",
-    "two-tone thigh-high hosiery with elegant contrast, {event} event theme",
-    "delicate lace-edged stockings with polished finish, {event} event theme"
-  ],
-  "GLOVES": [
-    "short lace gloves with seasonal ornament, {event} event theme",
-    "elbow-length satin gloves with refined trim, {event} event theme",
-    "fingerless lace gloves with small decorative detail, {event} event theme",
-    "sheer wrist gloves with ribbon accents, {event} event theme",
-    "slim fitted gloves with subtle metallic detail, {event} event theme",
-    "pearl-accented short gloves, {event} event theme",
-    "ruffled cuff gloves with delicate event trim, {event} event theme",
-    "translucent long gloves with elegant edging, {event} event theme",
-    "minimal satin wrist gloves, {event} event theme",
-    "ornamental mesh gloves with refined seasonal detail, {event} event theme"
-  ],
-  "SHOES": [
-    "elegant ankle-strap heels with seasonal accent, {event} event theme",
-    "lace-up platform sandals with refined event detailing, {event} event theme",
-    "classic pumps with decorative buckle, {event} event theme",
-    "slim ribbon-tie heels with seasonal ornament, {event} event theme",
-    "polished Mary Jane heels with event-inspired trim, {event} event theme",
-    "delicate strappy sandals with small decorative accents, {event} event theme",
-    "heeled ankle boots with refined seasonal detailing, {event} event theme",
-    "ornamental low heels with elegant ribbon finish, {event} event theme",
-    "platform pumps with subtle metallic accent, {event} event theme",
-    "pointed-toe heels with fine seasonal embellishment, {event} event theme"
-  ],
-  "DESIGN LANGUAGE": [
-    "romantic luxury seasonal fashion, {event} event theme, refined editorial direction",
-    "modern Japanese feminine event fashion, {event} event theme, polished detailing",
-    "elegant couture-inspired seasonal styling, {event} event theme",
-    "soft romantic fashion editorial, {event} event theme, delicate visual language",
-    "luxury boutique celebration aesthetic, {event} event theme",
-    "refined gothic-inspired seasonal fashion, {event} event theme",
-    "playful premium seasonal styling, {event} event theme",
-    "minimal elegant event fashion with selective ornament, {event} event theme",
-    "dreamy feminine seasonal editorial aesthetic, {event} event theme",
-    "dramatic high-fashion celebration aesthetic, {event} event theme"
-  ],
-  "POSE": [
-    "seated elegant pose with subtle event gesture, {event} event theme",
-    "one-hand-to-hair fashion pose, {event} event theme, graceful seasonal attitude",
-    "lightly holding a seasonal prop, {event} event theme, natural body language",
-    "gentle walking pose with flowing movement, {event} event theme",
-    "slight three-quarter turn with relaxed shoulders, {event} event theme",
-    "playful hand gesture near the face, {event} event theme",
-    "graceful side-step pose with dynamic skirt movement, {event} event theme",
-    "delicate standing pose with hands softly clasped, {event} event theme",
-    "confident fashion stance with one leg subtly forward, {event} event theme",
-    "soft over-the-shoulder pose with elegant seasonal mood, {event} event theme"
-  ],
-  "GAZE": [
-    "direct confident gaze with bright seasonal catchlights, {event} event theme",
-    "soft gaze toward the viewer, {event} event theme, intimate atmosphere",
-    "slightly upward gaze, {event} event theme, dreamy seasonal mood",
-    "gentle sideward gaze, {event} event theme, elegant restraint",
-    "playful sidelong gaze, {event} event theme, lively celebration mood",
-    "calm downward gaze, {event} event theme, refined emotion",
-    "focused gaze toward a seasonal detail, {event} event theme",
-    "over-the-shoulder gaze toward the viewer, {event} event theme",
-    "soft distant gaze, {event} event theme, atmospheric elegance",
-    "bright engaging eye contact, {event} event theme, festive confidence"
-  ],
-  "SUBJECT ORIENTATION": [
-    "front-facing stance with slight natural asymmetry, {event} event theme",
-    "three-quarter front orientation, {event} event theme, elegant presentation",
-    "three-quarter back orientation with head turned toward viewer, {event} event theme",
-    "side-oriented stance with graceful torso turn, {event} event theme",
-    "slight diagonal body orientation, {event} event theme",
-    "dynamic quarter-turn orientation, {event} event theme, fashion editorial feel",
-    "front orientation with subtle hip shift, {event} event theme",
-    "side profile with a gentle return toward camera, {event} event theme",
-    "three-quarter orientation with flowing garment direction, {event} event theme",
-    "diagonal stance emphasizing full silhouette, {event} event theme"
-  ],
-  "CAMERA ANGLE": [
-    "eye-level seasonal fashion angle, {event} event theme, natural perspective",
-    "slightly low camera angle, {event} event theme, elegant stature",
-    "slightly high camera angle, {event} event theme, delicate presentation",
-    "subtle three-quarter camera angle, {event} event theme",
-    "gentle low-angle editorial view, {event} event theme",
-    "soft elevated viewpoint, {event} event theme, refined composition",
-    "near eye-level portrait-fashion angle, {event} event theme",
-    "slight diagonal camera perspective, {event} event theme",
-    "restrained low viewpoint emphasizing the silhouette, {event} event theme",
-    "balanced elevated fashion viewpoint, {event} event theme"
-  ],
-  "SHOT TYPE": [
-    "full-body seasonal fashion shot, {event} event theme",
-    "three-quarter body editorial shot, {event} event theme",
-    "cowboy shot with seasonal styling emphasis, {event} event theme",
-    "upper-body fashion portrait, {event} event theme",
-    "medium full shot with environmental context, {event} event theme",
-    "knee-up seasonal editorial shot, {event} event theme",
-    "waist-up celebration portrait, {event} event theme",
-    "full-length environmental fashion scene, {event} event theme",
-    "three-quarter portrait with outfit detail, {event} event theme",
-    "dynamic full-body event fashion shot, {event} event theme"
-  ],
-  "FRAMING": [
-    "clean centered seasonal framing, {event} event theme",
-    "slightly off-center editorial framing, {event} event theme",
-    "foreground-framed seasonal composition, {event} event theme",
-    "generous environmental framing around the subject, {event} event theme",
-    "tight fashion framing with clear outfit detail, {event} event theme",
-    "balanced negative-space framing, {event} event theme",
-    "diagonal visual framing with layered depth, {event} event theme",
-    "architectural framing around the subject, {event} event theme",
-    "asymmetric luxury editorial framing, {event} event theme",
-    "intimate close framing with atmospheric context, {event} event theme"
-  ],
-  "BACKGROUND": [
-    "elegant {event} celebration venue with coordinated seasonal decor",
-    "beautiful {event} themed garden with refined decorative details",
-    "luxury {event} interior with tasteful seasonal ornament",
-    "atmospheric {event} night street with polished lighting",
-    "refined {event} festival setting with layered environmental details",
-    "romantic {event} courtyard with subtle thematic decorations",
-    "premium {event} event hall with sophisticated visual styling",
-    "dreamy {event} illuminated outdoor setting with seasonal atmosphere",
-    "stylish {event} boutique district with coordinated decorations",
-    "cinematic {event} celebration landscape with elegant depth"
-  ],
-  "LIGHTING": [
-    "soft directional key light with {event} seasonal reflections",
-    "warm rim lighting with subtle {event} color influence",
-    "cool ambient fill with refined {event} highlights",
-    "gentle diffused illumination inspired by {event} atmosphere",
-    "cinematic backlight with delicate {event} glow",
-    "soft window light with restrained {event} reflections",
-    "polished editorial lighting with {event} accent tones",
-    "layered ambient lighting with realistic {event} environmental bounce",
-    "subtle spotlight with soft {event} atmospheric fill",
-    "luminous dusk lighting with elegant {event} color balance"
-  ],
-  "COMPOSITION": [
-    "foreground seasonal detail framing the subject, {event} event theme",
-    "balanced subject-and-environment hierarchy, {event} event theme",
-    "layered depth with a clear seasonal focal point, {event} event theme",
-    "editorial diagonal composition with event storytelling, {event} event theme",
-    "clean central hierarchy with supporting seasonal details, {event} event theme",
-    "asymmetric composition using environmental decorations, {event} event theme",
-    "symmetrical celebration composition with refined visual balance, {event} event theme",
-    "cinematic depth composition with foreground accents, {event} event theme",
-    "minimal luxury composition with selective seasonal props, {event} event theme",
-    "dynamic fashion composition emphasizing movement and atmosphere, {event} event theme"
-  ],
-  "OUTFIT PATTERN": [
-    "subtle {event}-inspired ribbon motif with refined spacing",
-    "delicate {event} symbolic motif arranged as a fine repeat",
-    "small ornamental {event} motif on selected garment panels",
-    "elegant abstract pattern inspired by {event} visual elements",
-    "fine lace-like {event} pattern with restrained density",
-    "geometric pattern incorporating subtle {event} symbolism",
-    "scattered miniature {event} motifs with sophisticated spacing",
-    "tone-on-tone {event} pattern with low-contrast refinement",
-    "decorative border pattern inspired by {event} celebration",
-    "micro-pattern of refined {event} themed symbols"
-  ]
+
+const SEASONAL_EVENT_PROFILES = {
+  "Halloween": {palette:"black, pumpkin orange, blood red and antique gold", motif:"carved pumpkins, black cats, bats, spiderweb lace and tiny skull ornaments", material:"black velvet, satin, lace and sheer tulle", silhouette:"dramatic corset mini dress, layered ruffles and pointed asymmetric details", accent:"orange-and-black striped ribbons, gothic bows and antique gold hardware", pattern:"pumpkin, bat, spiderweb and occult-symbol pattern", hair:"black velvet bow, tiny bat clips and orange ribbon", shoes:"black lace-up platform boots with orange accents", background:"moonlit haunted mansion, pumpkins, candles, fog and autumn night", lighting:"dramatic orange candlelight mixed with cool moonlight", pose:"playful witch-like pose with one hand near the hat or face", gaze:"mischievous confident gaze"},
+  "Christmas": {palette:"deep emerald, crimson, ivory and metallic gold", motif:"holly leaves, snowflakes, candy canes, stars and fir branches", material:"velvet, satin, soft faux-fur trim and glittering tulle", silhouette:"luxurious festive mini dress with fitted bodice, flared skirt and fur-trimmed details", accent:"red velvet bows, gold bells, pearl ornaments and white fur cuffs", pattern:"holly, snowflake, tartan and Christmas ornament pattern", hair:"large velvet ribbon, holly hairpiece and pearl ornaments", shoes:"ivory or red velvet ankle boots with gold details", background:"luxury Christmas salon with a giant decorated tree, gifts and warm lights", lighting:"warm golden fairy lights and soft candle glow", pose:"elegant festive pose holding a small gift or ornament", gaze:"warm joyful festive gaze"},
+  "New Year": {palette:"vermilion red, ivory, black, deep navy and metallic gold", motif:"seigaiha waves, plum blossoms, cranes, mizuhiki cords and auspicious fans", material:"silk brocade, jacquard, satin and metallic woven fabric", silhouette:"modern Japanese-inspired mini ensemble with obi-like waist structure and layered panels", accent:"gold mizuhiki knots, ornamental cords, fan charms and lacquer-like details", pattern:"traditional Japanese auspicious motifs with bold gold accents", hair:"ornamental kanzashi, gold hairpins and red ribbon", shoes:"elegant platform sandals with Japanese-inspired ornamentation", background:"luxurious New Year celebration room with kadomatsu, lanterns and gold decor", lighting:"warm lantern light with refined gold highlights", pose:"formal celebratory pose with graceful hands and upright posture", gaze:"calm elegant celebratory gaze"},
+  "Valentine's Day": {palette:"cherry red, wine red, blush pink, ivory and dark chocolate", motif:"hearts, roses, ribbons, lace and tiny love-letter details", material:"silk satin, velvet, fine lace and soft chiffon", silhouette:"romantic fitted mini dress with sweetheart neckline, heart-shaped details and layered ruffles", accent:"oversized satin bow, heart-shaped jewelry and rose embellishments", pattern:"heart, rose and ribbon pattern", hair:"romantic rose hairpiece, heart clips and satin ribbon", shoes:"red or blush platform heels with ribbon ankle ties", background:"romantic rose-filled salon with heart decorations and candlelight", lighting:"soft pink and warm romantic candlelight", pose:"playful romantic pose holding a small heart-shaped gift", gaze:"sweet affectionate gaze"},
+  "White Day": {palette:"pearl white, powder blue, silver, pale lavender and soft pink", motif:"white ribbons, candies, pearls, lace, flowers and gift boxes", material:"pearl satin, chiffon, lace, organza and glossy silk", silhouette:"airy elegant mini dress with layered tulle, fitted waist and gift-ribbon construction", accent:"white satin bows, pearl trims, silver charms and candy-like details", pattern:"ribbon, candy, pearl and delicate floral pattern", hair:"white ribbon, pearl hairpins and delicate floral clips", shoes:"white or pastel lace-up heels with pearl accents", background:"elegant White Day gift salon filled with white flowers and wrapped sweets", lighting:"bright pearlescent light with soft pastel reflections", pose:"gentle gift-presenting pose with graceful hands", gaze:"soft grateful romantic gaze"},
+  "Hinamatsuri": {palette:"peach pink, sakura pink, lavender, ivory, vermilion and gold", motif:"peach blossoms, hina dolls, folding fans, traditional cords and tiny gold ornaments", material:"silk brocade, jacquard, satin and delicate organza", silhouette:"doll-like Japanese mini dress with layered kimono sleeves and obi-inspired waist", accent:"obi bow, miniature fan ornaments, gold cords and floral hairpieces", pattern:"peach blossom, traditional Japanese geometric and fan motifs", hair:"kanzashi-style peach blossoms, ribbons and ornamental pins", shoes:"decorated Japanese-inspired platform sandals", background:"refined Hinamatsuri room with tiered hina dolls, peach blossoms and lanterns", lighting:"soft warm lantern light with pink floral highlights", pose:"graceful doll-like formal pose with delicate hand placement", gaze:"gentle refined doll-like gaze"},
+  "Tanabata": {palette:"deep indigo, midnight blue, emerald, violet, silver and vivid pink", motif:"bamboo leaves, tanzaku wishes, stars, constellations and colorful paper ornaments", material:"silk, glossy satin, sheer organza and star-speckled chiffon", silhouette:"celestial festival mini dress with flowing panels and star-shaped waist ornament", accent:"star charms, colorful wish strips, metallic ribbons and bamboo-inspired details", pattern:"stars, constellations, bamboo leaves and tanzaku pattern", hair:"star hairpins, colorful ribbons and tiny bamboo ornaments", shoes:"midnight-blue platform sandals with silver star details", background:"nighttime Tanabata festival garden with bamboo wish trees and glowing stars", lighting:"deep blue night light with sparkling silver accents", pose:"dreamy reaching pose toward hanging wishes or stars", gaze:"dreamy upward celestial gaze"},
+  "Cherry Blossom Season": {palette:"sakura pink, blush, ivory, soft green and warm beige", motif:"cherry blossoms, falling petals, delicate branches, ribbons and floral charms", material:"matte silk, chiffon, lace and light jacquard", silhouette:"feminine spring mini dress with petal-shaped layers and softly cinched waist", accent:"sakura blossom appliques, pink ribbons and delicate floral buttons", pattern:"dense cherry blossom petals and branch motifs", hair:"sakura flower pins, floral ribbons and petal ornaments", shoes:"blush platform sandals with floral ankle details", background:"full cherry blossom garden with drifting petals and spring sunlight", lighting:"soft luminous spring daylight with pink reflected light", pose:"graceful pose gently touching a blossom branch or catching petals", gaze:"fresh serene spring gaze"},
+  "Summer Festival": {palette:"indigo, white, vermilion, fuchsia, turquoise and gold", motif:"yukata flowers, fans, goldfish, fireworks and festival paper ornaments", material:"light cotton, textured silk, satin ribbon and sheer summer fabric", silhouette:"stylized festival mini yukata-inspired outfit with wide sash and layered short skirt", accent:"obi bow, festival fan, decorative cords and bold hair ornament", pattern:"traditional summer festival motifs in strong contrasting colors", hair:"large festival flower, kanzashi and flowing ribbon", shoes:"decorated geta-inspired platform sandals", background:"crowded Japanese summer festival street with lanterns, stalls and banners", lighting:"warm lantern glow mixed with vivid festival lights", pose:"playful festival pose holding a fan or candy apple", gaze:"bright energetic festival gaze"},
+  "Fireworks Night": {palette:"midnight navy, black, violet, magenta, cobalt and silver", motif:"large fireworks bursts, sparks, stars, smoke trails and metallic confetti", material:"dark satin, shimmering organza, glitter tulle and metallic thread", silhouette:"dramatic fitted mini dress with explosive layered skirt and asymmetric spark details", accent:"firework-shaped crystals, metallic ribbons and sparkling trim", pattern:"large vivid fireworks and starburst pattern", hair:"sparkling star clips, metallic ribbon and firework-shaped ornaments", shoes:"midnight platform heels with silver glitter details", background:"open night sky filled with huge colorful fireworks over a festival crowd", lighting:"strong colorful fireworks rim light against deep blue darkness", pose:"dynamic celebratory pose with arms lifted or skirt movement", gaze:"excited luminous gaze"},
+  "Moon Viewing": {palette:"midnight blue, plum, ivory, muted gold and silver", motif:"full moon, pampas grass, rabbits, autumn flowers and flowing clouds", material:"silk, satin, velvet accents and translucent chiffon", silhouette:"elegant moonlit mini dress with crescent-shaped panels and flowing sleeves", accent:"crescent moon jewelry, rabbit charm, gold embroidery and silver trim", pattern:"moon, cloud, pampas grass and rabbit motifs", hair:"crescent hairpin, silver floral ornament and delicate ribbon", shoes:"dark velvet platform sandals with moon-shaped charms", background:"quiet Japanese moon-viewing garden with giant full moon and pampas grass", lighting:"cool silver moonlight with subtle warm lantern accents", pose:"serene seated or standing pose gazing toward the moon", gaze:"quiet contemplative moonlit gaze"},
+  "Autumn Leaves Season": {palette:"burnt orange, maple red, amber, deep brown, cream and muted gold", motif:"maple leaves, gingko leaves, acorns, branches and falling foliage", material:"velvet, matte silk, tweed accents and textured jacquard", silhouette:"rich autumn mini dress with layered leaf-like skirt and fitted waist", accent:"maple leaf brooches, amber jewelry and warm ribbon details", pattern:"dense maple and gingko leaf pattern", hair:"autumn leaf hairpiece, amber clips and warm ribbon", shoes:"brown or burgundy platform ankle boots with leaf ornaments", background:"lush autumn garden covered in vivid red and golden leaves", lighting:"low warm golden-hour sunlight through autumn foliage", pose:"elegant walking or leaf-catching pose", gaze:"warm nostalgic autumn gaze"},
+  "Harvest Season": {palette:"pumpkin orange, wheat gold, burgundy, olive green and cream", motif:"pumpkins, wheat, apples, grapes, corn, leaves and harvest baskets", material:"velvet, rustic jacquard, matte silk and lace", silhouette:"playful harvest-inspired mini dress with apron-like panels and full layered skirt", accent:"wheat bows, tiny pumpkins, fruit ornaments and rustic gold hardware", pattern:"abundant harvest fruits, wheat and autumn botanical motifs", hair:"small pumpkin or wheat hair ornament with rustic ribbon", shoes:"brown lace-up boots with harvest-colored bows", background:"rich autumn harvest field with pumpkins, wheat and rustic market decorations", lighting:"warm late-afternoon harvest sunlight", pose:"cheerful harvest pose holding a basket of seasonal produce", gaze:"bright cheerful harvest gaze"},
+  "Snow Season": {palette:"snow white, icy blue, silver, pale lavender and cool gray", motif:"snowflakes, icicles, frosted branches, crystals and winter stars", material:"white velvet, satin, faux fur, crystal tulle and shimmering knit", silhouette:"winter princess mini dress with fluffy trim, layered snow-like skirt and fitted waist", accent:"crystal snowflake brooches, white fur cuffs and icy rhinestones", pattern:"large crystalline snowflake and frost pattern", hair:"crystal snowflake hairpiece, white ribbon and pearl pins", shoes:"white fur-trimmed platform boots with crystal details", background:"snow-covered winter palace garden with frosted trees and falling snow", lighting:"cool luminous winter light with sparkling crystal highlights", pose:"elegant winter pose with hands near fur collar or catching snow", gaze:"serene sparkling winter gaze"},
+  "Rainy Season": {palette:"mist blue, hydrangea purple, sage green, ivory and silver", motif:"hydrangeas, raindrops, transparent umbrellas, puddle reflections and fresh leaves", material:"water-resistant glossy satin, translucent organza, lace and smooth silk", silhouette:"fresh rainy-season mini dress with translucent layered panels and petal-like sleeves", accent:"raindrop crystals, hydrangea appliques, clear ribbon and silver details", pattern:"hydrangea flowers, rain droplets and botanical pattern", hair:"hydrangea hair clip, translucent ribbon and pearl raindrop pins", shoes:"glossy ankle boots with hydrangea-colored accents", background:"rain-washed Japanese garden with hydrangeas, puddles and transparent umbrellas", lighting:"soft overcast daylight with luminous wet reflections", pose:"elegant pose holding a transparent umbrella or touching raindrops", gaze:"soft reflective rainy-day gaze"},
+  "Spring Season": {palette:"fresh green, blush pink, butter yellow, ivory and sky blue", motif:"new leaves, small blossoms, butterflies, ribbons and fresh botanical details", material:"light silk, chiffon, lace and airy organza", silhouette:"fresh youthful spring mini dress with petal layers and gently flared skirt", accent:"butterfly charms, floral bows and delicate botanical embroidery", pattern:"mixed spring flowers, leaves and butterflies", hair:"fresh flower crown accents, butterfly pins and pastel ribbon", shoes:"pastel platform sandals with floral straps", background:"bright spring garden with fresh greenery, blossoms and soft breeze", lighting:"clear fresh spring sunlight with soft luminous highlights", pose:"light playful pose with flowing skirt and gentle movement", gaze:"fresh optimistic spring gaze"},
+  "Easter": {palette:"lavender, mint, baby blue, butter yellow, blush pink and ivory", motif:"painted eggs, rabbits, tulips, ribbons, bows and spring grass", material:"satin, lace, tulle, organza and soft velvet accents", silhouette:"playful Easter mini dress with rounded puff details, layered skirt and oversized bow", accent:"rabbit-ear motifs, decorated egg ornaments and pastel bows", pattern:"colorful Easter eggs, rabbits, tulips and ribbons", hair:"rabbit-inspired ribbon ears, pastel flower clips and bows", shoes:"pastel platform Mary Janes with ribbon details", background:"whimsical Easter garden with decorated eggs, rabbits, tulips and pastel props", lighting:"bright cheerful pastel daylight", pose:"cute playful pose holding a decorated Easter egg or basket", gaze:"bright playful Easter gaze"},
+  "Birthday Celebration": {palette:"pink, lilac, champagne gold, ivory and vivid accent colors", motif:"balloons, ribbons, birthday cake, candles, confetti and gift boxes", material:"satin, glitter tulle, chiffon, lace and metallic-thread fabric", silhouette:"glamorous birthday party mini dress with dramatic bow, layered skirt and fitted waist", accent:"crystal birthday brooch, oversized ribbon, confetti details and tiny cake charm", pattern:"balloons, stars, confetti, ribbons and cake motifs", hair:"large birthday bow, crystal clips and celebratory ribbon", shoes:"sparkling platform heels with ribbon ankle ties", background:"luxury birthday party room with giant balloons, cake, gifts and confetti", lighting:"bright party lighting with sparkling highlights", pose:"joyful celebratory pose presenting a gift or touching a birthday cake", gaze:"excited joyful birthday gaze"},
+  "Anniversary Celebration": {palette:"black, ivory, champagne gold, deep red and elegant metallic tones", motif:"interlocking rings, roses, ribbons, candles, crystal ornaments and elegant numbers", material:"luxury satin, velvet, lace, brocade and crystal-embellished tulle", silhouette:"high-end anniversary cocktail mini dress with sculpted waist and elegant layered skirt", accent:"crystal ring motifs, gold embroidery, rose corsage and satin sash", pattern:"rings, roses, elegant geometric celebration motifs", hair:"crystal hair comb, rose ornament and satin ribbon", shoes:"luxury metallic platform heels with crystal details", background:"luxury anniversary ballroom with candles, roses, crystal decor and elegant table setting", lighting:"romantic candlelight with refined champagne-gold illumination", pose:"graceful formal celebration pose with elegant hand placement", gaze:"sophisticated affectionate gaze"},
+  "Golden Week": {palette:"vivid red, white, navy, gold, fresh green and bright festival colors", motif:"Japanese travel icons, flags, flowers, landmarks, ribbons and celebratory banners", material:"crisp satin, jacquard, light cotton and decorative woven fabric", silhouette:"fashionable Japanese holiday mini ensemble with energetic layered panels and statement sash", accent:"gold pins, travel-themed charms, decorative banners and bold ribbon details", pattern:"festive Japanese motifs, travel symbols and colorful geometric patterns", hair:"holiday ribbon, decorative pins and small travel-inspired charm", shoes:"comfortable yet glamorous platform sneakers or sandals with decorative accents", background:"lively Japanese holiday destination with flowers, banners, festive streets and landmarks", lighting:"bright clear holiday daylight with colorful reflections", pose:"energetic travel pose with confident movement", gaze:"bright adventurous holiday gaze"}
 };
-function expandSeasonalEventOptions(){
+
+const SEASONAL_CATEGORY_VARIANTS = {
+  "EXPRESSION": p => [p.motif, p.gaze, "smiling", "playful", "elegant", "joyful", "mischievous", "dreamy", "confident", "celebratory"],
+  "HAIRSTYLE": p => [p.hair, "event-themed braided styling with "+p.accent, "voluminous curls with "+p.accent, "half-up event styling with "+p.motif, "high ponytail with "+p.accent, "ornamental updo with "+p.hair, "long flowing waves with "+p.accent, "braided crown with "+p.motif, "low bun with "+p.hair, "romantic half-up style with "+p.accent],
+  "HAIR COLOR": p => [p.palette+" hair palette", "dark hair with reflected "+p.palette, "rich brown hair with "+p.palette+" highlights", "natural black hair with subtle "+p.palette+" reflections", "deep brown hair with "+p.palette+" sheen", "dark chocolate hair with "+p.palette+" reflected light", "soft black hair with event-colored highlights", "deep brunette hair with luminous "+p.palette+" accents", "natural dark hair with restrained "+p.palette+" glow", "espresso hair with subtle event-color reflections"],
+  "EYE COLOR": p => ["deep brown eyes with "+p.palette+" catchlights", "dark brown eyes reflecting "+p.lighting, "natural dark brown eyes with tiny "+p.motif+" reflections", "deep espresso eyes with luminous event-colored highlights", "rich brown eyes with subtle "+p.palette+" sparkle", "dark chocolate eyes with "+p.accent+" reflections", "natural brown irises with "+p.lighting, "deep brown irises with refined seasonal sparkle", "warm dark-brown eyes with event-colored catchlights", "dark brown eyes with atmospheric "+p.palette+" reflections"],
+  "HAIR ACCESSORIES": p => [p.hair, p.accent, "statement hair ornament featuring "+p.motif, "oversized event ribbon in "+p.palette, "crystal ornament inspired by "+p.motif, "decorative hair comb with "+p.accent, "large thematic floral or symbolic hairpiece", "layered ribbons using "+p.palette, "ornamental pins featuring "+p.motif, "bold event-specific hairpiece with "+p.accent],
+  "OUTFIT CONCEPT": p => [p.silhouette+", unmistakably "+p.motif, "luxury event couture based on "+p.motif, "statement mini dress with "+p.accent+" and "+p.silhouette, "editorial celebration outfit centered on "+p.motif, "themed fantasy mini ensemble with "+p.silhouette, "ornate event costume with "+p.accent, "high-fashion holiday outfit built around "+p.motif, "dramatic themed party dress with "+p.silhouette, "distinctive event heroine costume with "+p.motif, "luxury seasonal statement look using "+p.material+" and "+p.accent],
+  "OUTFIT COLOR": p => [p.palette, p.palette+", dominant event palette", "high-contrast "+p.palette+" combination", p.palette+" with metallic highlights", p.palette+" with bold thematic accent", p.palette+" in a rich gradient arrangement", p.palette+" with ivory balance", p.palette+" with deep shadow contrast", p.palette+" with luminous accent panels", p.palette+" with coordinated trim and accessories"],
+  "OUTFIT MATERIAL": p => [p.material, p.material+" with visible thematic texture", "layered "+p.material+" with "+p.accent, "embroidered "+p.material+" featuring "+p.motif, "textured "+p.material+" with event-specific trim", "luxury "+p.material+" with statement embellishment", "mixed "+p.material+" with contrasting event panels", "ornate "+p.material+" with metallic thematic details", "sheer and opaque "+p.material+" contrast", "richly textured "+p.material+" with "+p.motif],
+  "OUTFIT STRUCTURE": p => [p.silhouette, "sculpted bodice with "+p.accent+" and layered event skirt", "corset-style waist with "+p.motif+" panels", "asymmetric mini dress with "+p.accent+" and dramatic layers", "fitted bodice with oversized event bow and themed skirt", "structured peplum with "+p.motif+" ornamentation", "layered short dress with statement sleeves and "+p.accent, "tailored two-piece with themed corset and mini skirt", "ornate suspender-style mini dress with "+p.motif, "dramatic tiered silhouette with "+p.accent],
+  "SHOULDERS & SLEEVES": p => ["dramatic puff sleeves with "+p.accent, "sheer bishop sleeves with "+p.motif, "ruffled short sleeves in "+p.material, "off-shoulder sleeves with "+p.accent, "structured cap sleeves with "+p.motif, "detachable statement sleeves with "+p.accent, "lace-trimmed bell sleeves with event motifs", "asymmetric sleeve design with "+p.palette, "voluminous organza sleeves with "+p.accent, "fitted sleeves with thematic embroidery"],
+  "COLLAR": p => ["ornate high collar with "+p.accent, "ribbon choker collar featuring "+p.motif, "lace stand collar with "+p.material, "jewel collar with "+p.accent, "Peter Pan collar with thematic embroidery", "dramatic sweetheart neckline with "+p.motif, "square neckline with "+p.accent, "ruffled collar with event-specific trim", "decorative sailor collar inspired by "+p.motif, "structured neckline with "+p.palette+" contrast"],
+  "WAIST DESIGN": p => ["oversized thematic bow waist with "+p.accent, "ornamental sash inspired by "+p.motif, "corset waist with "+p.palette+" contrast", "wide decorative belt with event motifs", "layered ribbon waist with "+p.accent, "obi-inspired waist with "+p.motif, "crystal embellished waistline", "sculpted waist with contrasting event panels", "statement waist corsage with "+p.accent, "decorative lacing with thematic hardware"],
+  "SKIRT": p => ["dramatic layered mini skirt with "+p.motif, "full ruffled mini skirt in "+p.material, "asymmetric event skirt with "+p.accent, "petal-like layered skirt with thematic trim", "tiered tulle skirt with "+p.palette, "structured bell-shaped mini skirt with "+p.motif, "pleated mini skirt with bold event pattern", "oversized bow-back mini skirt with "+p.accent, "sculpted short skirt with "+p.material, "high-volume statement mini skirt with thematic embellishment"],
+  "LEGS & HOSIERY": p => ["themed thigh-high stockings with "+p.motif, "opaque hosiery in "+p.palette, "lace thigh-highs with "+p.accent, "patterned stockings featuring "+p.motif, "sheer tights with thematic glitter", "striped event hosiery in "+p.palette, "garter-detail thigh-highs with "+p.accent, "ornamental lace stockings with event motifs", "metallic-thread tights with "+p.palette, "decorative over-the-knee socks with "+p.motif],
+  "GLOVES": p => ["long event gloves with "+p.accent, "lace gloves featuring "+p.motif, "short satin gloves in "+p.palette, "sheer opera gloves with thematic embroidery", "fingerless gloves with "+p.accent, "ruffled wrist gloves with event motifs", "jewel-studded gloves with "+p.palette, "detachable themed glove cuffs", "velvet gloves with "+p.motif, "ornate gloves with metallic event details"],
+  "SHOES": p => [p.shoes, "themed platform heels with "+p.accent, "ornate ankle boots in "+p.palette, "lace-up event shoes with "+p.motif, "decorated Mary Janes with thematic details", "metallic platform sandals with "+p.accent, "ribbon-tied heels featuring "+p.motif, "luxury event boots with "+p.material, "crystal embellished platform shoes", "statement footwear matching "+p.palette],
+  "DESIGN LANGUAGE": p => ["unmistakable "+p.motif+" fantasy couture", "luxury event costume design with "+p.accent, "dramatic thematic editorial fashion", "ornate celebration couture centered on "+p.motif, "high-fashion seasonal fantasy with "+p.palette, "maximalist event styling with layered symbols", "romantic theatrical costume design", "statement festival couture with bold motifs", "premium themed character fashion", "cinematic event costume aesthetic"],
+  "POSE": p => [p.pose, "dynamic celebratory pose emphasizing the "+p.silhouette, "playful pose interacting with a thematic prop", "elegant pose presenting an event symbol", "dramatic fashion pose with flowing skirt movement", "graceful pose beside event decorations", "energetic walking pose through the themed setting", "seated pose surrounded by thematic props", "heroic event-character pose", "intimate close pose highlighting themed accessories"],
+  "GAZE": p => [p.gaze, "direct confident event gaze", "playful mischievous gaze toward the viewer", "soft dreamy gaze toward thematic decorations", "bright joyful celebration gaze", "dramatic cinematic gaze under event lighting", "curious gaze toward the event symbol", "warm affectionate festive gaze", "cool fashion-editorial gaze", "sparkling excited gaze"],
+  "SUBJECT ORIENTATION": p => ["front-facing orientation emphasizing the themed outfit", "three-quarter orientation showing event accessories", "side orientation revealing the thematic silhouette", "back three-quarter orientation showing decorative details", "dynamic diagonal orientation matching the festival energy", "front three-quarter orientation with thematic prop", "slightly turned orientation toward event decorations", "profile orientation emphasizing hairstyle and event ornaments", "heroic forward orientation", "graceful angled orientation showing layered costume details"],
+  "CAMERA ANGLE": p => ["slightly low angle emphasizing the statement event costume", "eye-level fashion angle with thematic background", "slightly high angle revealing event decorations", "dramatic low angle with cinematic event lighting", "three-quarter fashion angle emphasizing silhouette", "close fashion angle highlighting thematic accessories", "wide angle showing the full event environment", "low editorial angle emphasizing platform footwear", "intimate eye-level angle with event props", "dynamic diagonal camera angle matching the celebration"],
+  "SHOT TYPE": p => ["full-body event fashion shot", "three-quarter themed fashion shot", "cowboy shot emphasizing the event outfit", "full-body cinematic celebration shot", "upper-body themed portrait", "medium full shot with event props", "fashion editorial full-length shot", "dramatic full-body costume shot", "wide environmental event shot", "close themed portrait with accessories"],
+  "FRAMING": p => ["full body centered with the complete themed environment visible", "full outfit framed with event decorations around the subject", "subject framed by the central event motif", "dynamic diagonal framing with thematic props", "symmetrical framing emphasizing the event costume", "cinematic foreground framing using event decorations", "wide framing showing the complete celebration setting", "portrait framing with thematic accessories prominent", "low framing emphasizing the themed footwear and skirt", "balanced fashion-magazine framing with event motifs"],
+  "BACKGROUND": p => [p.background, "immersive "+p.motif+" event environment matching the outfit", "luxury themed event venue filled with "+p.motif, "cinematic outdoor scene dominated by "+p.motif, "elaborate festival setting in "+p.palette, "fantasy event world featuring "+p.motif, "high-detail celebration venue with thematic decorations", "dramatic night or day event setting with "+p.lighting, "ornate seasonal environment coordinated with "+p.palette, "fully decorated event scene with unmistakable "+p.motif],
+  "LIGHTING": p => [p.lighting, "strong event-colored key light using "+p.palette, "dramatic rim light shaped by the thematic decorations", "warm theatrical lighting with sparkling event highlights", "cinematic colored lighting matching "+p.palette, "soft atmospheric light with bright thematic accents", "high-contrast editorial lighting emphasizing event costume details", "glowing decorative light sources inspired by "+p.motif, "festive ambient illumination with metallic reflections", "luminous cinematic lighting designed around the event theme"],
+  "COMPOSITION": p => ["centered composition dominated by "+p.motif, "hero composition with the themed costume as the visual focal point", "layered foreground and background using "+p.motif, "cinematic composition with event decorations framing the subject", "symmetrical celebration composition using "+p.palette, "dynamic diagonal composition matching the event energy", "fashion editorial composition with thematic props", "environmental composition showing the complete event world", "dramatic close composition emphasizing event details", "balanced composition connecting costume, props and background"],
+  "OUTFIT PATTERN": p => [p.pattern, "large-scale "+p.motif+" pattern across the skirt", "bold "+p.motif+" pattern on bodice and sleeves", "all-over "+p.motif+" print with "+p.palette, "embroidered "+p.motif+" motifs with metallic accents", "repeating "+p.motif+" border pattern", "asymmetric "+p.motif+" placement with bold contrast", "ornate jacquard featuring "+p.motif, "large statement event emblem pattern", "dense coordinated "+p.motif+" textile pattern"]
+};
+
+function buildStrongSeasonalOptions(){
   CAT_KEYS.forEach(function(key){
     const list = SEASONAL_EVENT_OPTIONS[key];
-    const bank = SEASONAL_EVENT_VARIATION_BANKS[key];
-    if(!Array.isArray(list) || !Array.isArray(bank) || bank.length !== 10) return;
+    const maker = SEASONAL_CATEGORY_VARIANTS[key];
+    if(!Array.isArray(list) || typeof maker !== "function") return;
+    // Preserve original 100. Add exactly 10 strongly themed variants per event = +200.
     SEASONAL_EVENT_EXPANSION_THEMES.forEach(function(theme){
-      bank.forEach(function(template){
-        list.push(template.replaceAll("{event}", theme));
-      });
+      const p = SEASONAL_EVENT_PROFILES[theme];
+      const variants = maker(p);
+      for(let i=0;i<10;i++){
+        list.push(variants[i] + ", unmistakably " + theme + " themed");
+      }
     });
   });
 }
-expandSeasonalEventOptions();
+buildStrongSeasonalOptions();
 
 function addSeasonalEventOptions(){
   if(window.__seasonalEventOptionsAdded) return;
@@ -4737,7 +4470,7 @@ function randomSelect(s){
       if(!isSeasonal) return;
       // Each event occupies 15 consecutive entries: original 5 + expanded 10.
       const localIndex = i - (s.options.length - 300);
-      if(localIndex < bulkIndex * 15 || localIndex >= (bulkIndex + 1) * 15) return;
+      if(localIndex < bulkIndex * 15 + 5 || localIndex >= (bulkIndex + 1) * 15) return;
     }else{
       if(isSeasonal) return;
     }
@@ -5103,9 +4836,9 @@ function applySeasonEventBulk(themeIndex){
     return;
   }
 
-  // 20 themes × 15 variants (original 5 + expanded 10).
-  const variant = 0;
-  const optionIndexInSeason = idx * 15 + variant;
+  // 20 themes × 15 variants. For bulk mode, use only the 10 newly
+  // generated strong event-specific variants, and randomize independently
+  // per category so the same event does not produce one repeated outfit.
   let changed = 0;
   CAT_KEYS.forEach(function(key){
     const sel = catSelect(key);
@@ -5113,14 +4846,20 @@ function applySeasonEventBulk(themeIndex){
     const group = sel.querySelector('optgroup[data-seasonal-event="1"]');
     if(!group) return;
     const options = group.querySelectorAll("option");
-    if(options[optionIndexInSeason]){
-      sel.value = options[optionIndexInSeason].value;
+    const candidates = [];
+    for(let n=5;n<15;n++){
+      const option = options[idx * 15 + n];
+      if(option) candidates.push(option);
+    }
+    if(candidates.length){
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+      sel.value = chosen.value;
       changed++;
     }
   });
 
   const status = byId("seasonEventStatus");
-  if(status) status.textContent = "季節・イベント一括設定：" + SEASON_EVENT_THEME_NAMES[idx] + "（27カテゴリ連動中／300候補／ランダム対応／個別変更可能）";
+  if(status) status.textContent = "季節・イベント一括設定：" + SEASON_EVENT_THEME_NAMES[idx] + "（27カテゴリ連動中／イベント専用の強テーマ10候補からランダム／個別変更可能）";
   updatePrompt();
 }
 
