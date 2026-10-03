@@ -9929,7 +9929,7 @@ function updatePrompt(){
   let n = 0, nn = 0;
   CAT_KEYS.forEach(function(key){ const s=catSelect(key); if(s && s.value) n++; });
   NEG_KEYS.forEach(function(key){ const s=negSelect(key); if(s && s.value) nn++; });
-  byId("count").textContent = "可変 " + n + "/27 選択中 ｜ 固定ネガ " + FIXED_NEGATIVE.split(", ").length + "項目 ｜ ランダムネガ " + nn + "/7 選択中 ｜ 可変選択肢 27,000＋季節イベント拡張" + (getSeasonBulkIndex()>=0 ? " ｜ 季節イベント一括: ON" : (linkMode && genre ? " ｜ 連動: " + genre : ""));
+  byId("count").textContent = "可変 " + n + "/27 選択中 ｜ 固定ネガ " + FIXED_NEGATIVE.split(", ").length + "項目 ｜ ランダムネガ " + nn + "/7 選択中 ｜ 可変選択肢 54,000＋季節イベント拡張" + (getSeasonBulkIndex()>=0 ? " ｜ 季節イベント一括: ON" : (linkMode && genre ? " ｜ 連動: " + genre : ""));
 }
 
 function randomSelect(s){
@@ -10252,6 +10252,244 @@ function handleOutfitConceptChange(){
   if(concept && concept.value) handleOutfitConceptChange();
 })();
 
+
+/* ============================================================
+   NORMAL IDOL COSTUME EXPANSION
+   Existing normal options are preserved exactly as-is.
+   Adds 1,000 idol-themed options to every normal category.
+   The design vocabulary is generalized from Japanese idol/stage
+   costume conventions: frills/tulle, princess, sailor, gothic,
+   military, maid, street, cyber, celestial, Japanese festival,
+   etc. No existing option is replaced or edited.
+   ============================================================ */
+const IDOL_NORMAL_FAMILIES = [
+  "classic sparkling idol", "sweet candy pop idol", "princess ballroom idol",
+  "gothic romantic idol", "sailor school idol", "military parade idol",
+  "ballet tulle idol", "maid-inspired stage idol", "retro pop idol",
+  "street dance idol", "cyber future idol", "celestial angel idol",
+  "floral garden idol", "Japanese festival idol", "Chinese-inspired stage idol",
+  "rock performance idol", "glam disco idol", "musical theater idol",
+  "fairy fantasy idol", "winter crystal idol"
+];
+const IDOL_NORMAL_VARIANTS = [
+  "with layered frills", "with tiered tulle", "with ribbon trim", "with pearl trim",
+  "with crystal accents", "with delicate lace", "with satin piping", "with metallic edging",
+  "with decorative buttons", "with miniature bows", "with oversized bow detail", "with scalloped edging",
+  "with pleated detailing", "with asymmetric panels", "with contrasting trim", "with jewel accents",
+  "with embroidered motifs", "with subtle sequin detailing", "with fine beadwork", "with star accents",
+  "with heart accents", "with floral accents", "with moon accents", "with musical-note motifs",
+  "with stage-light reflective accents", "with coordinated member-color accents", "with two-tone detailing",
+  "with three-tone color blocking", "with soft pastel detailing", "with vivid accent panels",
+  "with elegant monochrome detailing", "with luminous trim", "with iridescent accents", "with translucent overlays",
+  "with sheer decorative panels", "with velvet accents", "with chiffon overlays", "with organza overlays",
+  "with brocade accents", "with jacquard detailing", "with glossy satin accents", "with matte contrast panels",
+  "with refined couture finishing", "with polished stage finishing", "with coordinated accessory details",
+  "with symmetrical ornamentation", "with controlled asymmetry", "with delicate scallop motifs",
+  "with geometric trim", "with tiny decorative rosettes", "with elegant chain accents", "with signature stage detailing"
+];
+const IDOL_COLOR_PALETTES = [
+  "pink and white", "sky blue and white", "lavender and white", "red and white", "blue and silver",
+  "black and red", "black and pink", "navy and white", "mint and white", "yellow and white",
+  "coral and cream", "rose pink and ivory", "purple and silver", "emerald and gold", "royal blue and gold",
+  "burgundy and ivory", "teal and white", "peach and cream", "champagne and blush", "ice blue and silver"
+];
+const IDOL_MATERIALS = [
+  "matte satin", "glossy satin", "soft tulle", "fine organza", "light chiffon", "embroidered lace",
+  "jacquard", "velvet accents", "brocade accents", "stretch stage fabric", "sequined fabric",
+  "micro-sequin textile", "pearl-embellished textile", "crystal-embellished textile", "metallic textile",
+  "soft velvet and tulle", "satin and lace", "organza and satin", "chiffon and lace", "tulle and satin"
+];
+const IDOL_SILHOUETTES = [
+  "frilled fitted mini dress", "layered princess mini dress", "corset bodice and tiered mini skirt",
+  "cropped stage jacket and pleated mini skirt", "tailored vest and pleated mini skirt",
+  "sailor collar top and flared mini skirt", "short bolero and layered skirt",
+  "peplum top and pleated skirt", "fitted blouse and high-waisted mini skirt",
+  "cropped top and high-waisted shorts", "fitted vest and tailored shorts",
+  "cropped jacket and tailored shorts", "asymmetric top and layered mini skirt",
+  "ribbon corset top and flared skirt", "off-shoulder fitted top and tiered skirt",
+  "short cape and fitted mini dress", "tailored stage jacket and slim trousers",
+  "cropped military jacket and pleated skirt", "fitted jumpsuit with decorative waist",
+  "two-piece stage costume with coordinated top and skirt"
+];
+const IDOL_SLEEVES = [
+  "short puff sleeves", "double-layer puff sleeves", "petal sleeves", "ruffled short sleeves",
+  "lace-trimmed sleeves", "bishop sleeves", "fitted long sleeves", "detachable long sleeves",
+  "sheer organza sleeves", "bell sleeves", "cape sleeves", "shoulder-bow sleeves",
+  "structured short sleeves", "epaulet-accented sleeves", "sailor short sleeves", "glove-like fitted sleeves",
+  "off-shoulder sleeves", "one-shoulder sleeve", "asymmetric sleeves", "sleeveless stage construction"
+];
+const IDOL_COLLARS = [
+  "sailor collar", "ribbon collar", "rounded Peter Pan collar", "jewel neckline", "sweetheart neckline",
+  "square neckline", "high decorative collar", "stand collar", "soft ruffled collar", "lace-trimmed collar",
+  "tailored lapel collar", "military high collar", "cape collar", "scalloped collar", "bow-tie collar",
+  "embroidered collar", "gemmed neckline", "decorative V neckline", "heart-shaped neckline", "clean stage neckline"
+];
+const IDOL_WAISTS = [
+  "ribbon corset waist", "high defined waist", "wide decorative waist sash", "peplum waist",
+  "double belt waist", "jewel waist accent", "bow-front waist", "lace-up corset waist",
+  "tailored waist panel", "cinched stage waist", "layered waistband", "asymmetric waist panel",
+  "decorative buckle waist", "satin waistband", "ribbon-laced waist", "embroidered waist panel",
+  "ornamental waist tabs", "slim jeweled belt", "structured empire-inspired waist", "clean natural waist"
+];
+const IDOL_SKIRTS = [
+  "layered pleated mini skirt", "tiered tulle mini skirt", "flared princess mini skirt", "ruffled mini skirt",
+  "asymmetric layered mini skirt", "box-pleated mini skirt", "scalloped mini skirt", "balloon mini skirt",
+  "wrap mini skirt", "panelled mini skirt", "petal-layer mini skirt", "double-layer mini skirt",
+  "high-low stage skirt", "short overskirt over fitted base", "tutu-inspired mini skirt", "structured A-line mini skirt",
+  "ribbon-trimmed mini skirt", "lace-overlay mini skirt", "pleated skort-style stage bottom", "tailored flared mini skirt"
+];
+const IDOL_LEGS = [
+  "white thigh-high stockings", "sheer white stockings", "lace-trimmed thigh-highs", "ribbon-top stockings",
+  "pastel thigh-high stockings", "black thigh-high stockings", "patterned stage tights", "sheer patterned tights",
+  "opaque tights", "sparkling tights", "white knee-high socks", "ruffled knee-high socks", "sailor knee socks",
+  "lace ankle socks", "frilled ankle socks", "coordinated leg warmers", "short stage socks", "clean bare legs with pumps",
+  "decorative over-knee socks", "subtle glitter stockings"
+];
+const IDOL_GLOVES = [
+  "short white gloves", "lace wrist gloves", "fingerless lace gloves", "sheer gloves", "satin wrist gloves",
+  "elbow-length satin gloves", "long lace gloves", "ribbon wrist cuffs", "ruffled wrist cuffs", "pearl-trimmed gloves",
+  "crystal-accented gloves", "mesh stage gloves", "short fingerless gloves", "detachable sleeve-gloves",
+  "ornamental wrist ribbons", "matching cuff bracelets", "minimal stage gloves", "two-tone gloves",
+  "lace-trimmed fingerless gloves", "no gloves with coordinated wrist accessories"
+];
+const IDOL_SHOES = [
+  "white platform ankle boots", "ribbon ankle boots", "lace-up stage boots", "Mary Jane platform shoes",
+  "T-strap stage shoes", "jewel pumps", "ribbon pumps", "heeled ankle boots", "white knee-high stage boots",
+  "lace-trimmed boots", "satin platform pumps", "two-tone platform shoes", "pearl-accented pumps",
+  "crystal-accented stage heels", "low-heeled idol shoes", "decorative strap shoes", "bow-front pumps",
+  "sailor-inspired platform shoes", "glitter stage boots", "refined dance heels"
+];
+const IDOL_HAIR = [
+  "soft twin tails", "high twin tails", "low twin tails", "long side ponytail", "high side ponytail",
+  "half-up wavy hair", "half-up curled hair", "long loose waves", "soft straight long hair", "long curled hair",
+  "high ponytail", "low ponytail", "side-swept long hair", "braided half-up hair", "crown braid with loose waves",
+  "short bob with curled ends", "long bob with ribbon accents", "layered medium hair", "voluminous stage curls",
+  "elegant low bun with loose strands"
+];
+const IDOL_HAIR_ACCESSORIES = [
+  "large matching hair bow", "double ribbon hair bows", "small side bow", "pearl hair clip", "crystal hair clip",
+  "star hair ornament", "heart hair ornament", "flower hair clip", "ribbon headpiece", "lace headband",
+  "small jeweled stage hair ornament", "decorative side comb", "satin rosette hair accessory", "mini sailor bow",
+  "jewel barrette", "paired ribbon clips", "musical-note hair clip", "crescent hair ornament",
+  "feather-light decorative hair piece", "coordinated stage hair ornament"
+];
+const IDOL_PATTERNS = [
+  "micro heart motifs", "tiny star motifs", "musical-note motifs", "ribbon motifs", "floral embroidery",
+  "rose motifs", "lace medallion motifs", "diamond motifs", "checker accents", "pinstripe accents",
+  "sailor stripe accents", "polka-dot accents", "small gingham accents", "ornamental crest motifs",
+  "celestial star-and-moon motifs", "sparkle motifs", "pearl-dot motifs", "geometric stage motifs",
+  "subtle member-color stripe accents", "delicate mixed ornamental motifs"
+];
+const IDOL_LANGUAGES = [
+  "classic Japanese idol couture", "sweet pop idol fashion", "princess stage couture", "gothic idol couture",
+  "sailor-inspired idol fashion", "military-inspired stage couture", "ballet-inspired idol fashion",
+  "maid-inspired stage fashion", "retro idol pop styling", "street dance idol fashion", "futuristic cyber idol couture",
+  "celestial fantasy idol couture", "floral romantic idol fashion", "Japanese festival stage couture",
+  "ornamental East-Asian-inspired stage fashion", "rock idol stage couture", "glamorous disco stage fashion",
+  "musical theater idol couture", "fairy fantasy idol fashion", "winter crystal stage couture"
+];
+const IDOL_BACKGROUNDS = [
+  "bright concert stage with pastel spotlights", "sparkling princess stage with curtain backdrop", "romantic rose stage",
+  "dark gothic concert stage", "school festival stage with banners", "grand parade stage with decorative arches",
+  "ballet theater stage", "cute café-style performance stage", "retro pop concert stage", "urban live stage",
+  "futuristic LED concert stage", "celestial starry concert stage", "flower garden concert stage",
+  "Japanese festival stage with lanterns", "ornamental palace-inspired stage", "rock concert stage with controlled lights",
+  "disco stage with reflective floor", "musical theater stage", "fantasy crystal stage", "winter illumination stage"
+];
+const IDOL_LIGHTING = [
+  "soft pink stage lighting", "pastel rainbow spotlights", "warm golden spotlights", "cool blue spotlights",
+  "lavender concert lighting", "white key light with sparkling rim light", "rose-gold stage glow", "crisp theatrical lighting",
+  "high-key idol concert lighting", "soft dreamy backlighting", "controlled colorful stage lighting", "cool cyan LED lighting",
+  "violet rim lighting", "warm amber theatrical lighting", "festival lantern glow", "clean white spotlight",
+  "magenta-and-blue concert lighting", "soft pearl illumination", "celestial star-like lighting", "winter crystal lighting"
+];
+const IDOL_POSES = [
+  "one hand near the matching hair bow", "both hands lightly framing the outfit", "one hand presenting toward the audience",
+  "gentle idol wave", "small heart gesture near the chest", "hands forming a soft heart gesture",
+  "graceful skirt presentation", "one hand on waist with poised smile", "elegant microphone-free singing pose",
+  "dynamic performance stance", "light step forward with confident posture", "playful shoulder turn",
+  "gentle half-turn showing layered skirt", "ballet-inspired presentation pose", "formal princess pose",
+  "salute-inspired stage pose", "cute asymmetric pose", "confident dance pose", "soft fan-service wave",
+  "editorial stage pose"
+];
+const IDOL_GAZES = [
+  "bright direct idol gaze", "warm audience-facing gaze", "playful confident gaze", "soft sparkling gaze",
+  "gentle smiling gaze", "elegant stage gaze", "slightly upward hopeful gaze", "focused performance gaze",
+  "friendly side glance", "sweet camera-facing gaze", "confident three-quarter gaze", "dreamy romantic gaze",
+  "energetic concert gaze", "calm refined gaze", "mischievous pop-star gaze", "graceful princess gaze",
+  "cool stage gaze", "soft fan-facing gaze", "luminous expressive gaze", "poised editorial gaze"
+];
+const IDOL_ORIENTATIONS = ["front-facing", "slight three-quarter left", "slight three-quarter right", "dynamic three-quarter", "gentle side-facing"];
+const IDOL_ANGLES = ["eye-level fashion angle", "slightly low stage angle", "slightly high editorial angle", "three-quarter concert angle", "subtle low-angle performance view"];
+const IDOL_SHOTS = ["full-body idol stage shot", "full-body fashion portrait", "three-quarter performance shot", "knee-up stage portrait", "cowboy-shot idol portrait"];
+const IDOL_FRAMING = ["full silhouette clearly visible", "centered stage framing", "balanced character-and-stage framing", "slightly wider concert framing", "editorial centered composition"];
+const IDOL_COMPOSITIONS = ["centered idol silhouette composition", "outfit-and-hair-accessory focused composition", "balanced stage environment composition", "dynamic performance composition", "clean fashion-editorial stage composition"];
+const IDOL_EXPRESSIONS = ["bright confident smile", "gentle sweet smile", "playful idol smile", "elegant soft smile", "energetic performance smile", "warm audience smile", "slightly mischievous smile", "refined cheerful expression", "dreamy romantic expression", "focused stage expression"];
+
+function idolCombine(arr, familyIndex, variantIndex){
+  return arr[familyIndex % arr.length] + ", " + IDOL_NORMAL_VARIANTS[variantIndex % IDOL_NORMAL_VARIANTS.length];
+}
+function idolValueFor(key, familyIndex, variantIndex){
+  const f=familyIndex%20, v=variantIndex%50;
+  const family=IDOL_NORMAL_FAMILIES[f];
+  switch(key){
+    case "EXPRESSION": return IDOL_EXPRESSIONS[(f*7+v)%IDOL_EXPRESSIONS.length]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "HAIRSTYLE": return IDOL_HAIR[f]+", "+IDOL_NORMAL_VARIANTS[v]+", stage-performance styling";
+    case "HAIR COLOR": return ["natural black","dark brown","soft brown","chocolate brown","ash brown","warm brown","deep navy","blue-black","cool dark purple","soft lavender","dusty rose","rose pink","pearl pink","champagne blonde","honey blonde","platinum blonde","silver blonde","ice blue","mint pastel","pearl white"][f]+", polished stage color, "+IDOL_NORMAL_VARIANTS[v];
+    case "EYE COLOR": return ["deep brown","warm brown","hazel brown","dark amber","soft gray","cool gray","blue-gray","clear blue","deep blue","royal blue","violet","lavender","plum","rose brown","soft pink-brown","emerald green","teal","aqua","golden brown","silver-gray"][f]+", natural iris texture, "+IDOL_NORMAL_VARIANTS[v];
+    case "HAIR ACCESSORIES": return IDOL_HAIR_ACCESSORIES[f]+", "+IDOL_COLOR_PALETTES[v%20]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "OUTFIT CONCEPT": return family+" stage costume, "+IDOL_SILHOUETTES[f]+", "+IDOL_COLOR_PALETTES[v%20]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "OUTFIT COLOR": return IDOL_COLOR_PALETTES[f]+", coordinated stage accent, "+IDOL_NORMAL_VARIANTS[v];
+    case "OUTFIT MATERIAL": return IDOL_MATERIALS[f]+", "+IDOL_NORMAL_VARIANTS[v]+", stage-ready finish";
+    case "OUTFIT STRUCTURE": return IDOL_SILHOUETTES[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "SHOULDERS & SLEEVES": return IDOL_SLEEVES[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "COLLAR": return IDOL_COLLARS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "WAIST DESIGN": return IDOL_WAISTS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "SKIRT": return IDOL_SKIRTS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "LEGS & HOSIERY": return IDOL_LEGS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "GLOVES": return IDOL_GLOVES[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "SHOES": return IDOL_SHOES[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "DESIGN LANGUAGE": return IDOL_LANGUAGES[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "POSE": return IDOL_POSES[(f+v)%IDOL_POSES.length]+", "+family+" performance styling";
+    case "GAZE": return IDOL_GAZES[(f*3+v)%IDOL_GAZES.length];
+    case "SUBJECT ORIENTATION": return IDOL_ORIENTATIONS[(f+v)%IDOL_ORIENTATIONS.length]+", stage-ready posture";
+    case "CAMERA ANGLE": return IDOL_ANGLES[(f+v)%IDOL_ANGLES.length];
+    case "SHOT TYPE": return IDOL_SHOTS[(f+v)%IDOL_SHOTS.length];
+    case "FRAMING": return IDOL_FRAMING[(f+v)%IDOL_FRAMING.length];
+    case "BACKGROUND": return IDOL_BACKGROUNDS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    case "LIGHTING": return IDOL_LIGHTING[(f+v)%IDOL_LIGHTING.length];
+    case "COMPOSITION": return IDOL_COMPOSITIONS[(f+v)%IDOL_COMPOSITIONS.length]+", "+family+" visual language";
+    case "OUTFIT PATTERN": return IDOL_PATTERNS[f]+", "+IDOL_NORMAL_VARIANTS[v];
+    default: return family+", "+IDOL_NORMAL_VARIANTS[v];
+  }
+}
+function addIdolNormalOptions(){
+  if(window.__idolNormalOptionsAdded) return;
+  CAT_KEYS.forEach(function(key){
+    const s=catSelect(key); if(!s) return;
+    const group=document.createElement("optgroup");
+    group.label="🎤 アイドル衣装（1000種類・通常）";
+    group.dataset.idolNormal="1";
+    for(let family=0;family<20;family++){
+      for(let variant=0;variant<50;variant++){
+        const idx=family*50+variant;
+        const value=idolValueFor(key,family,variant);
+        const o=document.createElement("option");
+        o.value=value;
+        o.textContent="IDOL｜"+String(idx+1).padStart(4,"0")+"｜"+value;
+        o.dataset.idolNormal="1";
+        o.dataset.idolFamily=String(family);
+        o.dataset.idolVariant=String(variant);
+        group.appendChild(o);
+      }
+    }
+    s.appendChild(group);
+    s.dataset.idolNormalAdded="1";
+  });
+  window.__idolNormalOptionsAdded=true;
+}
+
+addIdolNormalOptions();
 addSeasonalEventOptions();
 (function(){
   const bulk=byId("seasonEventBulk");
