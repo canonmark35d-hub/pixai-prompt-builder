@@ -83,11 +83,11 @@ button.secondary,button.dice{background:#eee;color:#333}
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
-<h2>🎨 テーマ専用モード一括設定</h2>
+<h2>🎨 3軸テーマ・イベント・シーン設定</h2>
 <div class="season-bulk-row">
-  <label for="themeModeBulk">テーマモード</label>
-  <select id="themeModeBulk" aria-label="テーマ専用モード一括設定">
-    <option value="normal">🧩 通常モード（既存候補）</option>
+  <label for="themeModeBulk">① ベーステーマ</label>
+  <select id="themeModeBulk" aria-label="ベーステーマ">
+    <option value="normal">🧩 OFF（通常候補）</option>
     <option value="idol">🎤 アイドル</option>
     <option value="swimwear">👙 水着</option>
     <option value="japanese">👘 和装</option>
@@ -97,8 +97,23 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="wedding">💍 ウェディング</option>
   </select>
 </div>
-<p class="note">テーマを選択すると、27カテゴリを選択したテーマ専用候補だけで一括設定します。「可変カテゴリランダム」も選択中のテーマ内だけから抽選します。通常候補・他テーマ候補・季節イベント候補は混在しません。</p>
-<div class="status" id="themeModeStatus">🎨 テーマ専用モード：通常</div>
+<div class="season-bulk-row">
+  <label for="sceneModeBulk">③ シーン・ムード</label>
+  <select id="sceneModeBulk" aria-label="シーン・ムード">
+    <option value="normal">🌐 OFF</option>
+    <option value="day">☀️ 昼・自然光</option>
+    <option value="night">🌙 夜・ナイト</option>
+    <option value="stage">🎤 ステージ・ライブ</option>
+    <option value="outdoor">🌿 屋外・自然</option>
+    <option value="luxury">✨ ラグジュアリー室内</option>
+    <option value="urban">🏙️ 都市・都会</option>
+    <option value="fantasy">🪄 ファンタジー</option>
+    <option value="cinematic">🎬 シネマティック</option>
+  </select>
+</div>
+<p class="note">①ベーステーマ＝衣装・人物の基本設計、②季節・イベント＝既存イベント候補、③シーン・ムード＝背景・照明・構図などを担当します。3つは同時にONにできます。OFFなら従来の候補を使用します。</p>
+<div class="status" id="themeModeStatus">🎛️ 3軸：すべてOFF</div>
+<div class="status" id="sceneModeStatus">③ シーン・ムード：OFF</div>
 </section>
 <section class="panel">
 <h2>👗 衣装コンセプト自動連動</h2>
@@ -10792,10 +10807,142 @@ updatePrompt();</script>
     });
   }
 
+  /* ============================================================
+     THREE-AXIS MODE LAYER
+     ① BASE THEME  ② EVENT/SEASON  ③ SCENE/MOOD
+     Existing seasonal/event option contents are reused unchanged.
+     ============================================================ */
+  const SCENE_MODES = {
+    normal:{label:"OFF",icon:"🌐"},
+    day:{label:"昼・自然光",icon:"☀️"},
+    night:{label:"夜・ナイト",icon:"🌙"},
+    stage:{label:"ステージ・ライブ",icon:"🎤"},
+    outdoor:{label:"屋外・自然",icon:"🌿"},
+    luxury:{label:"ラグジュアリー室内",icon:"✨"},
+    urban:{label:"都市・都会",icon:"🏙️"},
+    fantasy:{label:"ファンタジー",icon:"🪄"},
+    cinematic:{label:"シネマティック",icon:"🎬"}
+  };
+
+  const SCENE_DATA = {
+    day:{
+      backgrounds:["bright elegant garden in clear daytime","sunlit modern terrace","fresh daylight urban street","bright luxury conservatory","peaceful daytime courtyard","sunny seaside promenade","bright botanical garden","sunlit European plaza","clean daylight fashion studio","fresh spring garden terrace"],
+      lighting:["soft natural daylight","bright clean daylight","warm gentle sunlight","fresh diffused daylight","soft window daylight","clear morning sunlight","bright afternoon natural light","delicate sunlit illumination","clean high-key daylight","soft golden daylight"],
+      compositions:["bright daytime fashion composition","clean sunlit editorial composition","balanced daylight portrait composition","airy environment-and-character composition","fresh natural fashion composition","sunlit full-body composition","bright lifestyle editorial composition","clean outdoor fashion framing","soft daytime cinematic composition","natural daylight fashion framing"]
+    },
+    night:{
+      backgrounds:["elegant city street at night","luxury rooftop overlooking city lights","moonlit garden terrace","nighttime palace courtyard","glowing neon urban avenue","quiet night seaside promenade","romantic illuminated bridge at night","luxury hotel entrance at night","dark elegant street with soft bokeh lights","moonlit European plaza"],
+      lighting:["soft moonlight with subtle rim light","cinematic night illumination","warm city lights with cool ambient fill","elegant neon glow","soft blue night ambience","luxury architectural night lighting","romantic bokeh illumination","moonlit cinematic lighting","dramatic but refined night lighting","soft nighttime editorial lighting"],
+      compositions:["cinematic night fashion composition","city-light editorial composition","moonlit full-body composition","nighttime luxury fashion framing","balanced character-and-city composition","romantic night portrait composition","neon editorial composition","architectural night composition","soft bokeh fashion composition","cinematic nocturnal framing"]
+    },
+    stage:{
+      backgrounds:["grand idol concert stage","luxury live performance stage","sparkling theater stage","large modern concert venue","elegant musical theater stage","colorful pop performance stage","dramatic arena stage","luxury fashion show stage","intimate premium live stage","crystal-lit performance stage"],
+      lighting:["professional concert spotlights","soft stage key lighting with rim light","dynamic performance lighting","bright theatrical illumination","sparkling concert lights","colorful stage wash lighting","dramatic spotlight with ambient glow","luxury show lighting","cinematic performance lighting","crystal-like stage illumination"],
+      compositions:["dynamic stage performance composition","centered performer composition","full-body concert composition","fashion-show stage composition","heroic performance framing","balanced stage-and-character composition","editorial live-performance framing","dramatic theatrical composition","premium concert portrait composition","energetic stage fashion composition"]
+    },
+    outdoor:{
+      backgrounds:["lush botanical garden","quiet forest clearing","elegant riverside promenade","flower-filled park","scenic mountain terrace","coastal garden walkway","European countryside garden","sunny lakeside promenade","luxury outdoor courtyard","green woodland path"],
+      lighting:["soft natural outdoor light","dappled sunlight through leaves","fresh morning outdoor light","warm afternoon sunlight","soft overcast natural light","golden natural illumination","bright garden daylight","gentle woodland light","clean coastal sunlight","soft natural backlight"],
+      compositions:["natural outdoor fashion composition","garden editorial composition","full-body nature framing","balanced character-and-landscape composition","fresh lifestyle fashion framing","botanical portrait composition","scenic outdoor editorial composition","natural walking composition","soft environmental fashion composition","cinematic nature framing"]
+    },
+    luxury:{
+      backgrounds:["luxurious marble hotel lobby","ornate European palace interior","high-end fashion salon","elegant chandelier ballroom","luxury penthouse interior","refined classical drawing room","premium boutique interior","grand staircase in a luxury hotel","opulent modern lounge","elegant marble gallery"],
+      lighting:["soft chandelier illumination","luxury warm ambient lighting","refined window light","soft golden interior lighting","premium editorial studio illumination","elegant candlelit ambience","diffused luxury hotel lighting","warm marble interior illumination","polished fashion editorial lighting","soft glamorous interior light"],
+      compositions:["luxury editorial fashion composition","centered elegant interior composition","full-body couture framing","balanced architecture-and-character composition","premium hotel fashion composition","symmetrical luxury interior framing","high-end editorial portrait composition","grand staircase fashion composition","refined interior cinematic framing","luxury magazine composition"]
+    },
+    urban:{
+      backgrounds:["modern Tokyo-inspired city street","glass-and-steel downtown avenue","stylish urban crosswalk","rooftop city skyline","contemporary shopping district","creative street-art alley","modern train-station plaza","high-rise business district","fashion district at dusk","clean metropolitan boulevard"],
+      lighting:["clean urban daylight","soft city ambient lighting","modern architectural illumination","streetlight glow","mixed city light with soft fill","cool metropolitan lighting","fashion-editorial city lighting","reflected glass-and-neon light","soft dusk urban light","cinematic city illumination"],
+      compositions:["urban fashion editorial composition","full-body metropolitan framing","dynamic city-street composition","balanced skyline-and-character composition","street-style fashion composition","architectural urban portrait","modern lifestyle editorial framing","crosswalk fashion composition","rooftop skyline composition","cinematic metropolitan framing"]
+    },
+    fantasy:{
+      backgrounds:["enchanted moonlit garden","crystal palace courtyard","glowing magical forest","dreamlike celestial terrace","fairy-tale castle garden","floating fantasy library","mystical flower garden","ethereal crystal hall","enchanted European courtyard","dreamlike starry landscape"],
+      lighting:["soft magical glow","dreamy moonlit illumination","sparkling fantasy light","ethereal rim lighting","soft pastel magical ambience","celestial ambient glow","luminous garden lighting","crystal-reflected illumination","dreamlike cinematic light","subtle enchanted backlight"],
+      compositions:["dreamlike fantasy fashion composition","enchanted full-body framing","magical environment-and-character composition","fairy-tale editorial composition","celestial fashion framing","ethereal portrait composition","fantasy storybook composition","crystal palace fashion composition","dreamlike cinematic framing","magical editorial composition"]
+    },
+    cinematic:{
+      backgrounds:["cinematic European street set","dramatic luxury interior","moody rooftop scene","elegant old-town square","cinematic garden pathway","dramatic theater corridor","stylish hotel corridor","atmospheric city street","romantic cinematic terrace","high-end film set interior"],
+      lighting:["cinematic soft key light","controlled dramatic side lighting","film-like golden-hour illumination","moody soft ambient light","cinematic rim lighting","subtle chiaroscuro illumination","soft practical-light ambience","dramatic editorial lighting","film-style diffused illumination","cinematic atmospheric lighting"],
+      compositions:["cinematic fashion composition","film-still full-body framing","dramatic environmental portrait","balanced cinematic character framing","editorial movie-poster composition","wide cinematic fashion composition","intimate film-still framing","dramatic architectural composition","story-driven fashion framing","premium cinematic editorial composition"]
+    }
+  };
+
+  // Event elements overlay the base theme rather than replacing its core silhouette.
+  // These are existing seasonal/event candidates; their actual contents are untouched.
+  const EVENT_OVERLAY_KEYS = ["OUTFIT COLOR","OUTFIT MATERIAL","HAIR ACCESSORIES","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","GLOVES","SHOES","DESIGN LANGUAGE","OUTFIT PATTERN"];
+  const SCENE_OVERLAY_KEYS = ["BACKGROUND","LIGHTING","COMPOSITION"];
+
   function getThemeMode(){ const el=byId('themeModeBulk'); return el ? (el.value||'normal') : 'normal'; }
-  function setThemeMode(mode){
-    const el=byId('themeModeBulk'); if(el) el.value=mode;
+  function setThemeMode(mode){ const el=byId('themeModeBulk'); if(el) el.value=mode||'normal'; }
+  function getSceneMode(){ const el=byId('sceneModeBulk'); return el ? (el.value||'normal') : 'normal'; }
+  function setSceneMode(mode){ const el=byId('sceneModeBulk'); if(el) el.value=mode||'normal'; }
+
+  function removeThemeOptions(){
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      Array.from(s.options).forEach(function(o){if(isThemeOption(o)) o.remove();});
+    });
   }
+  function ensureThemeOptions(mode){
+    if(mode==='normal') return;
+    removeThemeOptions();
+    const p=modeProfile(mode); if(!p) return;
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      const group=document.createElement('optgroup');
+      group.label=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'（1000種類）';
+      group.dataset.themeMode=mode;
+      for(let f=0;f<20;f++) for(let v=0;v<50;v++){
+        const o=document.createElement('option');
+        const value=modeValue(mode,key,f,v);
+        o.value=value;
+        o.textContent='THEME｜'+String(f*50+v+1).padStart(4,'0')+'｜'+value;
+        o.dataset.themeMode=mode; o.dataset.themeFamily=String(f); o.dataset.themeVariant=String(v);
+        group.appendChild(o);
+      }
+      s.appendChild(group);
+    });
+  }
+
+  function sceneValue(mode,key,f,v){
+    const d=SCENE_DATA[mode]; if(!d) return '';
+    const suffix=MODE_VARIANTS[v%MODE_VARIANTS.length];
+    const arr=d.backgrounds;
+    if(key==='BACKGROUND') return d.backgrounds[f%10]+', '+suffix;
+    if(key==='LIGHTING') return d.lighting[f%10]+', '+suffix;
+    if(key==='COMPOSITION') return d.compositions[f%10]+', '+suffix;
+    if(key==='GAZE') return GAZE_EXTRA[(f+v)%GAZE_EXTRA.length]+', '+d.lighting[f%10];
+    if(key==='POSE') return POSE_EXTRA[(f+v)%POSE_EXTRA.length]+', '+d.compositions[f%10];
+    return '';
+  }
+  function isSceneOption(o){ return !!(o && o.dataset && o.dataset.sceneMode); }
+  function removeSceneOptions(){
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      Array.from(s.options).forEach(function(o){if(isSceneOption(o)) o.remove();});
+    });
+  }
+  function ensureSceneOptions(mode){
+    if(mode==='normal') return;
+    removeSceneOptions();
+    CAT_KEYS.forEach(function(key){
+      if(SCENE_OVERLAY_KEYS.indexOf(key)<0 && key!=='POSE' && key!=='GAZE') return;
+      const s=catSelect(key); if(!s) return;
+      const group=document.createElement('optgroup');
+      group.label=SCENE_MODES[mode].icon+' '+SCENE_MODES[mode].label+'（500種類）';
+      group.dataset.sceneMode=mode;
+      for(let f=0;f<10;f++) for(let v=0;v<50;v++){
+        const value=sceneValue(mode,key,f,v); if(!value) continue;
+        const o=document.createElement('option');
+        o.value=value; o.textContent='SCENE｜'+String(f*50+v+1).padStart(4,'0')+'｜'+value;
+        o.dataset.sceneMode=mode; o.dataset.sceneFamily=String(f); o.dataset.sceneVariant=String(v);
+        group.appendChild(o);
+      }
+      s.appendChild(group);
+    });
+  }
+  function sceneCandidates(s,mode){ return Array.from(s.options).filter(function(o){return o.dataset && o.dataset.sceneMode===mode;}); }
+
   function setSeasonOff(){
     const season=byId('seasonEventBulk');
     if(season && season.value!==''){
@@ -10803,123 +10950,153 @@ updatePrompt();</script>
       applySeasonEventBulk(-1);
     }
   }
-  function chooseThemeFamily(mode,f,v){
-    ensureThemeOptions(mode);
-    CAT_KEYS.forEach(function(key){
-      const s=catSelect(key); if(!s) return;
-      const opts=themeCandidates(s,mode).filter(function(o){return Number(o.dataset.themeFamily)===f && Number(o.dataset.themeVariant)===v;});
-      if(opts.length) s.value=opts[0].value;
-    });
+  function themeValueForFamily(mode,key,f,v){
+    const s=catSelect(key); if(!s) return false;
+    const opts=themeCandidates(s,mode).filter(function(o){return Number(o.dataset.themeFamily)===f && Number(o.dataset.themeVariant)===v;});
+    if(opts.length){s.value=opts[0].value; return true;} return false;
+  }
+  function eventValueForFamily(key,eventIndex,f,v){
+    const s=catSelect(key); if(!s || eventIndex<0) return false;
+    ensureSeasonExtraOptionsInSelect(key,eventIndex);
+    const opts=Array.from(s.options).filter(function(o){return o.dataset.seasonExtra==='1' && Number(o.dataset.seasonFamily)===f && Number(o.dataset.seasonVariant)===v;});
+    if(opts.length){s.value=opts[0].value; return true;} return false;
+  }
+  function sceneValueForFamily(key,mode,f,v){
+    const s=catSelect(key); if(!s) return false;
+    const opts=sceneCandidates(s,mode).filter(function(o){return Number(o.dataset.sceneFamily)===f && Number(o.dataset.sceneVariant)===v;});
+    if(opts.length){s.value=opts[0].value; return true;} return false;
+  }
+
+  function applyThreeAxes(randomize){
+    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    if(theme!=='normal') ensureThemeOptions(theme);
+    if(scene!=='normal') ensureSceneOptions(scene);
+
+    const tf=Math.floor(Math.random()*20), tv=Math.floor(Math.random()*50);
+    const ef=Math.floor(Math.random()*20), ev=Math.floor(Math.random()*10);
+    const sf=Math.floor(Math.random()*10), sv=Math.floor(Math.random()*50);
+
+    if(theme!=='normal'){
+      CAT_KEYS.forEach(function(key){ themeValueForFamily(theme,key,tf,tv); });
+    } else {
+      CAT_KEYS.forEach(function(key){
+        const s=catSelect(key); if(!s) return;
+        if(!isSeasonOption(s.options[s.selectedIndex]) && !isSceneOption(s.options[s.selectedIndex])){
+          originalRandomSelect(s);
+        }
+      });
+    }
+
+    // Apply the existing event family only to event-overlay categories.
+    if(eventIndex>=0){
+      EVENT_OVERLAY_KEYS.forEach(function(key){ eventValueForFamily(key,eventIndex,ef,ev); });
+    }
+
+    // Scene is intentionally limited to environment/cinematic categories.
+    if(scene!=='normal'){
+      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){sceneValueForFamily(key,scene,sf,sv);});
+    }
     updatePrompt();
   }
+
   function applyThemeMode(mode){
-    if(mode==='normal'){
+    if(mode!=='normal') ensureThemeOptions(mode);
+    else {
+      // Remove only theme selections/options; preserve active event and scene selections.
+      CAT_KEYS.forEach(function(key){
+        const s=catSelect(key); if(!s) return;
+        const current=s.options[s.selectedIndex];
+        if(current && isThemeOption(current)) s.selectedIndex=0;
+      });
       removeThemeOptions();
-      CAT_KEYS.forEach(function(key){const s=catSelect(key); if(s) s.selectedIndex=0;});
-      updatePrompt();
-      showStatus('通常モード：既存の通常候補だけを使用します');
-      return;
     }
-    setSeasonOff();
-    ensureThemeOptions(mode);
-    const f=Math.floor(Math.random()*20), v=Math.floor(Math.random()*50);
-    chooseThemeFamily(mode,f,v);
-    const st=byId('themeModeStatus');
-    if(st) st.textContent=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリを専用候補だけで統一';
-    showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モードで27カテゴリを一括設定しました');
+    applyThreeAxes(true);
+    showStatus('3軸設定を更新しました：'+THEME_MODES[getThemeMode()].icon+' '+THEME_MODES[getThemeMode()].label+' ＋ '+(getSeasonBulkIndex()>=0?SEASON_EVENT_NAMES[getSeasonBulkIndex()]:'イベントOFF')+' ＋ '+SCENE_MODES[getSceneMode()].icon+' '+SCENE_MODES[getSceneMode()].label);
   }
 
-  function themeRandomCategory(key){
-    const mode=getThemeMode(); const s=catSelect(key); if(mode==='normal') return false;
-    const pool=themeCandidates(s,mode); if(!pool.length) return false;
-    const chosen=pool[Math.floor(Math.random()*pool.length)]; s.value=chosen.value; return true;
-  }
-  function themeRandomAll(){
-    const mode=getThemeMode();
-    if(mode==='normal') return false;
-    ensureThemeOptions(mode);
-    const f=Math.floor(Math.random()*20), v=Math.floor(Math.random()*50);
-    chooseThemeFamily(mode,f,v);
-    return true;
+  function applySceneMode(mode){
+    if(mode!=='normal') ensureSceneOptions(mode);
+    else removeSceneOptions();
+    applyThreeAxes(true);
+    showStatus('3軸設定を更新しました：'+THEME_MODES[getThemeMode()].icon+' '+THEME_MODES[getThemeMode()].label+' ＋ '+(getSeasonBulkIndex()>=0?SEASON_EVENT_NAMES[getSeasonBulkIndex()]:'イベントOFF')+' ＋ '+SCENE_MODES[getSceneMode()].icon+' '+SCENE_MODES[getSceneMode()].label);
   }
 
-  // Theme mode UI is defined statically in the HTML above.
-  // Bind it here without changing existing seasonal-event UI or option contents.
+  function randomThreeAxes(){ applyThreeAxes(true); }
+
   const themeSelect=byId('themeModeBulk');
-  if(themeSelect){
-    themeSelect.addEventListener('change',function(){applyThemeMode(this.value||'normal');});
-  }
-
-  // Seasonal event mode remains the authoritative seasonal system and its contents are untouched.
+  if(themeSelect) themeSelect.addEventListener('change',function(){applyThemeMode(this.value||'normal');});
+  const sceneSelect=byId('sceneModeBulk');
+  if(sceneSelect) sceneSelect.addEventListener('change',function(){applySceneMode(this.value||'normal');});
   const seasonSelect=byId('seasonEventBulk');
   if(seasonSelect){
     seasonSelect.addEventListener('change',function(){
-      if(this.value!==''){
-        setThemeMode('normal');
-        removeThemeOptions();
-        const st=byId('themeModeStatus'); if(st) st.textContent='🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）';
+      const idx=getSeasonBulkIndex();
+      if(idx>=0){
+        applySeasonEventBulk(idx);
+        applyThreeAxes(true);
+      } else {
+        updatePrompt();
       }
     });
   }
 
   const originalRandomSelect=window.randomSelect;
   const originalRandomSeasonAwareCategory=window.randomSeasonAwareCategory;
+
   window.randomSelect=function(s){
-    const mode=getThemeMode();
-    if(mode!=='normal' && s && s.classList && s.classList.contains('cat-select')){
-      return themeRandomCategory(s.getAttribute('data-key'));
-    }
+    if(!s) return false;
+    const key=s.getAttribute ? s.getAttribute('data-key') : '';
+    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    if(scene!=='normal' && SCENE_OVERLAY_KEYS.indexOf(key)>=0) return sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));
+    if(theme!=='normal') return themeValueForFamily(theme,key,Math.floor(Math.random()*20),Math.floor(Math.random()*50));
+    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0) return eventValueForFamily(key,eventIndex,Math.floor(Math.random()*20),Math.floor(Math.random()*10));
     return originalRandomSelect(s);
   };
+
   window.randomSeasonAwareCategory=function(key){
-    const mode=getThemeMode();
-    if(mode!=='normal' && getSeasonBulkIndex()<0) return themeRandomCategory(key);
+    const s=catSelect(key); if(!s) return false;
+    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    if(scene!=='normal' && SCENE_OVERLAY_KEYS.indexOf(key)>=0) return sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));
+    if(theme!=='normal') return themeValueForFamily(theme,key,Math.floor(Math.random()*20),Math.floor(Math.random()*50));
+    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0) return eventValueForFamily(key,eventIndex,Math.floor(Math.random()*20),Math.floor(Math.random()*10));
+    if(eventIndex>=0) return chooseSeasonalOption(key,eventIndex,s.value);
     return originalRandomSeasonAwareCategory(key);
   };
+
   window.randomVariables=function(){
-    const mode=getThemeMode();
-    const eventIndex=getSeasonBulkIndex();
-    if(eventIndex>=0){
-      chooseCoordinatedEventFamily(eventIndex);
-      updatePrompt();
-      showStatus('選択中の季節イベント内だけで27カテゴリをランダム設定しました');
+    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
+      randomThreeAxes();
+      showStatus('3軸の選択範囲を維持して可変カテゴリをランダム設定しました');
       return;
     }
-    if(mode!=='normal'){
-      themeRandomAll();
-      showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'専用候補だけで27カテゴリをランダム設定しました');
-      return;
-    }
-    CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
-    updatePrompt();
-    showStatus('通常モードの既存候補だけで27カテゴリをランダム設定しました');
+    CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);});
+    updatePrompt(); showStatus('通常モードの既存候補だけで27カテゴリをランダム設定しました');
   };
   window.randomAll=function(){
-    const mode=getThemeMode();
-    const eventIndex=getSeasonBulkIndex();
-    if(eventIndex>=0){
-      chooseCoordinatedEventFamily(eventIndex); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus('選択中の季節イベントを維持して全カテゴリをランダム設定しました'); return;
+    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
+      randomThreeAxes(); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));});
+      showStatus('3軸の組み合わせを維持して全カテゴリをランダム設定しました');
+      return;
     }
-    if(mode!=='normal'){
-      themeRandomAll(); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'専用候補で全カテゴリをランダム設定しました'); return;
-    }
-    CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);}); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus('通常モードの既存候補で全カテゴリをランダム設定しました');
+    CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);});
+    NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));});
+    updatePrompt(); showStatus('通常モードの既存候補で全カテゴリをランダム設定しました');
   };
   window.randomOne=function(type,key){
-    if(type==='cat' && getThemeMode()!=='normal' && getSeasonBulkIndex()<0){themeRandomCategory(key); updatePrompt(); showStatus(THEME_MODES[getThemeMode()].icon+' '+THEME_MODES[getThemeMode()].label+'専用候補から「'+key+'」をランダム設定しました'); return;}
-    if(type==='cat') randomSeasonAwareCategory(key); else originalRandomSelect(negSelect(key)); updatePrompt(); showStatus((type==='cat'?'可変「'+key+'」':'ネガ「'+key+'」')+'をランダム設定しました');
+    if(type==='cat') randomSeasonAwareCategory(key); else originalRandomSelect(negSelect(key));
+    updatePrompt(); showStatus((type==='cat'?'可変「'+key+'"':'ネガ「'+key+'"')+'をランダム設定しました');
   };
 
-  // Wrap prompt refresh only to display active mode; the prompt contents themselves remain generated by the existing builder.
   const originalUpdatePrompt=window.updatePrompt;
   window.updatePrompt=function(){
     originalUpdatePrompt();
-    const mode=getThemeMode();
+    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
-    if(st){
-      if(mode==='normal') st.textContent=getSeasonBulkIndex()>=0 ? '🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）' : '🎨 テーマ専用モード：通常';
-      else st.textContent=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリ専用候補のみ';
-    }
+    if(st) st.textContent='🎛️ 3軸：'+THEME_MODES[theme].icon+' '+THEME_MODES[theme].label+' ＋ '+(eventIndex>=0?('🎃 '+SEASON_EVENT_NAMES[eventIndex]):'イベントOFF')+' ＋ '+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
+    const ss=byId('sceneModeStatus');
+    if(ss) ss.textContent='③ シーン・ムード：'+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
   };
 
   // Do not auto-apply normal mode on page load; preserve existing selections.
