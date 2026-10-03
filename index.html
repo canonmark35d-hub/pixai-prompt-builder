@@ -83,6 +83,24 @@ button.secondary,button.dice{background:#eee;color:#333}
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
+<h2>🎨 テーマ専用モード一括設定</h2>
+<div class="season-bulk-row">
+  <label for="themeModeBulk">テーマモード</label>
+  <select id="themeModeBulk" aria-label="テーマ専用モード一括設定">
+    <option value="normal">🧩 通常モード（既存候補）</option>
+    <option value="idol">🎤 アイドル</option>
+    <option value="swimwear">👙 水着</option>
+    <option value="japanese">👘 和装</option>
+    <option value="lolita">🎀 ロリータ</option>
+    <option value="gothic_lolita">🖤 ゴスロリ</option>
+    <option value="sports">🏃 スポーツ</option>
+    <option value="wedding">💍 ウェディング</option>
+  </select>
+</div>
+<p class="note">テーマを選択すると、27カテゴリを選択したテーマ専用候補だけで一括設定します。「可変カテゴリランダム」も選択中のテーマ内だけから抽選します。通常候補・他テーマ候補・季節イベント候補は混在しません。</p>
+<div class="status" id="themeModeStatus">🎨 テーマ専用モード：通常</div>
+</section>
+<section class="panel">
 <h2>👗 衣装コンセプト自動連動</h2>
 <div class="link-mode-row">
 <span class="link-mode-note">衣装コンセプトを選択すると、衣装カラー・素材・構造・袖・襟・ウエスト・スカート・手袋・靴・デザイン系統・柄の11カテゴリが自動的に連動します。連動は常時ONです。</span>
@@ -10512,6 +10530,404 @@ updatePrompt();</script>
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureFixedPromptInitial);
   else ensureFixedPromptInitial();
   window.addEventListener('pageshow', ensureFixedPromptInitial);
+})();
+</script>
+
+<script>
+/* ============================================================
+   THEME MODE LAYER
+   Existing normal options and all existing seasonal/event content
+   remain untouched. Theme modes use isolated candidate pools.
+   ============================================================ */
+(function(){
+  const THEME_MODES = {
+    normal: {label:"通常モード", icon:"🧩"},
+    idol: {label:"アイドル", icon:"🎤"},
+    swimwear: {label:"水着", icon:"👙"},
+    japanese: {label:"和装", icon:"👘"},
+    lolita: {label:"ロリータ", icon:"🎀"},
+    gothic_lolita: {label:"ゴスロリ", icon:"🖤"},
+    sports: {label:"スポーツ", icon:"🏃"},
+    wedding: {label:"ウェディング", icon:"💍"}
+  };
+
+  const P = {
+    idol:{
+      families:["classic sparkling idol","sweet candy pop idol","princess idol","gothic romantic idol","sailor idol","military parade idol","ballet tulle idol","maid-inspired stage idol","retro pop idol","street dance idol","cyber future idol","celestial angel idol","floral garden idol","Japanese festival idol","Chinese-inspired stage idol","rock performance idol","glam disco idol","musical theater idol","fairy fantasy idol","winter crystal idol"],
+      colors:["pink and white","sky blue and white","lavender and white","red and white","blue and silver","black and red","black and pink","navy and white","mint and white","yellow and white","coral and cream","rose pink and ivory","purple and silver","emerald and gold","royal blue and gold","burgundy and ivory","teal and white","peach and cream","champagne and blush","ice blue and silver"],
+      materials:["matte satin","glossy satin","soft tulle","fine organza","light chiffon","embroidered lace","jacquard","velvet accents","brocade accents","stretch stage fabric","sequined fabric","micro-sequin textile","pearl-embellished textile","crystal-embellished textile","metallic textile","soft velvet and tulle","satin and lace","organza and satin","chiffon and lace","tulle and satin"],
+      silhouettes:["frilled fitted mini dress","layered princess mini dress","corset bodice and tiered mini skirt","cropped stage jacket and pleated mini skirt","tailored vest and pleated mini skirt","sailor collar top and flared mini skirt","short bolero and layered skirt","peplum top and pleated skirt","fitted blouse and high-waisted mini skirt","cropped top and high-waisted shorts","fitted vest and tailored shorts","cropped jacket and tailored shorts","asymmetric top and layered mini skirt","ribbon corset top and flared skirt","off-shoulder fitted top and tiered skirt","short cape and fitted mini dress","tailored stage jacket and slim trousers","cropped military jacket and pleated skirt","fitted jump suit stage costume","crystal-accented fantasy mini dress"],
+      sleeves:["puff sleeves","ruffled short sleeves","detached frilled sleeves","lace-trimmed sleeves","bishop sleeves","sailor short sleeves","military sleeves","off-shoulder sleeves","sheer tulle sleeves","flutter sleeves","cap sleeves","bell sleeves","ribbon-cuff sleeves","glitter-trimmed sleeves","short bolero sleeves","asymmetric sleeves","structured jacket sleeves","cape sleeves","sleeveless with decorative straps","crystal-trimmed sleeves"],
+      collars:["ribbon collar","sailor collar","rounded collar","jewel neckline","sweetheart neckline","high stage collar","lace collar","stand collar","Peter Pan collar","square neckline","off-shoulder neckline","asymmetric neckline","decorative bow neckline","military collar","princess neckline","halter stage neckline","scalloped collar","choker-style neckline","cape collar","crystal neckline"],
+      waists:["ribbon waist","corset waist","high-waisted stage silhouette","peplum waist","jeweled waist","wide decorative belt","satin sash waist","cinched waist","double-belt waist","bow waist","empire stage waist","ornamental waist panel","lace-up waist","structured waist","asymmetric waist detail","metallic waist trim","pearl waist trim","crystal waistline","decorative harness-style waist","layered waist bow"],
+      skirts:["tiered mini skirt","pleated mini skirt","flared mini skirt","layered tulle skirt","bell-shaped mini skirt","ruffled mini skirt","asymmetric mini skirt","high-low stage skirt","peplum skirt","circle mini skirt","gathered mini skirt","princess mini skirt","lace-trimmed mini skirt","ribbon-layered skirt","sparkling stage skirt","panelled mini skirt","ballerina mini skirt","military pleated skirt","tailored mini skirt","crystal-trimmed mini skirt"],
+      gloves:["short lace gloves","fingerless stage gloves","ribbon gloves","sheer gloves","pearl-trimmed gloves","satin wrist gloves","detached sleeve gloves","short white gloves","black lace gloves","metallic trim gloves","frilled wrist gloves","mesh stage gloves","long sheer gloves","jewel gloves","bow gloves","opera-inspired short gloves","lace cuff gloves","sparkle gloves","minimal stage gloves","crystal-trimmed gloves"],
+      shoes:["ribbon pumps","platform Mary Janes","lace-up stage boots","ankle strap heels","sparkling pumps","satin bow shoes","white stage boots","black stage boots","knee-high performance boots","short lace-up boots","ornamental Mary Janes","heeled ankle boots","crystal pumps","platform sandals","ribbon sneakers","dance-inspired shoes","princess heels","metallic stage boots","pearl-trimmed pumps","fantasy stage footwear"],
+      languages:["sweet idol","princess idol","gothic idol","sailor idol","military idol","ballet idol","retro idol","street idol","cyber idol","celestial idol","floral idol","Japanese idol","rock idol","disco idol","theatrical idol","fantasy idol","luxury idol","cute pop idol","elegant stage fashion","concert couture"],
+      patterns:["tiny stars","hearts","ribbons","musical notes","roses","floral embroidery","sailor stripes","crest motifs","celestial stars and moons","sparkle motifs","pearl dots","geometric stage motifs","micro polka dots","lace medallions","diamond motifs","checker accents","ornamental trim","snow crystals","festival motifs","subtle sequins"],
+      hair:["soft twin tails","high twin tails","long side ponytail","half-up wavy hair","long loose waves","soft straight long hair","long curled hair","high ponytail","side-swept long hair","braided half-up hair","crown braid with loose waves","short bob with curled ends","long bob with ribbon accents","layered medium hair","voluminous stage curls","elegant low bun with loose strands","half-up curled hair","low ponytail","side braid with loose waves","polished stage curls"],
+      accessories:["large matching hair bow","double ribbon hair bows","small side bow","pearl hair clip","crystal hair clip","star hair ornament","heart hair ornament","flower hair clip","ribbon headpiece","lace headband","small jeweled stage ornament","decorative side comb","satin rosette hair accessory","mini sailor bow","jewel barrette","paired ribbon clips","musical-note hair clip","crescent hair ornament","mini crown hair ornament","coordinated stage hair ornament"],
+      backgrounds:["illuminated concert stage","luxury idol theater","pastel performance stage","sparkling concert hall","grand staircase stage","romantic rose stage","retro pop stage","festival stage","cyber LED stage","celestial fantasy stage","floral garden stage","Japanese festival stage","rock concert stage","disco stage","musical theater stage","fantasy crystal stage","luxury award stage","bright studio stage","audience-facing concert platform","winter crystal stage"],
+      lighting:["soft concert spotlights","warm stage lighting","pink and blue stage lights","sparkling rim lighting","bright performance lighting","soft pastel stage glow","dramatic backlight","colorful concert illumination","cool LED lighting","celestial glow","floral soft light","festival lantern lighting","rock concert lighting","disco lighting","theatrical spotlight","fantasy luminous lighting","luxury stage lighting","clean studio stage light","audience-facing stage illumination","crystal winter lighting"],
+      compositions:["centered idol silhouette composition","outfit-and-accessory focused stage composition","balanced character-and-stage composition","dynamic performance composition","clean fashion-editorial stage composition","princess-centered composition","full-body concert composition","sailor idol editorial composition","military stage composition","ballet stage composition","retro pop composition","street dance composition","cyber stage composition","celestial centered composition","floral stage composition","Japanese festival composition","rock performance composition","disco performance composition","theatrical stage composition","fantasy concert composition"]
+    },
+    swimwear:{
+      families:["luxury resort bikini","classic elegant one-piece swimsuit","sporty performance swimsuit","tropical floral bikini","retro high-waisted swimwear","sailor-inspired swimwear","ruffled swim dress","asymmetric resort swimsuit","minimal luxury bikini","athletic racerback swimsuit","halter resort swimwear","off-shoulder swim top and skirt","romantic lace-trimmed swimwear","sporty crop-top swimwear","yacht club swimwear","tropical resort set","sunset beach swimwear","poolside fashion swimwear","modest elegant one-piece","high-fashion resort swimwear"],
+      colors:["black and ivory","white and navy","coral and cream","turquoise and white","pink and white","red and white","sky blue and ivory","emerald and cream","royal blue and white","lavender and white","peach and ivory","mint and white","sunset orange and cream","deep navy and gold","burgundy and blush","beige and white","lemon yellow and white","aqua and coral","rose pink and black","champagne and ivory"],
+      materials:["smooth premium swim fabric","matte stretch swim fabric","ribbed swim fabric","textured stretch fabric","quick-dry athletic fabric","soft matte lycra","fine mesh accents","lace-trimmed swim fabric","satin-like resort fabric","recycled performance textile","sculpting swim fabric","lightweight mesh overlay","crochet-inspired swim texture","micro-ribbed textile","smooth technical fabric","luxury stretch textile","sheer resort overlay","matte jersey swim fabric","sport mesh textile","high-fashion swim textile"],
+      silhouettes:["triangle bikini","bandeau bikini","halter bikini","high-waisted bikini","one-piece swimsuit","cutout one-piece","sport racerback one-piece","ruffled one-piece","asymmetric one-piece","wrap-style swim top","cropped rashguard and bikini bottom","swim dress","high-waisted brief and fitted top","peplum swim top","off-shoulder swim top","scoop-neck one-piece","square-neck swimsuit","plunge resort one-piece","minimal string bikini","tailored resort swim set"],
+      sleeves:["thin shoulder straps","halter straps","wide supportive straps","sport racerback straps","ruffled straps","cross-back straps","detachable shoulder ties","minimal strapless construction","short swim sleeves","cap swim sleeves","mesh short sleeves","off-shoulder straps","one-shoulder construction","decorative shoulder ties","wide resort straps","athletic shoulder straps","lace-trimmed straps","scalloped straps","asymmetric shoulder strap","clean sleeveless construction"],
+      collars:["clean scoop neckline","square swim neckline","halter neckline","sweetheart swim neckline","high athletic neckline","deep v-neckline","rounded neckline","asymmetric neckline","sport crew neckline","off-shoulder neckline","wrap neckline","minimal bandeau neckline","keyhole neckline","zip-front neckline","scoop-back neckline","one-shoulder neckline","clean plunge neckline","retro sweetheart neckline","high-cut athletic neckline","refined resort neckline"],
+      waists:["high-waisted swim bottom","natural waist","wide supportive waistband","cinched resort waist","tie-side waist","ruched waist","belted resort waist","clean low-rise waist","sculpted waist panel","elastic sport waistband","wrap waist","decorative sash waist","high-rise retro waist","peplum waist","asymmetric waist","drawstring waist","minimal waistline","wide ribbed waistband","tailored resort waist","ruffled waistline"],
+      skirts:["high-waisted bikini bottom","minimal bikini bottom","sport swim brief","ruffled swim skirt","wrap swim skirt","high-waisted swim shorts","tailored resort shorts","asymmetric swim skirt","pleated swim skirt","flared swim skirt","side-tie bikini bottom","scalloped swim bottom","retro brief","sport short bottom","high-cut bikini bottom","full-coverage swim bottom","ruched swim bottom","layered swim skirt","sarong-inspired swim layer","clean fitted swim bottom"],
+      gloves:["no gloves, clean swimwear styling","minimal resort wrist accessory","lightweight sun sleeves","sport UV sleeves","sheer resort wrist wraps","thin ribbon wrist ties","minimal beach wrist bands","crochet wrist accents","light mesh wrist wraps","simple resort cuffs","athletic wrist bands","lace wrist accents","pearl wrist accessory","shell bracelet styling","fabric wrist ties","sportive wrist wraps","delicate resort cuffs","minimal metallic wrist accent","summer ribbon wrist accent","clean bare-arm styling"],
+      shoes:["flat resort sandals","strappy beach sandals","platform sandals","sport water shoes","woven resort sandals","white slide sandals","metallic sandals","lace-up sandals","minimal thong sandals","espadrille sandals","pool slides","ribbon sandals","shell-detail sandals","low platform slides","sporty beach sneakers","heeled resort sandals","barefoot beach styling","woven wedge sandals","minimal poolside heels","luxury resort slides"],
+      languages:["luxury resort fashion","tropical beachwear","sport swimwear","retro swim fashion","sailor resort style","romantic swimwear","minimalist swim fashion","high-fashion resort","yacht club style","athletic beachwear","poolside couture","summer vacation fashion","elegant resort wear","playful beach fashion","modern swim editorial","coastal luxury","sunset resort style","sport-luxe swimwear","refined vacation fashion","editorial swimwear"],
+      patterns:["solid color","tropical leaves","small florals","navy stripes","polka dots","gingham","shell motifs","wave motifs","sun motifs","citrus motifs","tiny hearts","abstract resort print","palm leaf motifs","seashell print","coral motifs","geometric swim print","micro stripes","botanical print","subtle animal-inspired print","watercolor floral print"],
+      hair:["high ponytail","wet-look loose waves","beach waves","messy high bun","low beach bun","side braid","loose straight hair","half-up beach waves","high braided ponytail","low ponytail","soft side braid","long loose curls","twisted half-up hair","messy side ponytail","sleek wet hair","double braids","fishtail braid","half-up knot","loose beach curls","relaxed resort waves"],
+      accessories:["shell hair clip","minimal sunglasses","straw hair accessory","flower hair clip","pearl hair clip","ribbon beach bow","tortoiseshell hair clip","small starfish ornament","resort head scarf","woven hair ribbon","sun-shaped hair clip","tropical flower accessory","simple pearl barrette","shell comb","small seashell clip","raffia hair accessory","delicate gold clip","beach ribbon tie","minimal resort hair ornament","floral resort clip"],
+      backgrounds:["luxury tropical beach","private resort pool","white-sand beach","Mediterranean resort","yacht deck","tropical lagoon","luxury infinity pool","seaside villa terrace","coral beach cove","palm-lined resort","sunset beach","bright poolside terrace","coastal garden","beach club","tropical cabana","yacht marina","resort rooftop pool","seaside promenade","hidden tropical cove","luxury oceanfront resort"],
+      lighting:["bright summer sunlight","soft beach daylight","warm golden-hour sunlight","sunset glow","clear midday sunlight","soft reflected pool light","tropical dappled sunlight","bright coastal light","warm resort evening light","cool pool reflections","soft morning beach light","late-afternoon sun","bright white-sand reflection","sunset rim light","clean fashion daylight","warm yacht-deck light","blue-hour pool lighting","soft seaside backlight","dramatic sunset light","luxury resort ambient light"],
+      compositions:["full-body resort fashion composition","balanced character-and-beach composition","poolside fashion editorial","yacht-deck editorial composition","centered swimwear silhouette","dynamic beach composition","clean resort portrait composition","wide coastal environment composition","sunset fashion composition","luxury pool composition","sport swim editorial","retro beach composition","tropical resort composition","minimal swimwear editorial","high-fashion resort composition","vacation lifestyle composition","coastal close environment composition","beach club fashion composition","oceanfront luxury composition","clean summer fashion composition"]
+    },
+    japanese:{
+      families:["formal kimono","furisode-inspired kimono","komon kimono","uchikake-inspired bridal kimono","summer yukata","modern kimono fashion","hakama ensemble","haori and kimono","michiyuki-inspired styling","meisen-inspired retro kimono","ceremonial Japanese fashion","refined tea-house kimono","festival yukata","autumn kimono","winter kimono","spring floral kimono","indigo traditional wear","modern wa-style dress","kimono-inspired couture","luxury Japanese formalwear"],
+      colors:["deep indigo and ivory","crimson and cream","vermillion and black","sakura pink and ivory","navy and silver","emerald and gold","plum and ivory","mustard and indigo","burgundy and cream","black and gold","pale lavender and white","moss green and beige","coral and ivory","teal and cream","deep purple and gold","rose and navy","white and crimson","charcoal and vermillion","peacock blue and ivory","antique red and gold"],
+      materials:["silk kimono textile","chirimen crepe","nishijin-inspired brocade","jacquard woven textile","matte silk","satin brocade","fine woven cotton","light yukata cotton","damask-inspired textile","embroidery-rich silk","gold-thread brocade","traditional patterned weave","soft crepe silk","linen-like summer weave","velvet obi accent","woven jacquard","luxury silk blend","textured Japanese textile","fine metallic-thread fabric","handcrafted-look woven textile"],
+      silhouettes:["traditional kimono silhouette","furisode long-sleeve silhouette","komon kimono silhouette","uchikake-inspired layered silhouette","yukata silhouette","kimono with hakama","kimono with haori","modern short kimono ensemble","kimono-inspired wrap dress","wa-style fitted dress","kimono jacket and pleated skirt","traditional layered wafuku","festival yukata ensemble","formal obi-centered kimono","sleeved kimono couture","modernized kimono coat","kimono top and wide hakama trousers","belted kimono-inspired silhouette","structured wa-style couture","elegant Japanese layered ensemble"],
+      sleeves:["wide kimono sleeves","furisode sleeves","short yukata sleeves","three-quarter kimono sleeves","long ceremonial sleeves","haori sleeves","bell-shaped kimono sleeves","narrow modern kimono sleeves","layered sleeve cuffs","wide summer sleeves","embroidered kimono sleeves","sleeves with contrasting lining","flowing silk sleeves","structured kimono sleeves","decorative sleeve panels","asymmetric kimono sleeves","formal long sleeves","cropped haori sleeves","soft draped sleeves","traditional sleeve construction"],
+      collars:["kimono overlapping collar","formal eri collar","yukata collar","stand kimono collar","decorative layered collar","haori collar","high traditional collar","soft wrap neckline","cross-over kimono neckline","wide eri collar","embroidered collar","contrasting collar lining","minimal modern kimono collar","formal double collar","rounded wa-inspired collar","asymmetric wrap collar","luxury brocade collar","summer open collar","traditional white collar","structured kimono neckline"],
+      waists:["wide obi waist","formal obi and obijime","narrow summer obi","decorative obi sash","layered obi styling","wide contrasting obi","soft sash waist","modern obi belt","brocade obi waist","double-layer obi","decorative cord waist","high obi placement","structured obi bow","traditional wrapped waist","minimal modern sash","textured obi belt","formal obi knot","festival obi styling","wide velvet obi accent","elegant Japanese waist wrap"],
+      skirts:["kimono lower-body drape","pleated hakama trousers","traditional wrap lower body","wide hakama silhouette","yukata lower-body drape","long layered kimono panels","modern pleated skirt with kimono top","asymmetric wrap skirt","kimono-inspired long skirt","structured hakama-style trousers","soft draped lower panels","formal layered lower body","short modern kimono skirt","wide-leg Japanese trousers","pleated Japanese skirt","traditional straight kimono drape","ceremonial layered panels","wrap-front skirt","elegant flowing kimono hem","modernized Japanese lower silhouette"],
+      gloves:["no gloves, traditional styling","short white tabi-inspired hand styling","lace wrist accessory","formal decorative wrist bands","silk wrist wraps","minimal Japanese wrist accessory","brocade wrist cuffs","ribbon wrist ties","festival wrist accessory","delicate pearl wrist accessory","sheer lace wrist cuffs","ornamental cord wrist ties","short black wrist gloves","white lace wrist gloves","fine embroidered wrist cuffs","modern Japanese wrist accessory","traditional accessory restraint","silk ribbon wrist ties","minimal gold wrist ornament","refined bare-hand traditional styling"],
+      shoes:["zori sandals","geta sandals","formal zori","lace-up tabi boots","modern tabi shoes","wooden geta","heeled zori","platform geta","minimal Japanese sandals","embroidered tabi footwear","black tabi shoes","white tabi socks with zori","brocade zori","festival geta","modern Japanese pumps","kimono-inspired ankle boots","platform tabi boots","formal Japanese footwear","woven summer sandals","luxury tabi heels"],
+      languages:["traditional Japanese elegance","formal wafuku","modern wa fashion","summer yukata style","festival Japanese fashion","kimono couture","retro Japanese fashion","ceremonial Japanese style","refined tea-house aesthetic","indigo Japanese aesthetic","luxury kimono design","modernized traditional fashion","Japanese textile couture","seasonal Japanese elegance","minimal wa design","ornamental Japanese fashion","classic kimono aesthetics","contemporary wafuku","Japanese editorial fashion","authentic refined Japanese style"],
+      patterns:["seigaiha waves","asanoha hemp-leaf motifs","sakura blossoms","chrysanthemum motifs","maple leaves","wisteria motifs","ume blossoms","crane motifs","fan motifs","traditional geometric motifs","shibori-inspired patterns","indigo stripes","gold floral motifs","bamboo motifs","butterfly motifs","autumn grass motifs","Japanese clouds","water motifs","traditional crest motifs","seasonal botanical motifs"],
+      hair:["traditional low bun","elegant updo with loose strands","side-swept chignon","Japanese braided updo","low ponytail with ribbon","half-up traditional styling","long straight hair with ornamental pin","soft waves with kanzashi","high polished bun","side braid with hair ornament","formal Japanese updo","low twisted bun","long loose waves with comb","traditional braided bun","sleek low knot","half-up with ribbon","elegant side bun","soft straight hair with floral pin","festival ponytail","modern kimono-compatible updo"],
+      accessories:["kanzashi hair ornament","traditional floral hairpin","tama kanzashi","gold hair comb","pearl kanzashi","sakura hair ornament","fan-shaped hairpin","wisteria hair ornament","ornamental hair comb","silk ribbon hair ornament","Japanese floral pin","traditional decorative comb","small gold hairpin","red mizuhiki ornament","seasonal kanzashi","brocade hair ribbon","pearl hair stick","butterfly kanzashi","minimal Japanese hairpin","ornamental silk hair cord"],
+      backgrounds:["traditional Japanese garden","quiet Kyoto-style street","Japanese tea house","shrine courtyard","lantern-lit festival street","bamboo grove","maple garden","sakura garden","traditional wooden machiya","Japanese castle garden","tatami tea room","mountain shrine","riverbank with Japanese bridge","summer festival street","snow-covered Japanese temple","autumn temple garden","indigo-dyed textile workshop","traditional inn courtyard","moonlit Japanese garden","refined Japanese palace garden"],
+      lighting:["soft Japanese daylight","warm paper-lantern light","golden afternoon light","sakura-filtered spring light","cool indigo twilight","warm festival lantern lighting","soft tea-house window light","dappled bamboo light","autumn golden light","snow-reflected winter light","moonlit garden light","soft overcast Japanese daylight","warm shrine lantern glow","sunset temple light","clean editorial daylight","subtle candlelight","summer evening light","misty mountain light","soft dawn light","refined evening garden illumination"],
+      compositions:["full-body kimono silhouette composition","centered traditional fashion composition","balanced character-and-garden composition","kimono detail editorial composition","festival street composition","tea-house fashion composition","shrine-centered composition","bamboo environment composition","sakura fashion composition","autumn maple composition","snow temple composition","moonlit Japanese composition","formal Japanese portrait composition","modern wa editorial composition","textile-focused composition","dynamic festival composition","refined palace garden composition","traditional bridge composition","minimal Japanese fashion composition","luxury kimono editorial composition"]
+    },
+    lolita:{
+      families:["sweet lolita","classic lolita","princess lolita","romantic lolita","floral lolita","ribbon lolita","tea-party lolita","doll lolita","pastel lolita","vintage lolita","rose lolita","ivory lace lolita","matte-silk lolita","velvet winter lolita","elegant gothic-influenced lolita","sailor lolita","ballet lolita","cottage lolita","royal lolita","luxury couture lolita"],
+      colors:["ivory and pink","cream and rose","dusty rose and ivory","lavender and cream","mint and ivory","sky blue and white","peach and cream","burgundy and ivory","black and ivory","champagne and blush","powder blue and cream","sage and ivory","rose red and cream","lilac and white","soft yellow and ivory","coral pink and cream","mocha and ivory","dusty blue and rose","antique rose and beige","white and pale pink"],
+      materials:["matte silk","cotton lace","fine tulle","jacquard","velvet","soft chiffon","embroidered lace","organza","brocade","matte satin","cotton twill","rose-patterned jacquard","pearl-trimmed lace","soft velvet and lace","silk-blend textile","fine floral lace","ribbed velvet","layered tulle","textured cotton lace","luxury matte silk and lace"],
+      silhouettes:["pinafore mini dress","corset bodice and bell mini skirt","high-waisted ruffle mini dress","tiered lace mini dress","princess mini dress","fitted bodice and full mini skirt","blouse and jumper skirt","puff-sleeve mini dress","ribbon-front mini dress","lace-trimmed suspender skirt set","sweet sailor mini dress","peplum lolita mini dress","high-neck Victorian mini dress","floral tea-party mini dress","doll-style gathered mini dress","double-layered mini dress","short bolero and lolita dress","corset waist and tiered skirt","classic blouse and pleated mini skirt","luxury couture lolita mini dress"],
+      sleeves:["puff sleeves","bishop sleeves","frilled short sleeves","lace-trimmed sleeves","detached frilled sleeves","bell sleeves","short puff sleeves","three-quarter lace sleeves","ribbon-cuff sleeves","sheer lace sleeves","ruffled sleeves","petal sleeves","structured puff sleeves","long bishop sleeves","scalloped sleeves","organza sleeves","flared lace sleeves","short cape sleeves","double-frill sleeves","ornamental lace sleeves"],
+      collars:["Peter Pan collar","rounded lace collar","ribbon collar","high Victorian collar","lace stand collar","square lace neckline","sailor collar","frilled collar","embroidery-trimmed collar","cameo collar","high rounded collar","sweetheart lace neckline","scalloped collar","detachable lace collar","Victorian bib collar","bow collar","ruffled neckline","small jewel collar","embroidered Peter Pan collar","ornamental lace neckline"],
+      waists:["corset waist","ribbon waist","high-waisted silhouette","lace-up waist","wide sash waist","bow waist","peplum waist","empire waist","decorative waist ribbon","double ribbon waist","structured bodice waist","cinched Victorian waist","pinafore waist","lace-trimmed waist","ornamental corset waist","high princess waist","gathered waist","satin sash waist","ribbon corset waist","layered waist bow"],
+      skirts:["bell-shaped mini skirt","tiered mini skirt","ruffled mini skirt","pleated mini skirt","full gathered mini skirt","lace-layered mini skirt","puffy mini skirt","flared mini skirt","double-tier mini skirt","scalloped mini skirt","rose-trimmed mini skirt","ribbon-layered mini skirt","tulle underskirt and mini skirt","princess mini skirt","high-waisted flared skirt","gathered tea-party skirt","lace-edged mini skirt","ornamental pleated mini skirt","double-layered bell skirt","luxury full mini skirt"],
+      gloves:["lace gloves","ribbon gloves","frilled wrist gloves","short lace gloves","sheer lace gloves","pearl-trimmed gloves","rose-trimmed gloves","satin wrist gloves","fingerless lace gloves","white cotton lace gloves","black lace gloves","detached lace cuffs","ruffled wrist cuffs","bow wrist gloves","embroidered lace gloves","short velvet gloves","organza wrist gloves","scalloped lace cuffs","delicate ribbon cuffs","ornamental lace gloves"],
+      shoes:["Mary Jane shoes","platform Mary Janes","ribbon pumps","lace-up boots","heeled Mary Janes","bow shoes","ankle strap shoes","lace-trimmed pumps","round-toe platforms","Victorian ankle boots","ribbon platform shoes","low-heel Mary Janes","pearl-detail shoes","lace-up platform boots","sweet lolita pumps","embroidered Mary Janes","velvet bow shoes","ornamental platform shoes","scalloped pumps","luxury lolita footwear"],
+      languages:["sweet lolita","classic lolita","princess lolita","romantic lolita","tea-party lolita","doll-inspired lolita","pastel lolita","vintage lolita","floral lolita","ribbon lolita","royal lolita","cottage lolita","ballet lolita","sailor lolita","Victorian lolita","lace couture lolita","matte-silk lolita","luxury lolita","elegant feminine lolita","ornamental lolita couture"],
+      patterns:["rose motifs","tiny florals","ribbons","hearts","polka dots","lace medallions","cameo motifs","tea-party motifs","crown motifs","pearls","cherry blossoms","vintage floral print","micro gingham","ornamental scrollwork","butterflies","lace rose embroidery","small bows","doll motifs","antique floral motifs","delicate jacquard pattern"],
+      hair:["soft long curls","half-up curls","twin tails with ribbons","low twin tails","high side ponytail","long straight hair with bows","braided half-up hair","crown braid with loose curls","low curled bun","side-swept curls","soft bob with curled ends","long wavy hair","half-up rose curls","elegant low bun","double braids with ribbons","voluminous romantic curls","long side ponytail","curled twin tails","lace-ribbon half-up hair","princess waves"],
+      accessories:["large satin hair bow","double ribbon bows","rose hair clip","pearl hair clip","lace headband","mini crown headpiece","cameo hair ornament","floral hair comb","ribbon bonnet-style ornament","small tiara","silk rosette hair accessory","lace bow clip","pearl ribbon clip","rose crown hair ornament","decorative side bow","vintage hair comb","butterfly hair clip","mini pearl crown","lace ribbon headpiece","ornamental lolita hair bow"],
+      backgrounds:["romantic tea room","European-style rose garden","luxury dollhouse interior","pastel Victorian salon","ornate ballroom","English garden gazebo","flower-filled conservatory","elegant tea-party room","antique library","ivory palace interior","rose-covered courtyard","candlelit Victorian room","luxury boutique salon","storybook garden","ornate staircase hall","vintage manor garden","pastel confectionery salon","romantic greenhouse","elegant palace garden","luxury dollhouse bedroom"],
+      lighting:["soft romantic daylight","warm tea-room light","gentle pastel window light","soft rose garden sunlight","warm chandelier light","dreamy diffused daylight","delicate candlelight","golden afternoon light","soft conservatory light","ivory ambient lighting","warm ballroom illumination","storybook soft glow","gentle sunset light","romantic backlight","soft floral garden light","warm vintage lamp light","clean fashion daylight","subtle pearl-like glow","soft cloudy garden light","luxury salon illumination"],
+      compositions:["full-body lolita fashion composition","centered doll-like silhouette","tea-party fashion editorial","rose garden composition","balanced character-and-mansion composition","princess-centered composition","full skirt silhouette composition","lace-detail-focused composition","Victorian salon composition","storybook garden composition","ballroom fashion composition","cottage garden composition","confectionery fashion composition","antique library composition","palace staircase composition","luxury lolita editorial","soft romantic portrait composition","ornamental fashion composition","garden gazebo composition","couture lolita composition"]
+    },
+    gothic_lolita:{
+      families:["classic gothic lolita","Victorian gothic lolita","dark romantic lolita","black lace gothic lolita","gothic princess lolita","corset gothic lolita","burgundy gothic lolita","cathedral gothic lolita","rose gothic lolita","moonlit gothic lolita","cross-detail gothic lolita","velvet gothic lolita","military gothic lolita","dark doll gothic lolita","aristocratic gothic lolita","occult-inspired gothic lolita","lace-heavy gothic lolita","black-and-white gothic lolita","dramatic Victorian gothic lolita","luxury gothic lolita"],
+      colors:["black and ivory","black and burgundy","black and deep red","black and plum","charcoal and silver","black and antique gold","black and dark blue","black and wine red","black and dusty rose","black and mauve","black and emerald","black and crimson","black and silver","black and violet","black and champagne","black and gray","black and antique white","burgundy and ivory","deep purple and black","midnight blue and black"],
+      materials:["black velvet","matte satin","Victorian lace","brocade","jacquard","fine black lace","velvet and lace","matte silk","tulle and lace","embossed jacquard","crushed velvet","satin and lace","mesh lace","brocade and velvet","silk velvet","ornamental lace","dark floral jacquard","antique satin","fine embroidered lace","luxury velvet and lace"],
+      silhouettes:["Victorian corset mini dress","black lace mini dress","high-neck gothic mini dress","corset bodice and layered mini skirt","military gothic jacket and skirt","dark princess mini dress","lace blouse and tiered mini skirt","velvet fitted mini dress","asymmetric gothic mini dress","capelet and corset mini dress","Victorian blouse and corset skirt","fitted gothic jumper dress","ruffled black mini dress","off-shoulder gothic dress","high-waisted corset and bell skirt","aristocratic short dress","cross-detail gothic mini dress","rose lace mini dress","dramatic layered mini dress","luxury gothic couture mini dress"],
+      sleeves:["bishop sleeves","bell sleeves","long lace sleeves","detached lace sleeves","Victorian puff sleeves","ruffled long sleeves","sheer lace sleeves","fitted velvet sleeves","flared cuff sleeves","lace-trimmed bishop sleeves","dramatic bell sleeves","double-layer lace sleeves","off-shoulder sleeves","cape sleeves","corset cuff sleeves","long mesh sleeves","ruffled wrist sleeves","Victorian cuff sleeves","ornamental lace sleeves","luxury bishop sleeves"],
+      collars:["high Victorian collar","lace stand collar","choker collar","ruffled high collar","Victorian bib collar","black lace collar","jewel high neckline","cross-detail collar","stand collar","high square neckline","lace-up neckline","ornamental collar","velvet choker neckline","ruffled collar","cameo neckline","dramatic high collar","Victorian lace neckline","black ribbon collar","brocade stand collar","gothic jewel neckline"],
+      waists:["corset waist","lace-up corset waist","wide black sash","cinched Victorian waist","ornamental belt waist","ribbon corset waist","high-waisted corset","velvet waist belt","double belt waist","decorative chain waist","structured corset bodice","lace-trimmed waist","brocade waist panel","asymmetric waist belt","rose corset waist","cross-detail waist","ornamental buckle waist","high princess waist","black ribbon waist","luxury corset waist"],
+      skirts:["layered gothic mini skirt","bell-shaped black skirt","tiered lace mini skirt","asymmetric mini skirt","pleated gothic mini skirt","ruffled black mini skirt","velvet layered mini skirt","corset flare skirt","lace-edged mini skirt","double-tier gothic skirt","high-waisted bell skirt","dramatic flared mini skirt","black tulle mini skirt","burgundy lace mini skirt","Victorian layered skirt","rose-trimmed gothic skirt","panelled gothic mini skirt","pleated velvet mini skirt","ornamental lace skirt","luxury gothic mini skirt"],
+      gloves:["black lace gloves","fingerless lace gloves","long sheer lace gloves","velvet wrist gloves","Victorian lace cuffs","black satin gloves","fishnet lace gloves","ruffled wrist gloves","lace gauntlet-style gloves","detached lace cuffs","cross-detail gloves","rose-trimmed gloves","sheer mesh gloves","ornamental black gloves","short gothic gloves","velvet fingerless gloves","lace opera-style gloves","Victorian cuff gloves","black ribbon wrist gloves","luxury lace gloves"],
+      shoes:["black platform Mary Janes","lace-up platform boots","Victorian ankle boots","gothic platform boots","heeled lace-up boots","ornamental Mary Janes","black ribbon pumps","platform ankle boots","buckled gothic boots","lace-trimmed boots","velvet ankle boots","cross-detail platform shoes","heeled gothic boots","black patent Mary Janes","Victorian button boots","platform lace shoes","ornamental buckle boots","gothic heeled Mary Janes","black ribbon platform boots","luxury gothic footwear"],
+      languages:["classic gothic lolita","Victorian gothic lolita","dark romantic lolita","gothic princess","black lace gothic","corset gothic","cathedral gothic","aristocratic gothic","occult gothic","dark doll gothic","rose gothic","moonlit gothic","military gothic lolita","velvet gothic","dramatic Victorian gothic","black-and-white gothic","luxury gothic lolita","ornamental gothic fashion","dark couture lolita","elegant gothic romance"],
+      patterns:["black roses","cross motifs","ornamental damask","lace medallions","moon and stars","bat motifs","gothic arches","Victorian florals","antique keys","cameo motifs","ornamental chains","dark butterflies","black ribbons","thorn motifs","cathedral windows","skull-free gothic ornament","filigree motifs","burgundy roses","antique crest motifs","dark lace patterns"],
+      hair:["long black waves","low gothic twin tails","straight black hair with curls","Victorian low bun","long curled hair","half-up gothic curls","braided gothic updo","side-swept long waves","high gothic ponytail","low side ponytail","ornamental low bun","dark doll curls","long straight hair with ribbon","crown braid with loose strands","voluminous black curls","side braid with lace ribbon","gothic half-up hair","Victorian curled bob","long burgundy-tinted waves","elegant dark chignon"],
+      accessories:["black lace headband","black ribbon bow","rose hair ornament","cameo hair clip","cross-inspired hair ornament","black pearl hair clip","Victorian hair comb","dark rose crown","ornamental lace bow","mini black tiara","velvet hair ribbon","antique key hair ornament","moon hair ornament","burgundy rose clip","lace bonnet-style accessory","black jewel barrette","gothic crown hairpiece","filigree hair comb","dark floral hairpin","luxury gothic hair ornament"],
+      backgrounds:["dark Victorian mansion","gothic cathedral interior","candlelit gothic hall","moonlit rose garden","ornate dark library","Victorian manor staircase","black-and-burgundy ballroom","gothic chapel-inspired hall","foggy gothic courtyard","dark antique salon","moonlit castle garden","velvet theater interior","ornate gothic corridor","dark conservatory","Victorian cemetery-free manor garden","black rose greenhouse","cathedral window hall","luxury gothic ballroom","midnight palace interior","dramatic Victorian chamber"],
+      lighting:["dramatic candlelight","moonlit blue light","deep burgundy ambient light","soft gothic window light","warm chandelier glow","cool cathedral light","dramatic rim lighting","dark rose ambient light","misty moonlight","velvet-soft low-key lighting","warm candlelit highlights","silver moon glow","deep purple ambient light","ornate chandelier illumination","soft Victorian window light","dramatic backlight","black-and-gold ambient lighting","cool midnight light","luxury gothic illumination","cinematic candlelit glow"],
+      compositions:["full-body gothic lolita composition","centered gothic silhouette","Victorian mansion fashion composition","cathedral-inspired composition","moonlit garden composition","dramatic corset-focused composition","lace-detail editorial composition","dark princess composition","black rose composition","ornate ballroom composition","gothic staircase composition","candlelit interior composition","dramatic Victorian composition","luxury gothic editorial","dark doll fashion composition","cathedral window composition","velvet ballroom composition","moonlit fashion composition","ornamental gothic composition","couture gothic lolita composition"]
+    },
+    sports:{
+      families:["tennis fashion","golf fashion","running wear","track and field wear","basketball-inspired fashion","volleyball wear","soccer-inspired sportswear","gym training wear","yoga fashion","pilates fashion","cycling-inspired wear","skate fashion","dance sportswear","cheer sportswear","baseball-inspired fashion","boxing-inspired training wear","swim training sportswear","outdoor hiking wear","winter sports fashion","luxury athleisure"],
+      colors:["white and navy","black and white","red and white","royal blue and white","pink and white","mint and white","sky blue and navy","lime and black","orange and white","purple and white","burgundy and white","teal and black","yellow and navy","coral and charcoal","lavender and black","gray and white","emerald and white","navy and silver","black and red","cream and forest green"],
+      materials:["technical performance fabric","breathable mesh","stretch jersey","moisture-wicking textile","compression fabric","lightweight nylon","matte athletic knit","ribbed performance fabric","quick-dry textile","technical fleece","stretch woven fabric","sport mesh","sculpting performance jersey","lightweight track fabric","wind-resistant textile","soft performance cotton","recycled athletic textile","premium activewear fabric","technical rib knit","high-performance stretch textile"],
+      silhouettes:["fitted tennis dress","cropped sports top and skort","racerback training top and shorts","track jacket and fitted pants","athletic crop top and leggings","sport polo and pleated skort","performance tank and running shorts","zip-up training jacket and shorts","fitted yoga top and leggings","pilates wrap top and leggings","cycling jersey and fitted shorts","skate crop top and athletic skirt","dance leotard and warm-up jacket","cheer crop top and pleated skirt","baseball jersey and shorts","boxing crop top and training shorts","swim training top and athletic shorts","outdoor shell jacket and leggings","winter sports jacket and fitted pants","luxury athleisure jacket and leggings"],
+      sleeves:["sleeveless athletic cut","racerback armholes","short performance sleeves","fitted long sleeves","mesh short sleeves","cap athletic sleeves","zip-neck long sleeves","raglan sleeves","three-quarter training sleeves","thumb-hole sleeves","cropped jacket sleeves","windbreaker sleeves","compression sleeves","polo short sleeves","rolled athletic sleeves","lightweight track sleeves","sheer mesh sleeves","fitted sports sleeves","hoodie sleeves","clean sleeveless construction"],
+      collars:["sport crew neckline","polo collar","zip mock neck","high athletic collar","round neck","v-neck sports neckline","half-zip collar","stand collar","hooded neckline","square athletic neckline","scoop neck","cross-back neckline","zip-front neckline","ribbed crew collar","button polo collar","funnel neck","sporty halter neckline","clean athletic neckline","mock turtleneck","performance zip collar"],
+      waists:["elastic performance waistband","high-rise athletic waist","drawstring waist","wide compression waistband","ribbed waist","sport belt waist","cinched training waist","high-waisted skort waist","clean fitted waist","adjustable athletic waist","wide elastic waist","zippered waist panel","wrap athletic waist","sculpted performance waist","low-rise sport waist","high-rise running waist","structured golf waist","skirt waistband","leggings waistband","tailored athleisure waist"],
+      skirts:["tennis skort","pleated athletic skort","running shorts","fitted training leggings","bike shorts","track pants","wide-leg warm-up pants","athletic mini skirt","golf skort","dance shorts","cycling shorts","compression leggings","straight athletic pants","training joggers","sport culottes","performance shorts","winter sport pants","hiking leggings","tailored track trousers","luxury athleisure leggings"],
+      gloves:["no gloves, clean sports styling","fingerless training gloves","lightweight cycling gloves","gym wrist wraps","sport wrist bands","tennis wristbands","running gloves","mesh training gloves","boxing-inspired training gloves","compression wrist sleeves","golf gloves styling","cycling fingerless gloves","winter sport gloves","lightweight grip gloves","athletic wrist cuffs","dance wristbands","outdoor sport gloves","minimal training gloves","technical wrist wraps","clean bare-hand sports styling"],
+      shoes:["tennis shoes","running shoes","training sneakers","court sneakers","basketball sneakers","volleyball court shoes","soccer training shoes","gym trainers","minimal training shoes","cycling shoes","skate sneakers","dance sneakers","cheer sneakers","baseball trainers","boxing training shoes","trail running shoes","hiking shoes","winter sport boots","golf shoes","luxury sport sneakers"],
+      languages:["tennis fashion","golf fashion","running performance","track sportswear","court sportswear","volleyball fashion","soccer-inspired sportswear","gym training fashion","yoga activewear","pilates fashion","cycling sportswear","skate fashion","dance sportswear","cheer fashion","baseball sportswear","boxing training style","swim training wear","outdoor activewear","winter sports fashion","luxury athleisure"],
+      patterns:["clean solid color","sport stripes","number-inspired trim","micro check","color-block panels","diagonal athletic stripes","mesh geometric panels","minimal logo-like geometry","thin piping","contrast sleeve stripes","track-inspired bands","tennis pinstripes","small geometric motifs","checker athletic accents","two-tone panels","gradient athletic panels","reflective trim motifs","micro dots","technical grid accents","clean monochrome detailing"],
+      hair:["high ponytail","sleek high ponytail","braided ponytail","messy high bun","low athletic ponytail","double braids","side braid","half-up sporty hair","short ponytail","high braided bun","fishtail braid","low braided ponytail","messy side ponytail","sleek low bun","headband-free short bob","long straight ponytail","double dutch braids","high half-up ponytail","sporty loose waves","tight training bun"],
+      accessories:["minimal sports hair tie","small ribbon hair tie","athletic hair clip","sport visor","minimal cap","tennis hair ribbon","simple headband","performance hair tie","small athletic barrette","clean sport hair clip","wristband accessory","minimal sweatband","small visor","sport ribbon tie","technical hair band","simple ponytail ribbon","compact sport accessory","minimal athletic clip","tennis-inspired hair ornament","clean performance accessory"],
+      backgrounds:["modern tennis court","luxury golf course","urban running track","athletic stadium","indoor basketball court","bright volleyball court","professional soccer field","modern fitness studio","minimal yoga studio","luxury pilates studio","cycling track","urban skate park","dance training studio","cheer stadium","baseball field","boxing gym","indoor swim facility","mountain trail","winter sports resort","luxury athleisure studio"],
+      lighting:["bright outdoor daylight","clean stadium lighting","soft gym lighting","high-key sports lighting","warm late-afternoon field light","cool indoor court lighting","bright training studio light","soft yoga studio light","dramatic stadium lights","clear morning sunlight","golden-hour outdoor light","cool skate-park light","bright dance studio lighting","concert-like cheer lighting","clean baseball daylight","dramatic gym lighting","cool aquatic lighting","misty mountain daylight","crisp winter sunlight","luxury studio lighting"],
+      compositions:["full-body athletic fashion composition","dynamic sports stance composition","centered athlete silhouette","court environment composition","stadium fashion composition","golf-course editorial composition","running-track composition","gym training composition","yoga fashion composition","pilates studio composition","cycling editorial composition","skate fashion composition","dance sports composition","cheer performance composition","baseball field composition","boxing training composition","swim training composition","mountain outdoor composition","winter sports composition","luxury athleisure editorial"]
+    },
+    wedding:{
+      families:["classic bridal mini dress","modern bridal couture","princess bridal mini dress","romantic lace bridal dress","civil wedding fashion","garden wedding bridal look","luxury hotel bridal fashion","minimal silk bridal dress","short veil bridal look","bow bridal mini dress","pearl bridal couture","floral bridal fashion","Victorian bridal mini dress","ballerina bridal look","satin bridal mini dress","corset bridal couture","modern city wedding look","elegant reception bridal outfit","winter bridal fashion","luxury couture bridal look"],
+      colors:["ivory and white","pure white and pearl","champagne and ivory","blush and ivory","soft beige and white","white and silver","ivory and gold","pearl white and blush","cream and champagne","white and rose gold","soft lavender and ivory","white and dusty rose","ivory and sage","white and pale blue","champagne and blush","white and antique gold","ivory and silver","cream and pearl","white and soft gray","luxury ivory and champagne"],
+      materials:["matte silk","bridal satin","fine lace","silk organza","soft tulle","embroidered lace","jacquard bridal fabric","pearl-embellished textile","matte crepe","chiffon and lace","silk mikado-inspired fabric","fine mesh tulle","brocade bridal textile","satin and lace","soft velvet accents","beaded tulle","floral lace","silk-blend bridal fabric","organza and satin","luxury silk and lace"],
+      silhouettes:["short bridal mini dress","lace corset bridal mini dress","satin fitted mini dress","princess mini bridal dress","A-line bridal mini dress","off-shoulder bridal mini dress","square-neck bridal dress","puff-sleeve bridal mini dress","bow-back bridal mini dress","pearl-trimmed bridal dress","floral lace bridal mini dress","Victorian bridal mini dress","ballerina-inspired bridal dress","high-neck lace bridal dress","asymmetric bridal mini dress","short cape bridal dress","corset and layered tulle bridal dress","fitted reception bridal dress","modern city bridal mini dress","luxury couture bridal mini dress"],
+      sleeves:["detached lace sleeves","puff bridal sleeves","short lace sleeves","off-shoulder sleeves","long sheer lace sleeves","bishop bridal sleeves","tulle sleeves","cap sleeves","flutter sleeves","pearl-trimmed sleeves","organza sleeves","bell lace sleeves","three-quarter lace sleeves","short satin sleeves","ribbon-cuff sleeves","asymmetric bridal sleeve","detached puff sleeves","floral lace sleeves","soft chiffon sleeves","luxury couture sleeves"],
+      collars:["sweetheart neckline","square bridal neckline","high lace neckline","off-shoulder neckline","boat neckline","illusion lace neckline","v-neck bridal neckline","jewel neckline","rounded lace neckline","pearl-trimmed neckline","halter bridal neckline","asymmetric neckline","high Victorian neckline","scalloped lace neckline","portrait neckline","soft cowl neckline","satin square neckline","embroidered lace collar","clean minimalist neckline","luxury bridal neckline"],
+      waists:["corset bridal waist","ribbon waist","pearl waistline","natural bridal waist","high princess waist","satin sash waist","lace-up corset waist","cinched couture waist","decorative bow waist","empire-inspired waist","peplum bridal waist","structured bodice waist","double ribbon waist","beaded waistline","floral lace waist","asymmetric waist detail","clean fitted waist","wide bridal sash","pearl-trimmed waist","luxury corset waist"],
+      skirts:["layered tulle mini skirt","A-line bridal mini skirt","full princess mini skirt","ruffled bridal mini skirt","lace-overlay mini skirt","pleated bridal mini skirt","bell-shaped mini skirt","satin flared mini skirt","organza layered skirt","pearl-trimmed mini skirt","bow-layered mini skirt","floral lace mini skirt","ballerina tulle skirt","asymmetric tulle skirt","high-waisted bridal mini skirt","double-layer bridal skirt","scalloped lace skirt","soft chiffon mini skirt","fitted reception skirt","luxury couture mini skirt"],
+      gloves:["short bridal gloves","sheer lace gloves","pearl-trimmed gloves","satin wrist gloves","detached lace cuffs","long sheer bridal gloves","fingerless lace gloves","embroidered lace gloves","tulle wrist gloves","ribbon bridal gloves","short white gloves","lace gauntlet-style cuffs","pearl wrist cuffs","floral lace gloves","soft organza gloves","satin bow gloves","minimal bridal wrist accessory","lace-trimmed wrist gloves","sheer pearl gloves","luxury bridal gloves"],
+      shoes:["white satin pumps","pearl bridal pumps","lace bridal heels","ribbon pumps","white Mary Janes","platform bridal sandals","crystal heels","lace-up bridal sandals","satin ankle-strap heels","pearl strap heels","white bridal pumps","floral-detail heels","bow bridal shoes","ivory slingback heels","low bridal pumps","ornamental wedding heels","minimal ivory sandals","pearl-trimmed Mary Janes","luxury satin heels","couture bridal footwear"],
+      languages:["classic bridal couture","modern bridal fashion","princess bridal style","romantic lace bridal","garden wedding fashion","luxury hotel bridal","minimal silk bridal","Victorian bridal","ballerina bridal","pearl bridal couture","floral bridal fashion","satin bridal elegance","corset bridal couture","city wedding fashion","reception bridal style","winter bridal elegance","luxury bridal editorial","modern romantic bridal","refined feminine bridal","couture wedding fashion"],
+      patterns:["floral lace motifs","small roses","pearl motifs","subtle damask","embroidered blossoms","ribbon motifs","lace medallions","delicate vines","tiny bows","scalloped lace","crystal motifs","botanical embroidery","ornamental bridal motifs","fine jacquard pattern","micro floral pattern","soft geometric lace","rose embroidery","pearl-dot motifs","subtle heart motifs","luxury embroidered pattern"],
+      hair:["elegant low chignon","soft bridal waves","half-up curled hair","romantic low bun","long loose curls","braided bridal updo","side-swept bridal waves","high elegant bun","low ponytail with ribbon","crown braid with loose curls","soft curled bob","half-up pearl curls","twisted low bun","floral bridal updo","long polished waves","side bun with loose strands","elegant half-up hairstyle","low braided chignon","soft bridal ponytail","luxury bridal waves"],
+      accessories:["pearl hair comb","small bridal tiara","floral hair ornament","silk ribbon bow","pearl hair pins","crystal hair comb","lace bridal headpiece","mini veil-style hair accessory","rose hair ornament","delicate bridal barrette","pearl side comb","floral crystal hairpiece","simple satin bow","small rhinestone tiara","ivory ribbon hair ornament","botanical hairpin","pearl vine hairpiece","minimal bridal comb","ornamental crystal clip","luxury bridal hairpiece"],
+      backgrounds:["luxury wedding chapel","romantic garden ceremony","elegant hotel ballroom","white rose garden","ornate bridal salon","grand wedding staircase","sunlit conservatory wedding venue","luxury reception hall","garden gazebo ceremony","European-style wedding courtyard","romantic palace interior","candlelit wedding hall","modern city wedding venue","ivory floral reception room","beachside wedding terrace","winter wedding hall","classic manor wedding garden","luxury bridal studio","soft floral ceremony space","couture wedding editorial venue"],
+      lighting:["soft bridal daylight","warm chandelier lighting","romantic golden-hour light","soft window light","pearl-like diffused lighting","bright white ceremony light","warm candlelit reception light","garden dappled sunlight","soft rose garden light","luxury ballroom illumination","sunset wedding glow","cool winter wedding light","clean bridal studio lighting","soft champagne ambient light","delicate backlight","crystal chandelier glow","bright conservatory light","romantic evening illumination","soft floral ambient light","luxury bridal editorial lighting"],
+      compositions:["full-body bridal fashion composition","centered bridal silhouette","garden wedding composition","chapel-centered composition","luxury ballroom composition","staircase bridal composition","conservatory bridal editorial","reception fashion composition","gazebo wedding composition","palace bridal composition","candlelit wedding composition","city wedding editorial","floral ceremony composition","beach wedding composition","winter bridal composition","manor garden composition","bridal studio composition","soft romantic wedding composition","couture bridal editorial","luxury wedding fashion composition"]
+    }
+  };
+
+  const MODE_VARIANTS = [
+    "with refined coordinated detailing","with delicate ornamental trim","with subtle layered detailing","with elegant accent panels","with fine decorative edging","with graceful ribbon details","with polished fashion finishing","with small-scale ornamental details","with balanced decorative accents","with refined texture contrast","with delicate scalloped edging","with subtle embroidered accents","with graceful gathered details","with coordinated accessory accents","with elegant tonal contrast","with fine lace or trim accents","with controlled layered construction","with polished couture finishing","with understated decorative details","with refined silhouette emphasis","with delicate pearl-like accents","with subtle metallic trim","with soft dimensional details","with elegant contrast piping","with fine pleated accents","with graceful draped details","with refined bow accents","with small floral detailing","with tasteful jewel accents","with subtle texture layering","with coordinated trim details","with elegant seam detailing","with fine embroidered accents","with polished edge finishing","with delicate gathered texture","with restrained ornamental details","with refined panel construction","with graceful asymmetric accents","with subtle tonal detailing","with elegant handcrafted character","with fine decorative stitching","with coordinated motif accents","with soft sculptural details","with refined premium finishing","with delicate trim contrast","with clean couture detailing","with elegant micro-pattern accents","with balanced texture variation","with sophisticated finishing details","with signature thematic detailing"
+  ];
+
+  const MODE_HAIR_COLORS = ["natural black","deep brown","soft brown","chocolate brown","dark ash brown","warm brown","cool dark brown","espresso brown","soft chestnut","dark auburn","natural black-brown","deep mocha","cool brown","warm chestnut","dark chocolate","soft black","deep coffee brown","neutral brown","dark walnut brown","natural deep brown"];
+  const MODE_EYE = "deep brown eyes, natural iris texture";
+  const ORIENTATIONS=["front-facing","slight three-quarter left","slight three-quarter right","dynamic three-quarter","gentle side-facing"];
+  const ANGLES=["eye-level fashion angle","slightly low fashion angle","slightly high editorial angle","three-quarter fashion angle","subtle low-angle fashion view"];
+  const SHOTS=["full-body fashion shot","full-body editorial portrait","three-quarter fashion shot","knee-up fashion portrait","cowboy-shot fashion portrait"];
+  const FRAMING=["full silhouette clearly visible","centered character framing","balanced character-and-environment framing","slightly wider fashion framing","clean editorial framing"];
+  const POSE_EXTRA=["elegant standing pose","soft presentation pose","confident fashion pose","graceful three-quarter pose","subtle walking pose","gentle hand-near-face pose","relaxed standing pose","refined seated pose","light step-forward pose","poised editorial pose"];
+  const GAZE_EXTRA=["calm direct gaze","soft camera-facing gaze","confident three-quarter gaze","gentle side glance","refined slightly upward gaze","warm direct gaze","quiet elegant gaze","playful side glance","poised editorial gaze","soft distant gaze"];
+
+  function modeProfile(mode){ return P[mode]; }
+  function modeValue(mode,key,f,v){
+    const p=modeProfile(mode); const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
+    switch(key){
+      case "EXPRESSION": return (p.expressions||["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"])[fam%10]+", "+suffix;
+      case "HAIRSTYLE": return p.hair[fam]+", "+suffix;
+      case "HAIR COLOR": return MODE_HAIR_COLORS[fam]+", "+suffix;
+      case "EYE COLOR": return MODE_EYE+", "+suffix;
+      case "HAIR ACCESSORIES": return p.accessories[fam]+", "+suffix;
+      case "OUTFIT CONCEPT": return p.silhouettes[fam]+", "+p.colors[fam]+", "+p.languages[fam]+", "+suffix;
+      case "OUTFIT COLOR": return p.colors[fam]+", coordinated thematic palette, "+suffix;
+      case "OUTFIT MATERIAL": return p.materials[fam]+", "+suffix;
+      case "OUTFIT STRUCTURE": return p.silhouettes[fam]+", structured thematic construction, "+suffix;
+      case "SHOULDERS & SLEEVES": return p.sleeves[fam]+", "+suffix;
+      case "COLLAR": return p.collars[fam]+", "+suffix;
+      case "WAIST DESIGN": return p.waists[fam]+", "+suffix;
+      case "SKIRT": return p.skirts[fam]+", "+suffix;
+      case "LEGS & HOSIERY": return (p.hosiery||["sheer tights","matte thigh-high stockings","knee-high socks","lace-trimmed thigh-highs","opaque tights","ribbon thigh-highs","fine stockings","sport socks","clean bare legs","elegant hosiery","patterned stockings","matte over-knee socks","lace stockings","sheer knee-highs","classic stockings","ribbed socks","fine over-knee hosiery","simple thigh-highs","coordinated socks","refined thematic hosiery"])[fam]+", "+suffix;
+      case "GLOVES": return p.gloves[fam]+", "+suffix;
+      case "SHOES": return p.shoes[fam]+", "+suffix;
+      case "DESIGN LANGUAGE": return p.languages[fam]+", "+suffix;
+      case "POSE": return (p.poses||POSE_EXTRA)[(fam+vari)%10]+", "+p.languages[fam];
+      case "GAZE": return (p.gazes||GAZE_EXTRA)[(fam*3+vari)%10];
+      case "SUBJECT ORIENTATION": return ORIENTATIONS[(fam+vari)%5]+", "+p.languages[fam]+" styling";
+      case "CAMERA ANGLE": return ANGLES[(fam+vari)%5];
+      case "SHOT TYPE": return SHOTS[(fam+vari)%5];
+      case "FRAMING": return FRAMING[(fam+vari)%5];
+      case "BACKGROUND": return p.backgrounds[fam]+", "+suffix;
+      case "LIGHTING": return p.lighting[fam]+", "+suffix;
+      case "COMPOSITION": return p.compositions[fam]+", "+suffix;
+      case "OUTFIT PATTERN": return p.patterns[fam]+", "+suffix;
+      default: return p.languages[fam]+", "+suffix;
+    }
+  }
+
+  // Theme-specific refinements for categories that benefit from their own vocabulary.
+  P.idol.expressions=["bright confident idol smile","gentle sweet idol smile","playful idol expression","elegant stage smile","energetic performance smile","warm audience smile","dreamy romantic idol expression","focused stage expression","refined cheerful expression","mischievous pop-star expression"];
+  P.swimwear.expressions=["bright relaxed summer smile","soft resort smile","confident beach expression","playful vacation smile","calm poolside expression","warm sunset smile","fresh summer expression","gentle seaside smile","elegant resort expression","cheerful holiday smile"];
+  P.japanese.expressions=["calm refined Japanese expression","gentle elegant smile","serene traditional expression","soft reserved smile","poised formal expression","warm subtle smile","quiet graceful expression","delicate seasonal smile","refined composed expression","peaceful elegant expression"];
+  P.lolita.expressions=["sweet confident smile","gentle doll-like smile","cute elegant expression","soft romantic smile","playful tea-party smile","graceful princess expression","dreamy gentle expression","warm charming smile","refined sweet expression","delicate cheerful smile"];
+  P.gothic_lolita.expressions=["calm mysterious expression","subtle gothic smile","elegant serious expression","quiet confident gaze","soft dark-romantic smile","dramatic composed expression","poised aristocratic expression","mischievous gothic smile","serene mysterious expression","refined dark elegance"];
+  P.sports.expressions=["confident athletic smile","focused training expression","energetic sports smile","fresh active expression","determined performance expression","relaxed athlete smile","bright competitive expression","calm focused expression","playful athletic smile","confident post-training expression"];
+  P.wedding.expressions=["soft bridal smile","gentle romantic smile","elegant bridal expression","warm wedding smile","dreamy romantic expression","refined serene smile","graceful bridal expression","quiet joyful smile","delicate elegant expression","confident modern bridal smile"];
+
+  P.idol.hosiery=["white thigh-high stockings","sparkling thigh-high stockings","lace-trimmed thigh-highs","pastel thigh-high stockings","black stage thigh-highs","white knee-high socks","ribbon thigh-highs","sheer stage stockings","crystal-trimmed thigh-highs","color-coordinated stockings","frilled thigh-high socks","opaque stage tights","satin-finish thigh-highs","lace knee-high socks","patterned idol stockings","ribbon-cuff thigh-highs","soft pastel stockings","glitter-trimmed stockings","elegant stage hosiery","princess thigh-high stockings"];
+  P.swimwear.hosiery=["bare legs with clean resort styling","bare legs with subtle ankle accessory","light resort leg styling","bare legs with woven anklet","minimal beach leg styling","sport bare-leg styling","bare legs with shell anklet","clean poolside leg styling","lightweight resort leg wrap","bare legs with delicate ribbon anklet","minimal athletic leg styling","bare legs with pearl anklet","summer resort leg styling","clean yacht-deck leg styling","bare legs with small floral anklet","simple beach leg styling","bare legs with gold anklet","minimal poolside styling","bare legs with shell detail","refined resort leg styling"];
+  P.japanese.hosiery=["white tabi socks","split-toe tabi socks","traditional white tabi","lace tabi socks","black tabi socks","short white tabi","embroidered tabi socks","formal tabi socks","summer barefoot geta styling","fine white tabi","patterned tabi socks","soft cotton tabi","formal black tabi","white ankle tabi","decorative tabi socks","minimal tabi styling","traditional tabi footwear styling","summer yukata bare-leg styling","refined white tabi","luxury tabi hosiery"];
+  P.lolita.hosiery=["lace-trimmed thigh-high stockings","white over-knee socks","ribbon thigh-highs","sheer lace stockings","opaque pastel tights","frilled thigh-high socks","rose-patterned stockings","pearl-trimmed thigh-highs","cream over-knee socks","lace knee-high socks","ribbon-cuff thigh-highs","fine patterned stockings","white lace thigh-highs","pastel over-knee socks","matte ivory tights","floral lace stockings","doll-style knee-high socks","sweet lace hosiery","ruffled thigh-high socks","luxury lolita stockings"];
+  P.gothic_lolita.hosiery=["black lace thigh-high stockings","opaque black tights","sheer black stockings","cross-detail thigh-highs","burgundy thigh-high stockings","black lace knee-highs","velvet-textured tights","ornamental black stockings","striped gothic thigh-highs","lace-trimmed black tights","sheer mesh stockings","black over-knee socks","dark floral stockings","black ribbon thigh-highs","Victorian lace stockings","deep burgundy tights","ornamental gothic hosiery","black matte thigh-highs","lace cuff thigh-highs","luxury gothic stockings"];
+  P.sports.hosiery=["white athletic crew socks","sport knee-high socks","compression socks","tennis ankle socks","running crew socks","performance knee-highs","ribbed athletic socks","sport over-knee socks","technical compression leggings","white court socks","black performance socks","striped athletic socks","cycling compression socks","training crew socks","golf knee-high socks","dance athletic tights","winter sport socks","trail running socks","minimal sport socks","luxury athleisure socks"];
+  P.wedding.hosiery=["ivory sheer stockings","white bridal thigh-high stockings","pearl-trimmed stockings","lace bridal stockings","sheer ivory tights","white lace knee-highs","delicate bridal thigh-highs","matte ivory stockings","silk-finish stockings","subtle floral bridal hosiery","pearl-dot stockings","soft champagne stockings","white ribbon thigh-highs","fine sheer tights","lace-edged ivory stockings","bridal over-knee stockings","delicate embroidered stockings","clean ivory hosiery","romantic lace stockings","luxury bridal hosiery"];
+
+  function isThemeOption(o){ return !!(o && o.dataset && o.dataset.themeMode); }
+  function isIdolOption(o){ return !!(o && o.dataset && o.dataset.idolNormal==='1'); }
+  function isSeasonOption(o){
+    if(!o) return false;
+    if(o.dataset && (o.dataset.seasonEvent!==undefined || o.dataset.seasonExtra==='1')) return true;
+    const v=o.value||"";
+    return v.indexOf("SEASON｜")===0 || v.indexOf("EVENT｜")===0 || v.indexOf("EVENT+｜")===0;
+  }
+  function normalCandidates(s){
+    return Array.from(s.options).filter(function(o,i){return i>0 && !isThemeOption(o) && !isIdolOption(o) && !isSeasonOption(o);});
+  }
+  function themeCandidates(s,mode){ return Array.from(s.options).filter(function(o){return o.dataset && o.dataset.themeMode===mode;}); }
+
+  function removeThemeOptions(){
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      Array.from(s.options).forEach(function(o){if(isThemeOption(o)) o.remove();});
+    });
+  }
+  function ensureThemeOptions(mode){
+    if(mode==='normal') return;
+    removeThemeOptions();
+    const p=modeProfile(mode); if(!p) return;
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      const group=document.createElement('optgroup');
+      group.label=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'（1000種類）';
+      group.dataset.themeMode=mode;
+      for(let f=0;f<20;f++) for(let v=0;v<50;v++){
+        const o=document.createElement('option');
+        const value=modeValue(mode,key,f,v);
+        o.value=value;
+        o.textContent='THEME｜'+String(f*50+v+1).padStart(4,'0')+'｜'+value;
+        o.dataset.themeMode=mode; o.dataset.themeFamily=String(f); o.dataset.themeVariant=String(v);
+        group.appendChild(o);
+      }
+      s.appendChild(group);
+    });
+  }
+
+  function getThemeMode(){ const el=byId('themeModeBulk'); return el ? (el.value||'normal') : 'normal'; }
+  function setThemeMode(mode){
+    const el=byId('themeModeBulk'); if(el) el.value=mode;
+  }
+  function setSeasonOff(){
+    const season=byId('seasonEventBulk');
+    if(season && season.value!==''){
+      season.value='';
+      applySeasonEventBulk(-1);
+    }
+  }
+  function chooseThemeFamily(mode,f,v){
+    ensureThemeOptions(mode);
+    CAT_KEYS.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      const opts=themeCandidates(s,mode).filter(function(o){return Number(o.dataset.themeFamily)===f && Number(o.dataset.themeVariant)===v;});
+      if(opts.length) s.value=opts[0].value;
+    });
+    updatePrompt();
+  }
+  function applyThemeMode(mode){
+    if(mode==='normal'){
+      removeThemeOptions();
+      CAT_KEYS.forEach(function(key){const s=catSelect(key); if(s) s.selectedIndex=0;});
+      updatePrompt();
+      showStatus('通常モード：既存の通常候補だけを使用します');
+      return;
+    }
+    setSeasonOff();
+    ensureThemeOptions(mode);
+    const f=Math.floor(Math.random()*20), v=Math.floor(Math.random()*50);
+    chooseThemeFamily(mode,f,v);
+    const st=byId('themeModeStatus');
+    if(st) st.textContent=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリを専用候補だけで統一';
+    showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モードで27カテゴリを一括設定しました');
+  }
+
+  function themeRandomCategory(key){
+    const mode=getThemeMode(); const s=catSelect(key); if(mode==='normal') return false;
+    const pool=themeCandidates(s,mode); if(!pool.length) return false;
+    const chosen=pool[Math.floor(Math.random()*pool.length)]; s.value=chosen.value; return true;
+  }
+  function themeRandomAll(){
+    const mode=getThemeMode();
+    if(mode==='normal') return false;
+    ensureThemeOptions(mode);
+    const f=Math.floor(Math.random()*20), v=Math.floor(Math.random()*50);
+    chooseThemeFamily(mode,f,v);
+    return true;
+  }
+
+  // Theme mode UI is defined statically in the HTML above.
+  // Bind it here without changing existing seasonal-event UI or option contents.
+  const themeSelect=byId('themeModeBulk');
+  if(themeSelect){
+    themeSelect.addEventListener('change',function(){applyThemeMode(this.value||'normal');});
+  }
+
+  // Seasonal event mode remains the authoritative seasonal system and its contents are untouched.
+  const seasonSelect=byId('seasonEventBulk');
+  if(seasonSelect){
+    seasonSelect.addEventListener('change',function(){
+      if(this.value!==''){
+        setThemeMode('normal');
+        removeThemeOptions();
+        const st=byId('themeModeStatus'); if(st) st.textContent='🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）';
+      }
+    });
+  }
+
+  const originalRandomSelect=window.randomSelect;
+  const originalRandomSeasonAwareCategory=window.randomSeasonAwareCategory;
+  window.randomSelect=function(s){
+    const mode=getThemeMode();
+    if(mode!=='normal' && s && s.classList && s.classList.contains('cat-select')){
+      return themeRandomCategory(s.getAttribute('data-key'));
+    }
+    return originalRandomSelect(s);
+  };
+  window.randomSeasonAwareCategory=function(key){
+    const mode=getThemeMode();
+    if(mode!=='normal' && getSeasonBulkIndex()<0) return themeRandomCategory(key);
+    return originalRandomSeasonAwareCategory(key);
+  };
+  window.randomVariables=function(){
+    const mode=getThemeMode();
+    const eventIndex=getSeasonBulkIndex();
+    if(eventIndex>=0){
+      chooseCoordinatedEventFamily(eventIndex);
+      updatePrompt();
+      showStatus('選択中の季節イベント内だけで27カテゴリをランダム設定しました');
+      return;
+    }
+    if(mode!=='normal'){
+      themeRandomAll();
+      showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'専用候補だけで27カテゴリをランダム設定しました');
+      return;
+    }
+    CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
+    updatePrompt();
+    showStatus('通常モードの既存候補だけで27カテゴリをランダム設定しました');
+  };
+  window.randomAll=function(){
+    const mode=getThemeMode();
+    const eventIndex=getSeasonBulkIndex();
+    if(eventIndex>=0){
+      chooseCoordinatedEventFamily(eventIndex); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus('選択中の季節イベントを維持して全カテゴリをランダム設定しました'); return;
+    }
+    if(mode!=='normal'){
+      themeRandomAll(); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus(THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'専用候補で全カテゴリをランダム設定しました'); return;
+    }
+    CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);}); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));}); updatePrompt(); showStatus('通常モードの既存候補で全カテゴリをランダム設定しました');
+  };
+  window.randomOne=function(type,key){
+    if(type==='cat' && getThemeMode()!=='normal' && getSeasonBulkIndex()<0){themeRandomCategory(key); updatePrompt(); showStatus(THEME_MODES[getThemeMode()].icon+' '+THEME_MODES[getThemeMode()].label+'専用候補から「'+key+'」をランダム設定しました'); return;}
+    if(type==='cat') randomSeasonAwareCategory(key); else originalRandomSelect(negSelect(key)); updatePrompt(); showStatus((type==='cat'?'可変「'+key+'」':'ネガ「'+key+'」')+'をランダム設定しました');
+  };
+
+  // Wrap prompt refresh only to display active mode; the prompt contents themselves remain generated by the existing builder.
+  const originalUpdatePrompt=window.updatePrompt;
+  window.updatePrompt=function(){
+    originalUpdatePrompt();
+    const mode=getThemeMode();
+    const st=byId('themeModeStatus');
+    if(st){
+      if(mode==='normal') st.textContent=getSeasonBulkIndex()>=0 ? '🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）' : '🎨 テーマ専用モード：通常';
+      else st.textContent=THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリ専用候補のみ';
+    }
+  };
+
+  // Do not auto-apply normal mode on page load; preserve existing selections.
+  window.addEventListener('load',function(){
+    const mode=getThemeMode();
+    const st=byId('themeModeStatus');
+    if(st) st.textContent=mode==='normal' ? (getSeasonBulkIndex()>=0 ? '🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）' : '🎨 テーマ専用モード：通常') : THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリ専用候補のみ';
+  });
 })();
 </script>
 </body>
