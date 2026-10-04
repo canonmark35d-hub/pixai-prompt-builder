@@ -40,6 +40,8 @@ button.secondary,button.dice{background:#eee;color:#333}
 .switch-label{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;}
 .switch-label input{width:18px;height:18px;accent-color:#333;}
 .link-mode-note{font-size:12px;line-height:1.5;color:#555;}
+
+.technique-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:10px}.technique-row{display:flex;align-items:center;gap:10px}.technique-row label{min-width:145px;font-weight:700}.technique-row select{flex:1;min-width:0}.technique-panel .note{line-height:1.55}.technique-managed-hidden{display:none!important}@media(max-width:700px){.technique-grid{grid-template-columns:1fr}.technique-row{align-items:stretch;flex-direction:column;gap:5px}.technique-row label{min-width:0}}
 </style>
 </head>
 <body>
@@ -114,6 +116,19 @@ button.secondary,button.dice{background:#eee;color:#333}
 <p class="note">①ベーステーマ＝衣装・人物の基本設計、②季節・イベント＝既存イベント候補、③シーン・ムード＝背景・照明・構図などを担当します。3つは同時にONにできます。OFFなら従来の候補を使用します。</p>
 <div class="status" id="themeModeStatus">🎛️ 3軸：すべてOFF</div>
 <div class="status" id="sceneModeStatus">③ シーン・ムード：OFF</div>
+</section>
+<section class="panel technique-panel" id="techniquePanel">
+<h2>📷 表現技法・大分類設定</h2>
+<p class="note">大枠だけ選択すると、そのグループ内から具体的なポーズ・目線・人物方向・カメラアングル・画角・構図を自動選択します。「自動ランダム」は毎回大分類も具体項目も自動で変化します。</p>
+<div class="technique-grid">
+  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"></select></div>
+  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"></select></div>
+  <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"></select></div>
+  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"></select></div>
+  <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"></select></div>
+  <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"></select></div>
+</div>
+<div class="status" id="techniqueStatus">表現技法：自動ランダム</div>
 </section>
 <section class="panel">
 <h2>👗 衣装コンセプト自動連動</h2>
@@ -9967,6 +9982,13 @@ function updatePrompt(){
 
 function randomSelect(s){
   if(!s || !s.options || s.options.length < 2) return false;
+  const key=s.getAttribute ? s.getAttribute("data-key") : "";
+  const expanded=s.querySelectorAll ? s.querySelectorAll('option[data-technique-expanded="1"]') : [];
+  if(expanded.length && ["POSE","GAZE","SUBJECT ORIENTATION","CAMERA ANGLE","SHOT TYPE","FRAMING"].indexOf(key)>=0 && Math.random()<0.5){
+    const o=expanded[Math.floor(Math.random()*expanded.length)];
+    s.value=o.value;
+    return true;
+  }
   const index = 1 + Math.floor(Math.random() * (s.options.length - 1));
   s.selectedIndex = index;
   return s.selectedIndex === index;
@@ -11105,6 +11127,136 @@ updatePrompt();</script>
     const st=byId('themeModeStatus');
     if(st) st.textContent=mode==='normal' ? (getSeasonBulkIndex()>=0 ? '🎨 テーマ専用モード：通常（季節・イベント一括設定を優先）' : '🎨 テーマ専用モード：通常') : THEME_MODES[mode].icon+' '+THEME_MODES[mode].label+'モード：ON｜27カテゴリ専用候補のみ';
   });
+})();
+</script>
+
+<script>
+/* ============================================================
+   EXPRESSION TECHNIQUE MASTER CONTROLS
+   Large category -> internal pool -> automatic concrete choice.
+   Existing 27 category options remain intact; these controls only
+   choose among dedicated technique pools and are intentionally easy
+   to extend by adding strings to one group below.
+   ============================================================ */
+(function(){
+  'use strict';
+  const TECH={
+    POSE:{select:'techniquePoseMode', key:'POSE', groups:{
+      'AUTO_RANDOM':['__AUTO__'],
+      'Standing':['standing','standing tall','relaxed standing','graceful standing','contrapposto stance','open stance','one foot slightly forward','one leg crossed in front','weight shifted to one leg','poised standing pose','fashion model standing pose','elegant standing pose','confident standing pose','soft feminine standing pose','three-quarter standing pose'],
+      'Sitting':['sitting on a chair','sitting on a sofa','sitting on the floor','sitting on a bench','sitting cross-legged','sitting with legs crossed','sitting with knees up','sitting with one leg extended','side sitting','sitting formally','sitting relaxed','sitting at a desk','seiza','wariza','elegant seated pose'],
+      'Kneeling':['kneeling','kneeling down','one knee down','kneeling upright','kneeling with one hand on the floor','kneeling gracefully','formal kneeling pose','one-knee fashion pose','kneeling three-quarter pose','kneeling with hands together'],
+      'Lying / Reclining':['lying down','reclining','lying on the back','lying on the stomach','lying on the side','lying on the left side','lying on the right side','lying stretched out','curled-up lying pose','resting on one elbow','reclining on one elbow','sleeping posture'],
+      'Walking / Moving':['walking forward','walking toward the camera','walking away from the camera','slow walking','casual strolling','mid-step walking','turning while walking','walking with natural arm swing','light step-forward pose','walking with a gentle stride'],
+      'Running / Jumping':['running','jogging','running toward the camera','running past the camera','dynamic running stride','jumping','light jump','jumping with one knee raised','jumping with both arms raised','landing from a jump'],
+      'Dancing':['dancing','ballet-inspired pose','twirling pose','spinning pose','dance step pose','arms raised while dancing','dynamic dance pose','graceful dance pose','idol performance dance pose','fashion dance pose'],
+      'Fashion Model':['fashion runway pose','editorial model pose','red-carpet pose','formal presentation pose','three-quarter fashion pose','hand-on-hip fashion pose','long-leg fashion pose','crossed-leg fashion pose','poised campaign pose','luxury fashion pose'],
+      'Cute / Idol':['finger-heart gesture','heart gesture near the chest','gentle wave pose','both hands framing the face','one hand under the chin','one hand near the face','hands clasped in front','playful idol pose','cute presentation pose','cheerful performance pose'],
+      'Dynamic / Special':['squatting down','crouching','low squat','bending forward','leaning forward','leaning backward','leaning against a wall','standing against a wall','leaning against a railing','stretching','arms raised overhead','looking over the shoulder pose','over-the-shoulder pose','one hand extended toward the viewer','both hands lightly extended']
+    }},
+    GAZE:{select:'techniqueGazeMode',key:'GAZE',groups:{
+      'AUTO_RANDOM':['__AUTO__'],'Direct / Viewer':['looking at viewer','looking directly at the camera','facing the viewer with direct eye contact','looking straight ahead','soft direct gaze','calm direct gaze','confident direct gaze','gentle gaze toward the viewer'],
+      'Left / Right':['looking to the right','looking to the left','looking toward the right side','looking toward the left side','looking slightly left of camera','looking slightly right of camera','glancing sideways','looking to the side'],
+      'Over Shoulder':['looking back over the shoulder','looking over the right shoulder','looking over the left shoulder','looking back','looking behind','back-facing gaze','over-the-shoulder gaze'],
+      'Upward':['looking upward','looking slightly upward','looking high into the distance','looking toward the sky','looking up at the sky','shy upward gaze','gentle upward gaze'],
+      'Downward':['looking down','looking slightly downward','looking toward the ground','looking toward the floor','reserved downward gaze','soft downward gaze'],
+      'Away / Distance':['looking away','looking into the distance','looking toward the horizon','gazing into the distance','looking past the viewer','distant contemplative gaze'],
+      'Object / Scene':['looking at a book','looking at a phone','looking at the raised hand','looking at the outfit','looking at an accessory','looking at the flowers','looking toward the light source','looking toward the window','looking toward the stage','looking toward the audience']
+    }},
+    ORIENTATION:{select:'techniqueOrientationMode',key:'SUBJECT ORIENTATION',groups:{
+      'AUTO_RANDOM':['__AUTO__'],'Front':['front-facing','straight-on orientation','facing forward','body facing camera','front-oriented pose'],
+      'Three-Quarter Left':['slight three-quarter left','three-quarter left','half-turn left','body angled left with face toward camera','torso turned left with head facing camera'],
+      'Three-Quarter Right':['slight three-quarter right','three-quarter right','half-turn right','body angled right with face toward camera','torso turned right with head facing camera'],
+      'Side Left':['side-facing left','full side profile left','left profile','left-facing profile','side profile toward the left'],
+      'Side Right':['side-facing right','full side profile right','right profile','right-facing profile','side profile toward the right'],
+      'Back':['back-facing','back view','rear-facing pose','back-oriented pose','facing away from camera'],
+      'Back Three-Quarter':['back three-quarter left','back three-quarter right','rear three-quarter left','rear three-quarter right','back-facing three-quarter pose'],
+      'Mixed / Head Turn':['torso facing camera with head turned left','torso facing camera with head turned right','body angled left with face toward camera','body angled right with face toward camera','torso turned left with head facing camera','torso turned right with head facing camera']
+    }},
+    CAMERA:{select:'techniqueCameraMode',key:'CAMERA ANGLE',groups:{
+      'AUTO_RANDOM':['__AUTO__'],'Front':['from front','front view','straight-on camera position'],'Side / Rear':['from the right side','from the left side','from behind','back view','three-quarter camera view','three-quarter rear view'],'Three-Quarter':['three-quarter camera view','three-quarter front view','three-quarter rear view','diagonal three-quarter camera view'],'Eye-Level':['eye-level','eye-height camera position','camera at face height','camera at chest height','level angle'],'Slight High':['camera slightly above eye height','slightly high angle','from slightly above','subtle high-angle view'],'High / Overhead':['from above','from the front and above','overhead view','high-angle view','bird’s-eye perspective','aerial perspective'],'Slight Low':['camera slightly below eye height','slightly low angle','from slightly below','subtle low-angle view'],'Low / Worm’s-Eye':['from below','low-angle view','from the front and below','worm’s-eye perspective','three-quarter low angle'],'Dutch / Dynamic':['dutch angle','tilted angle','dynamic angle','dynamic camera perspective','diagonal camera angle']
+    }},
+    SHOT:{select:'techniqueShotMode',key:'SHOT TYPE',groups:{
+      'AUTO_RANDOM':['__AUTO__'],'Wide / Environment':['wide shot','extreme wide shot','long shot','extreme long shot','environmental full-body shot','panoramic view','vista','distant view','far shot'],'Full Body':['full body shot','full-body fashion shot','head-to-toe shot','full figure shot','full-length portrait','complete silhouette shot'],'Cowboy Shot':['cowboy shot','cowboy shot framing','cowboy-style knee-up shot'],'Three-Quarter / Knee':['medium-long shot','three-quarter body shot','knee-up shot','thigh-up shot','three-quarter portrait'],'Upper Body':['waist-up shot','upper-body shot','chest-up shot','bust shot','head-and-shoulders shot','medium shot'],'Portrait':['portrait shot','headshot','medium close-up','close-up portrait','tight portrait shot'],'Close-Up':['close-up shot','face close-up','intense closeup shot','extreme close-up','extreme closeup shot'],'Detail / Macro':['eye close-up','eye closeup shot','close-up of eyes','lips close-up','macro photo','macro shot','zoomed in','enlarged']
+    }},
+    FRAMING:{select:'techniqueFramingMode',key:'FRAMING',groups:{
+      'AUTO_RANDOM':['__AUTO__'],'Centered':['centered character framing','centered full-body framing','centered portrait framing','subject centered in frame','balanced centered composition'],'Left / Right Offset':['character slightly left of center','character slightly right of center','off-center left framing','off-center right framing','asymmetrical subject placement'],'Symmetrical':['symmetrical framing','balanced symmetrical composition','formal centered framing','architectural symmetry framing','clean symmetrical layout'],'Rule of Thirds':['rule-of-thirds framing','subject placed on the left third','subject placed on the right third','upper-third subject placement','lower-third subject placement'],'Negative Space':['negative-space framing','generous negative space','clean negative-space composition','subject surrounded by open space','minimal negative-space layout'],'Environmental':['balanced character-and-environment framing','wide environmental framing','cinematic environmental framing','character-and-background composition','environmental fashion framing'],'Depth / Layered':['foreground-to-background depth framing','foreground-framed composition','layered depth composition','strong foreground and background separation','deep environmental composition'],'Architectural':['doorway framing','window framing','architectural framing','leading-line framing','corridor framing','staircase framing'],'Dynamic / Diagonal':['diagonal composition','dynamic diagonal framing','tilted editorial composition','dynamic fashion framing','energetic asymmetrical composition'],'Editorial / Magazine':['clean fashion-editorial layout','magazine-cover layout','polished campaign layout','luxury fashion editorial framing','high-fashion campaign composition']
+    }}
+  };
+
+  const MANAGED=Object.values(TECH).map(x=>x.key);
+  const state={};
+
+  function catSelect(key){return document.getElementById('cat-'+key);}
+  function random(arr){return arr[Math.floor(Math.random()*arr.length)];}
+  function groupNames(def){return Object.keys(def.groups);}
+  function addOptionToSelect(s,key,group,value,baseValue){
+    const finalValue=baseValue ? baseValue+', '+value : value;
+    let opt=Array.from(s.options).find(o=>o.dataset && o.dataset.techniqueManaged==='1' && o.dataset.techGroup===group && o.dataset.techBase===String(baseValue||'') && o.dataset.techConcrete===value);
+    if(!opt){
+      opt=document.createElement('option');
+      opt.value=finalValue;
+      opt.textContent='TECH｜'+group+'｜'+value;
+      opt.dataset.techniqueManaged='1'; opt.dataset.techGroup=group; opt.dataset.techBase=String(baseValue||''); opt.dataset.techConcrete=value;
+      s.appendChild(opt);
+    }
+    return opt;
+  }
+  function ensureGroupOptions(def,group){
+    const s=catSelect(def.key); if(!s) return [];
+    return def.groups[group].filter(v=>v!=='__AUTO__').map(v=>addOptionToSelect(s,def.key,group,v));
+  }
+  function chooseFor(def,mode,randomizeGroup){
+    const sel=document.getElementById(def.select); if(!sel) return false;
+    let group=sel.value||'AUTO_RANDOM';
+    const names=groupNames(def).filter(x=>x!=='AUTO_RANDOM');
+    if(randomizeGroup || group==='AUTO_RANDOM') group=random(names);
+    const vals=def.groups[group].filter(v=>v!=='__AUTO__');
+    if(!vals.length) return false;
+    const value=random(vals);
+    const s=catSelect(def.key); if(!s) return false;
+    const current=s.options[s.selectedIndex];
+    let baseValue=(current && current.dataset && current.dataset.techniqueManaged==='1') ? (current.dataset.techBase||'') : (s.value||'');
+    // When a BASE/EVENT/SCENE mode is active, preserve the mode-generated
+    // clothing/scene choice and append the selected expression technique.
+    // In ordinary mode the technique itself is the complete category value.
+    const modeActive=(typeof getThemeMode==='function' && getThemeMode()!=='normal') ||
+      (typeof getSceneMode==='function' && getSceneMode()!=='normal') ||
+      (typeof getSeasonBulkIndex==='function' && getSeasonBulkIndex()>=0);
+    if(!modeActive) baseValue='';
+    const o=addOptionToSelect(s,def.key,group,value,baseValue); s.value=o.value;
+    state[def.key]={group,value,baseValue};
+    return true;
+  }
+  function applyAll(randomizeGroup){Object.values(TECH).forEach(def=>chooseFor(def,def.select,randomizeGroup));updateTechniqueStatus();}
+  function updateTechniqueStatus(){
+    const parts=Object.values(TECH).map(def=>{const el=document.getElementById(def.select);return el?el.value:'AUTO_RANDOM';});
+    const st=document.getElementById('techniqueStatus'); if(st) st.textContent='表現技法：'+parts.join(' ｜ ');
+  }
+  function initSelector(def){
+    const sel=document.getElementById(def.select); if(!sel) return;
+    Object.keys(def.groups).forEach(group=>{const o=document.createElement('option');o.value=group;o.textContent=group==='AUTO_RANDOM'?'🎲 自動ランダム':group;sel.appendChild(o);});
+    sel.value='AUTO_RANDOM';
+    sel.addEventListener('change',function(){chooseFor(def,def.select,false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();});
+  }
+  function hideManagedCategories(){
+    MANAGED.forEach(key=>{const s=catSelect(key);if(!s)return;const sec=s.closest('section.cat');if(sec)sec.classList.add('technique-managed-hidden');});
+  }
+  Object.values(TECH).forEach(initSelector);
+  hideManagedCategories();
+
+  window.__applyTechniqueModes=function(randomizeGroup){applyAll(!!randomizeGroup);if(typeof window.updatePrompt==='function')window.updatePrompt();};
+  window.__randomizeTechniqueConcrete=function(){applyAll(false);};
+
+  const oldRandomVariables=window.randomVariables;
+  const oldRandomAll=window.randomAll;
+  if(typeof oldRandomVariables==='function') window.randomVariables=function(){oldRandomVariables();applyAll(true);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();showStatus('可変カテゴリ＋表現技法の大分類をランダム設定しました');};
+  if(typeof oldRandomAll==='function') window.randomAll=function(){oldRandomAll();applyAll(true);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();showStatus('全カテゴリ＋表現技法の大分類をランダム設定しました');};
+
+  const axes=['themeModeBulk','seasonEventBulk','sceneModeBulk'];
+  axes.forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',function(){setTimeout(function(){applyAll(false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();},0);});});
+
+  window.addEventListener('load',function(){updateTechniqueStatus();});
 })();
 </script>
 </body>
