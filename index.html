@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜バックアップ基準＋新6テーマ再構築｜2026-10-05 強化版 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜全BASE THEME連動強化版｜2026-10-05 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜バックアップ基準＋新6テーマ再構築｜2026-10-05 強化版 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜全BASE THEME連動強化版｜2026-10-05 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12314,12 +12314,27 @@ updatePrompt();</script>
   };
 
   const BASE_THEME_EMPHASIS = {
-    harajuku:"(Harajuku fashion:1.35); (Japanese street fashion:1.3); (colorful layered street styling:1.25); (kawaii streetwear:1.2); playful eclectic coordination; bold youth-fashion details",
-    girly:"(girly Japanese fashion:1.35); (feminine casual fashion:1.3); (ribbons and lace:1.2); (soft romantic styling:1.2); delicate feminine details; polished cute everyday coordination",
+    idol:"(idol fashion:1.4); (Japanese idol stage fashion:1.35); (performance costume:1.3); (sparkling stagewear:1.25); (feminine idol silhouette:1.2); ribbon details; coordinated stage accessories; polished concert couture",
+    swimwear:"(swimwear fashion:1.4); (authentic swimsuit construction:1.35); (resort beachwear:1.3); (fitted swimwear silhouette:1.25); (bikini or one-piece swimwear:1.2); swimwear-specific neckline; coordinated resort styling; premium swim fabric",
+    japanese:"(traditional Japanese kimono fashion:1.4); (authentic Japanese wafuku:1.35); (kimono construction:1.3); (overlapping kimono front:1.25); (obi sash:1.25); (traditional Japanese sleeves:1.2); Japanese textile motifs; refined traditional Japanese styling",
+    lolita:"(Lolita fashion:1.4); (Japanese Lolita fashion:1.35); (bell-shaped Lolita silhouette:1.3); (full Lolita skirt:1.25); (lace and ruffle details:1.2); (decorative bows:1.2); modest high-detail Lolita construction; coordinated Lolita accessories",
+    gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
+    sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
+    wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
+    balloon_skirt:"(balloon skirt fashion:1.4); (rounded balloon skirt silhouette:1.35); (gathered voluminous skirt:1.3); (compact rounded hem:1.25); (structured balloon volume:1.2); gathered waist; softly inflated skirt shape; clearly visible balloon-skirt construction",
+    agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
+    korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
+    chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
+    harajuku:"(Harajuku fashion:1.4); (Japanese street fashion:1.35); (colorful layered street styling:1.3); (kawaii streetwear:1.25); playful eclectic coordination; bold youth-fashion details; mixed textures; distinctive Japanese street-style accessories",
+    girly:"(girly Japanese fashion:1.4); (feminine casual fashion:1.35); (ribbons and lace:1.25); (soft romantic styling:1.25); delicate feminine details; cute polished everyday coordination; graceful silhouette; coordinated girly accessories",
     steampunk:"(steampunk fashion:1.4); (Victorian-industrial fashion:1.35); (clockwork aesthetic:1.3); (antique brass hardware:1.25); (Victorian corset:1.2); (high Victorian collar:1.2); (leather waistcoat:1.2); (bustle skirt:1.2); (lace-up engineer boots:1.2); mechanical gears; brass fittings; airship-era fashion",
-    himekaji:"(himekaji fashion:1.4); (princess-inspired casual fashion:1.3); (lace and ribbon details:1.2); (feminine casual styling:1.2); soft elegant silhouette; rose and pearl accents; refined Japanese princess-casual coordination",
-    poncho:"(poncho-centered fashion:1.4); (draped poncho outerwear:1.35); (cape-like silhouette:1.25); (layered poncho coordination:1.2); flowing outer layer; clearly visible poncho construction; coordinated boots or flats",
-    wizard_robe:"(wizard robe fashion:1.4); (fantasy mage robe:1.35); (hooded ceremonial robe:1.3); (arcane fantasy clothing:1.25); flowing layered robe; magical embroidery; rune motifs; fantasy waist and sleeve construction"
+    himekaji:"(himekaji fashion:1.4); (princess-inspired casual fashion:1.35); (lace and ribbon details:1.25); (feminine casual styling:1.25); soft elegant silhouette; rose and pearl accents; refined Japanese princess-casual coordination; graceful everyday femininity",
+    poncho:"(poncho-centered fashion:1.4); (draped poncho outerwear:1.35); (cape-like silhouette:1.3); (layered poncho coordination:1.25); flowing outer layer; clearly visible poncho construction; coordinated inner outfit; refined boots or flats",
+    wizard_robe:"(wizard robe fashion:1.4); (fantasy mage robe:1.35); (hooded ceremonial robe:1.3); (arcane fantasy clothing:1.25); flowing layered robe; magical embroidery; rune motifs; fantasy waist and sleeve construction; clearly visible wizard-robes silhouette",
+    oversized:"(oversized fashion:1.4); (oversized streetwear styling:1.35); (deliberately oversized silhouette:1.3); (voluminous outerwear:1.25); (relaxed oversized proportions:1.2); dropped shoulders; long loose sleeves; large-scale layered clothing; compact coordinated inner layer",
+    princess:"(princess fashion:1.4); (royal princess couture:1.35); (princess-inspired silhouette:1.3); (ornamental bodice:1.25); (elegant full skirt:1.2); refined royal embellishment; luxurious fabrics; crown-worthy formal styling; graceful regal coordination",
+    marine:"(marine fashion:1.4); (Japanese sailor-inspired marine look:1.35); (naval-inspired fashion:1.3); (sailor collar:1.25); (double-breasted details:1.2); (nautical stripes:1.2); anchor and rope motifs; pleated marine skirt; refined coastal styling",
+    tube_top:"(tube top fashion:1.4); (strapless tube-top styling:1.35); (clean strapless neckline:1.3); (fitted tube top:1.25); (modern feminine top-and-bottom coordination:1.2); visible bare shoulders; optional layered jacket styling; contemporary fashion-editorial look"
   };
 
   function applyBaseThemeEmphasis(text){
