@@ -9957,6 +9957,141 @@ function applySeasonEventBulk(eventIndex){
 }
 
 
+// ============================================================
+// 11衣装カテゴリ・意味強化レイヤー
+// 既存の1,000選択肢は一切変更せず、最終プロンプト上で
+// 各カテゴリが「何を表すか」を明確化する。
+// BASE THEME / OUTFIT CONCEPT の連動結果にも適用する。
+// ============================================================
+const OUTFIT_CATEGORY_SEMANTIC_RULES = {
+  "OUTFIT COLOR": [
+    {keys:["black","charcoal","ebony"], text:"coordinated black and charcoal outfit color palette"},
+    {keys:["white","ivory","cream"], text:"refined white, ivory and cream outfit color palette"},
+    {keys:["pink","rose","blush","magenta"], text:"feminine pink and rose outfit color palette"},
+    {keys:["red","crimson","burgundy","wine"], text:"rich red and burgundy outfit color palette"},
+    {keys:["blue","navy","indigo","aqua","teal"], text:"coordinated blue and indigo outfit color palette"},
+    {keys:["purple","violet","lavender"], text:"elegant purple and lavender outfit color palette"},
+    {keys:["green","emerald","mint"], text:"refined green and emerald outfit color palette"},
+    {keys:["gold","silver","metallic"], text:"controlled metallic accent color palette"}
+  ],
+  "OUTFIT MATERIAL": [
+    {keys:["matte silk","silk"], text:"authentic silk textile character with refined surface texture"},
+    {keys:["satin"], text:"authentic satin textile with controlled sheen"},
+    {keys:["velvet"], text:"authentic velvet textile with rich soft pile texture"},
+    {keys:["lace"], text:"authentic lace textile with delicate openwork texture"},
+    {keys:["tulle","organza","chiffon"], text:"lightweight translucent fashion textile with delicate drape"},
+    {keys:["leather","pu leather"], text:"authentic leather or leather-like structured material character"},
+    {keys:["denim"], text:"authentic denim fabric with visible woven texture"},
+    {keys:["knit","wool","cashmere"], text:"authentic knit or wool textile with visible soft fiber texture"},
+    {keys:["brocade","jacquard"], text:"rich woven ornamental textile with visible pattern structure"}
+  ],
+  "OUTFIT STRUCTURE": [
+    {keys:["corset","bustier"], text:"clearly defined corset or bustier bodice construction"},
+    {keys:["blazer","tailored","jacket","waistcoat"], text:"clearly structured tailored garment construction"},
+    {keys:["dress","gown"], text:"clearly recognizable dress construction with defined bodice and skirt"},
+    {keys:["kimono","yukata","wafuku"], text:"authentic Japanese wrap-garment construction"},
+    {keys:["lolita","pinafore","frill"], text:"clearly recognizable Lolita-inspired garment construction"},
+    {keys:["poncho","cape"], text:"clearly recognizable draped poncho or cape-based outerwear construction"},
+    {keys:["robe","wizard","mage"], text:"clearly recognizable full-length fantasy robe construction"},
+    {keys:["swimwear","bikini","one-piece"], text:"authentic fitted swimwear construction"},
+    {keys:["uniform","school"], text:"clearly recognizable structured school-uniform construction"},
+    {keys:["armor","armored","warrior","knight"], text:"clearly recognizable fantasy armor and warrior garment construction"}
+  ],
+  "SHOULDERS & SLEEVES": [
+    {keys:["puff sleeve","puffed"], text:"clearly defined puff sleeves with controlled gathered volume"},
+    {keys:["bishop sleeve","bell sleeve"], text:"clearly defined voluminous historical-style sleeves"},
+    {keys:["cape sleeve","cape"], text:"clearly defined cape-like shoulder and sleeve construction"},
+    {keys:["kimono sleeve","furisode"], text:"clearly defined wide Japanese kimono sleeves"},
+    {keys:["halter","strapless","thin straps"], text:"clearly defined minimal strap or strapless shoulder construction"},
+    {keys:["blazer","tailored","structured shoulder"], text:"clearly defined structured tailored shoulders and sleeves"},
+    {keys:["long sleeve"], text:"clearly defined full-length sleeves with visible cuff construction"}
+  ],
+  "COLLAR": [
+    {keys:["high collar","stand collar","mandarin collar"], text:"clearly defined high or stand collar"},
+    {keys:["peter pan","rounded collar"], text:"clearly defined rounded Peter Pan-style collar"},
+    {keys:["sailor collar"], text:"clearly defined sailor collar with visible neckline geometry"},
+    {keys:["lapel","notched lapel","peak lapel"], text:"clearly defined tailored lapel collar construction"},
+    {keys:["sweetheart"], text:"clearly defined sweetheart neckline"},
+    {keys:["halter"], text:"clearly defined halter neckline"},
+    {keys:["v-neck","v neck"], text:"clearly defined V-neckline"}
+  ],
+  "WAIST DESIGN": [
+    {keys:["corset","lace-up","lace up"], text:"clearly defined corset-shaped waist with visible structured waist control"},
+    {keys:["obi"], text:"clearly defined Japanese obi-style waist sash"},
+    {keys:["high-waisted","high waist"], text:"clearly defined high-waisted silhouette"},
+    {keys:["empire"], text:"clearly defined empire waistline"},
+    {keys:["belt","belted","sash"], text:"clearly defined waist belt or sash construction"},
+    {keys:["cinched"], text:"clearly defined cinched waist silhouette"}
+  ],
+  "SKIRT": [
+    {keys:["balloon"], text:"clearly recognizable rounded balloon skirt volume with gathered hem"},
+    {keys:["pleated"], text:"clearly defined vertical pleated skirt construction"},
+    {keys:["tiered","layered"], text:"clearly defined multi-tiered or layered skirt construction"},
+    {keys:["bustle"], text:"clearly defined Victorian bustle skirt volume and rear structure"},
+    {keys:["bell skirt","bell-shaped"], text:"clearly defined bell-shaped skirt silhouette"},
+    {keys:["pencil"], text:"clearly defined narrow pencil skirt silhouette"},
+    {keys:["a-line","a line"], text:"clearly defined A-line skirt silhouette"},
+    {keys:["flared"], text:"clearly defined flared skirt silhouette with controlled volume"},
+    {keys:["mini skirt","mini-skirt"], text:"clearly defined short mini skirt silhouette"},
+    {keys:["trouser","trousers","pants","shorts"], text:"clearly defined tailored lower-body garment rather than an ordinary skirt"}
+  ],
+  "GLOVES": [
+    {keys:["opera gloves","long gloves","elbow gloves"], text:"clearly defined long formal gloves extending toward the elbows"},
+    {keys:["lace gloves","lace"], text:"clearly defined delicate lace glove construction"},
+    {keys:["leather gloves","leather"], text:"clearly defined fitted leather glove construction"},
+    {keys:["fingerless"], text:"clearly defined fingerless glove construction"},
+    {keys:["gauntlet","armored gloves"], text:"clearly defined fantasy armored gauntlet construction"},
+    {keys:["no gloves","no glove"], text:"bare hands with no gloves or hand coverings"}
+  ],
+  "SHOES": [
+    {keys:["mary jane"], text:"clearly defined Mary Jane shoes with visible strap construction"},
+    {keys:["platform"], text:"clearly defined elevated platform footwear with substantial sole"},
+    {keys:["lace-up","lace up"], text:"clearly defined lace-up footwear with visible lacing"},
+    {keys:["boots","boot"], text:"clearly defined structured boots with visible shaft and sole"},
+    {keys:["pumps","heels","stiletto"], text:"clearly defined elegant heeled pump footwear"},
+    {keys:["loafers","oxford"], text:"clearly defined structured loafer or Oxford footwear"},
+    {keys:["sandal","sandals","slides"], text:"clearly defined open resort sandal footwear"},
+    {keys:["geta","zori"], text:"clearly defined traditional Japanese geta or zori footwear"},
+    {keys:["sneakers","running shoes"], text:"clearly defined athletic sneaker footwear"}
+  ],
+  "DESIGN LANGUAGE": [
+    {keys:["steampunk","victorian-industrial"], text:"strong steampunk Victorian-industrial design language with mechanical detailing"},
+    {keys:["harajuku","street fashion"], text:"strong Japanese Harajuku street-fashion design language with playful layered styling"},
+    {keys:["girly","romantic","cute"], text:"strong feminine girly fashion design language with soft romantic detailing"},
+    {keys:["himekaji","princess-inspired"], text:"strong Himekaji princess-casual design language with feminine everyday styling"},
+    {keys:["wizard","mage","arcane"], text:"strong fantasy wizard design language with arcane magical detailing"},
+    {keys:["gothic"], text:"strong gothic design language with dark romantic ornamentation"},
+    {keys:["lolita"], text:"strong Lolita design language with refined lace, ribbon and structured volume"},
+    {keys:["kimono","japanese","wafuku"], text:"strong Japanese traditional design language with authentic cultural garment details"},
+    {keys:["sport","athletic","activewear"], text:"strong athletic performancewear design language"}
+  ],
+  "OUTFIT PATTERN": [
+    {keys:["gear","clockwork","mechanical","airship"], text:"clearly recognizable steampunk mechanical motifs and industrial pattern language"},
+    {keys:["floral","flower","rose","sakura"], text:"clearly defined floral pattern motifs with controlled scale"},
+    {keys:["ribbon","bow","heart"], text:"clearly defined feminine ribbon and bow motifs"},
+    {keys:["plaid","tartan","check"], text:"clearly defined woven plaid or tartan pattern"},
+    {keys:["stripe"], text:"clearly defined stripe pattern with controlled spacing"},
+    {keys:["damask","baroque","jacquard"], text:"clearly defined ornate damask or baroque textile motif"},
+    {keys:["rune","arcane","celestial","star","moon"], text:"clearly defined fantasy arcane or celestial ornamental motifs"},
+    {keys:["seigaiha","asanoha","japanese"], text:"clearly defined Japanese traditional pattern motifs"},
+    {keys:["animal","leopard","zebra"], text:"clearly defined animal-print motif with controlled pattern scale"}
+  ]
+};
+
+function strengthenOutfitCategory(key, value){
+  if(!value) return value;
+  const rules = OUTFIT_CATEGORY_SEMANTIC_RULES[key];
+  if(!rules) return value;
+  const lower = String(value).toLowerCase();
+  for(const rule of rules){
+    if(rule.keys.some(function(k){ return lower.indexOf(k.toLowerCase()) !== -1; })){
+      return rule.text + "; " + value;
+    }
+  }
+  return value;
+}
+
+
 function updatePrompt(){
   syncFramingWithShotType();
   const selected = [];
@@ -9971,6 +10106,7 @@ function updatePrompt(){
         value = getLinkedValue(key, value, genre);
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
+      if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
       selected.push("[" + key + "] " + value);
     }
   });
