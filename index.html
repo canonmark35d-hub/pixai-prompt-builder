@@ -10108,7 +10108,7 @@ function updatePrompt(){
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
-      if(isBalloonSkirtThemeActive()) value = enforceBalloonSkirtCategory(key, value);
+      if(typeof window.isBalloonSkirtThemeActive==='function' && window.isBalloonSkirtThemeActive()) value = window.enforceBalloonSkirtCategory(key, value);
       selected.push("[" + key + "] " + value);
     }
   });
@@ -10905,36 +10905,41 @@ updatePrompt();</script>
 
   function modeProfile(mode){ return P[mode]; }
   function modeValue(mode,key,f,v){
-    const p=modeProfile(mode); const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
+    const p=modeProfile(mode)||{}; const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
+    const arr=function(name,fallback){
+      const a=Array.isArray(p[name]) && p[name].length ? p[name] : fallback;
+      return a[fam % a.length];
+    };
+    const languages=Array.isArray(p.languages)&&p.languages.length?p.languages:["refined thematic fashion"];
     switch(key){
       case "EXPRESSION": return (p.expressions||["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"])[fam%10]+", "+suffix;
-      case "HAIRSTYLE": return p.hair[fam]+", "+suffix;
+      case "HAIRSTYLE": return arr("hair",["long loose waves"])+", "+suffix;
       case "HAIR COLOR": return MODE_HAIR_COLORS[fam]+", "+suffix;
       case "EYE COLOR": return MODE_EYE+", "+suffix;
-      case "HAIR ACCESSORIES": return p.accessories[fam]+", "+suffix;
-      case "OUTFIT CONCEPT": return p.silhouettes[fam]+", "+p.colors[fam]+", "+p.languages[fam]+", "+suffix;
-      case "OUTFIT COLOR": return p.colors[fam]+", coordinated thematic palette, "+suffix;
-      case "OUTFIT MATERIAL": return p.materials[fam]+", "+suffix;
-      case "OUTFIT STRUCTURE": return p.silhouettes[fam]+", structured thematic construction, "+suffix;
-      case "SHOULDERS & SLEEVES": return p.sleeves[fam]+", "+suffix;
-      case "COLLAR": return p.collars[fam]+", "+suffix;
-      case "WAIST DESIGN": return p.waists[fam]+", "+suffix;
-      case "SKIRT": return p.skirts[fam]+", "+suffix;
+      case "HAIR ACCESSORIES": return arr("accessories",["delicate hair ribbon"])+", "+suffix;
+      case "OUTFIT CONCEPT": return arr("silhouettes",[p.anchor||"refined thematic silhouette"])+", "+arr("colors",["coordinated thematic palette"])+", "+languages[fam%languages.length]+", "+suffix;
+      case "OUTFIT COLOR": return arr("colors",["coordinated thematic palette"])+", coordinated thematic palette, "+suffix;
+      case "OUTFIT MATERIAL": return arr("materials",["refined fashion textile"])+", "+suffix;
+      case "OUTFIT STRUCTURE": return arr("silhouettes",[p.anchor||"refined thematic silhouette"])+", structured thematic construction, "+suffix;
+      case "SHOULDERS & SLEEVES": return arr("sleeves",["refined sleeves"])+", "+suffix;
+      case "COLLAR": return arr("collars",["refined neckline"])+", "+suffix;
+      case "WAIST DESIGN": return arr("waists",["defined waist"])+", "+suffix;
+      case "SKIRT": return arr("skirts",[p.anchor||"coordinated lower-body construction"])+", "+suffix;
       case "LEGS & HOSIERY": return (p.hosiery||["sheer tights","matte thigh-high stockings","knee-high socks","lace-trimmed thigh-highs","opaque tights","ribbon thigh-highs","fine stockings","sport socks","clean bare legs","elegant hosiery","patterned stockings","matte over-knee socks","lace stockings","sheer knee-highs","classic stockings","ribbed socks","fine over-knee hosiery","simple thigh-highs","coordinated socks","refined thematic hosiery"])[fam]+", "+suffix;
-      case "GLOVES": return p.gloves[fam]+", "+suffix;
-      case "SHOES": return p.shoes[fam]+", "+suffix;
-      case "DESIGN LANGUAGE": return p.languages[fam]+", "+suffix;
-      case "POSE": return (p.poses||POSE_EXTRA)[(fam+vari)%10]+", "+p.languages[fam];
+      case "GLOVES": return arr("gloves",["minimal fitted gloves"])+", "+suffix;
+      case "SHOES": return arr("shoes",["refined fashion footwear"])+", "+suffix;
+      case "DESIGN LANGUAGE": return languages[fam%languages.length]+", "+suffix;
+      case "POSE": return (p.poses||POSE_EXTRA)[(fam+vari)%10]+", "+languages[fam%languages.length];
       case "GAZE": return (p.gazes||GAZE_EXTRA)[(fam*3+vari)%10];
-      case "SUBJECT ORIENTATION": return ORIENTATIONS[(fam+vari)%5]+", "+p.languages[fam]+" styling";
+      case "SUBJECT ORIENTATION": return ORIENTATIONS[(fam+vari)%5]+", "+languages[fam%languages.length]+" styling";
       case "CAMERA ANGLE": return ANGLES[(fam+vari)%5];
       case "SHOT TYPE": return SHOTS[(fam+vari)%5];
       case "FRAMING": return FRAMING[(fam+vari)%5];
-      case "BACKGROUND": return p.backgrounds[fam]+", "+suffix;
-      case "LIGHTING": return p.lighting[fam]+", "+suffix;
-      case "COMPOSITION": return p.compositions[fam]+", "+suffix;
-      case "OUTFIT PATTERN": return p.patterns[fam]+", "+suffix;
-      default: return p.languages[fam]+", "+suffix;
+      case "BACKGROUND": return arr("backgrounds",["clean fashion studio"])+", "+suffix;
+      case "LIGHTING": return arr("lighting",["soft editorial lighting"])+", "+suffix;
+      case "COMPOSITION": return arr("compositions",["balanced fashion composition"])+", "+suffix;
+      case "OUTFIT PATTERN": return arr("patterns",["subtle thematic pattern"])+", "+suffix;
+      default: return languages[fam%languages.length]+", "+suffix;
     }
   }
 
@@ -11993,6 +11998,43 @@ updatePrompt();</script>
   }
   Object.keys(EXPANDED_THEME_CONFIGS).forEach(function(k){ P[k]=makeExpandedThemeProfile(EXPANDED_THEME_CONFIGS[k]); });
 
+  // Ensure hand-authored themes expose the same complete schema as expanded themes.
+  // This prevents one missing category array from aborting the entire randomization flow.
+  (function ensureThemeProfileSchema(){
+    const fallbackExpressions=["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"];
+    const fallbackPoses=POSE_EXTRA;
+    const fallbackGazes=GAZE_EXTRA;
+    const fill=function(p,key,source){
+      if(!p) return;
+      if(!Array.isArray(p[key]) || p[key].length<20){
+        const src=Array.isArray(source)?source:["refined thematic styling"];
+        p[key]=Array.from({length:20},(_,i)=>src[i%src.length]);
+      }
+    };
+    const genericHair=["long loose waves","soft straight long hair","high ponytail","low ponytail","half-up waves","loose high bun","low loose bun","side-swept waves","long layered hair","soft curled bob","long side ponytail","half-up ribbon hair","messy elegant bun","long soft curls","low braided ponytail","high braided ponytail","wavy medium hair","polished editorial waves","low braided bun","long flowing curls"];
+    const genericAccessories=["delicate hair ribbon","small pearl hairpin","minimal hair clip","fine bow hair accessory","subtle floral hair ornament","slim decorative barrette","small satin ribbon","delicate metallic hairpin","simple jeweled clip","refined side hair ornament","thin velvet ribbon","small lace hairpiece","minimal decorative comb","fine crystal hairpin","small thematic bow","delicate chain hair ornament","simple pearl pin","small rose hairpin","refined ribbon clip","elegant thematic hair accessory"];
+    const genericSleeves=EXPANDED_SLEEVES;
+    const genericCollars=EXPANDED_COLLARS;
+    const genericWaists=EXPANDED_WAISTS;
+    const genericHosiery=EXPANDED_HOSIERY;
+    const genericGloves=EXPANDED_GLOVES;
+    const genericShoes=EXPANDED_SHOES;
+    const genericLanguages=EXPANDED_VARIANT_LANGUAGES;
+    const genericBackgrounds=EXPANDED_BACKGROUNDS;
+    const genericLighting=EXPANDED_LIGHTING;
+    const genericCompositions=EXPANDED_COMPOSITIONS;
+    Object.keys(P).forEach(function(mode){
+      const p=P[mode]; if(!p) return;
+      fill(p,"hair",genericHair); fill(p,"accessories",genericAccessories);
+      fill(p,"sleeves",genericSleeves); fill(p,"collars",genericCollars); fill(p,"waists",genericWaists);
+      fill(p,"skirts",p.silhouettes||[]); fill(p,"hosiery",genericHosiery); fill(p,"gloves",genericGloves); fill(p,"shoes",genericShoes);
+      fill(p,"languages",genericLanguages); fill(p,"backgrounds",genericBackgrounds); fill(p,"lighting",genericLighting); fill(p,"compositions",genericCompositions);
+      fill(p,"expressions",fallbackExpressions); fill(p,"poses",fallbackPoses); fill(p,"gazes",fallbackGazes);
+      fill(p,"colors",p.colors||["coordinated thematic palette"]); fill(p,"materials",p.materials||["refined fashion textile"]);
+      fill(p,"silhouettes",p.silhouettes||[p.anchor||"refined thematic silhouette"]); fill(p,"patterns",p.patterns||["subtle thematic pattern"]);
+    });
+  })();
+
   function isThemeOption(o){ return !!(o && o.dataset && o.dataset.themeMode); }
   function isIdolOption(o){ return !!(o && o.dataset && o.dataset.idolNormal==='1'); }
   function isSeasonOption(o){
@@ -12229,7 +12271,9 @@ updatePrompt();</script>
     // EVENT is additive: do not replace BASE selections. The selected event family is
     // retained in an internal state and rendered as a dedicated EVENT block below.
     if(eventIndex>=0){
-      const ef=Math.floor(Math.random()*20), ev=Math.floor(Math.random()*10);
+      const existing=window.__activeEventDesign && Number(window.__activeEventDesign.eventIndex)===eventIndex ? window.__activeEventDesign : null;
+      const ef=existing ? Number(existing.family) : Math.floor(Math.random()*20);
+      const ev=existing ? Number(existing.variant) : Math.floor(Math.random()*10);
       window.__activeEventDesign={eventIndex:eventIndex,family:ef,variant:ev};
       EVENT_OVERLAY_KEYS.forEach(function(key){ ensureSeasonExtraOptionsInSelect(key,eventIndex); });
     } else {
@@ -12266,6 +12310,19 @@ updatePrompt();</script>
   }
 
   function randomThreeAxes(){ applyThreeAxes(true); }
+
+  // Public diagnostic hook used by the repair validation. It is inert in normal use.
+  window.__validateThreeAxisState=function(){
+    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    return {
+      theme:theme,
+      eventIndex:eventIndex,
+      scene:scene,
+      eventDesign:eventIndex>=0 ? (window.__activeEventDesign||null) : null,
+      themeOptions:theme==='normal'?0:CAT_KEYS.reduce(function(n,key){const s=catSelect(key);return n+(s?themeCandidates(s,theme).length:0);},0),
+      eventOptions:eventIndex<0?0:CAT_KEYS.reduce(function(n,key){const s=catSelect(key);return n+(s?Array.from(s.options).filter(function(o){return o.dataset.seasonExtra==='1'&&o.dataset.seasonEvent===String(eventIndex);}).length:0);},0)
+    };
+  };
 
   const themeSelect=byId('themeModeBulk');
   if(themeSelect) themeSelect.addEventListener('change',function(){applyThemeMode(this.value||'normal');});
@@ -12419,6 +12476,12 @@ updatePrompt();</script>
     if(key==='SKIRT') return anchor;
     return anchor+'; '+cleaned;
   }
+
+  // Expose these two helpers because the legacy global updatePrompt() runs outside
+  // this theme-layer closure. This keeps the balloon-skirt guard active without
+  // creating a temporal-scope error during initialization or randomization.
+  window.isBalloonSkirtThemeActive=isBalloonSkirtThemeActive;
+  window.enforceBalloonSkirtCategory=enforceBalloonSkirtCategory;
 
   function enforceBalloonSkirtSelection(){
     if(!isBalloonSkirtThemeActive()) return;
