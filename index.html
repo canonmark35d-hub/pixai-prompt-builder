@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造強化版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造強化版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10108,6 +10108,7 @@ function updatePrompt(){
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
+      if(isBalloonSkirtThemeActive()) value = enforceBalloonSkirtCategory(key, value);
       selected.push("[" + key + "] " + value);
     }
   });
@@ -12222,6 +12223,9 @@ updatePrompt();</script>
       });
     }
 
+    // Balloon Skirt is the only BASE theme with a dedicated hard structural override.
+    enforceBalloonSkirtSelection();
+
     // EVENT is additive: do not replace BASE selections. The selected event family is
     // retained in an internal state and rendered as a dedicated EVENT block below.
     if(eventIndex>=0){
@@ -12306,6 +12310,7 @@ updatePrompt();</script>
   window.randomSeasonAwareCategory=function(key){
     const s=catSelect(key); if(!s) return false;
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    if(theme==='balloon_skirt' && key==='SKIRT'){ enforceBalloonSkirtSelection(); return true; }
     if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
       ensureSeasonExtraOptionsInSelect(key,eventIndex);
       const design=window.__activeEventDesign || {eventIndex:eventIndex,family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
@@ -12352,7 +12357,7 @@ updatePrompt();</script>
     gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
     sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
     wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
-    balloon_skirt:"(balloon skirt fashion:1.4); (rounded balloon skirt silhouette:1.35); (gathered voluminous skirt:1.3); (compact rounded hem:1.25); (structured balloon volume:1.2); gathered waist; softly inflated skirt shape; clearly visible balloon-skirt construction",
+    balloon_skirt:"(bubble skirt:1.45); (puffball skirt:1.4); (bubble-hem skirt:1.35); (rounded inflated skirt silhouette:1.35); (gathered inward hem:1.3); (tucked-under hem:1.3); (outer skirt gathered over a shorter inner lining:1.3); (rounded bubble-shaped volume:1.3); wearable fashion skirt garment; fitted waistband; compact rounded lower volume; clearly visible bubble-hem construction",
     agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
     korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
     chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
@@ -12367,6 +12372,69 @@ updatePrompt();</script>
     marine:"(marine fashion:1.4); (Japanese sailor-inspired marine look:1.35); (naval-inspired fashion:1.3); (sailor collar:1.25); (double-breasted details:1.2); (nautical stripes:1.2); anchor and rope motifs; pleated marine skirt; refined coastal styling",
     tube_top:"(tube top fashion:1.4); (strapless tube-top styling:1.35); (clean strapless neckline:1.3); (fitted tube top:1.25); (modern feminine top-and-bottom coordination:1.2); visible bare shoulders; optional layered jacket styling; contemporary fashion-editorial look"
   };
+
+  /* ============================================================
+     BALLOON SKIRT — dedicated structural safeguard
+     Only the 🎈バルーンスカート BASE theme uses this override.
+     The model-facing vocabulary deliberately favors the learned
+     "bubble skirt / puffball skirt / bubble-hem" concepts and
+     construction details, avoiding standalone "balloon" imagery.
+     ============================================================ */
+  const BALLOON_SKIRT_STRUCTURE = {
+    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit built around a fitted waistband and a compact rounded bubble skirt",
+    "OUTFIT STRUCTURE":"structured bubble-skirt construction; outer skirt is fuller than a shorter inner lining; lower edge is gathered and tucked inward to form a rounded enclosed hem; controlled compact volume",
+    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
+    "WAIST DESIGN":"fitted clean waistband supporting a rounded bubble skirt; controlled waist gathers",
+    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
+    "OUTFIT PATTERN":"pattern and surface details follow the rounded bubble-skirt panels without changing the compact silhouette"
+  };
+
+  function isBalloonSkirtThemeActive(){
+    return typeof getThemeMode==='function' && getThemeMode()==='balloon_skirt';
+  }
+
+  function cleanBalloonConflicts(value){
+    if(!value) return value;
+    let v=String(value);
+    [
+      [/\bflared skirt\b/gi,'rounded bubble skirt'],
+      [/\bflare skirt\b/gi,'rounded bubble skirt'],
+      [/\ba-line skirt\b/gi,'rounded bubble skirt'],
+      [/\ba line skirt\b/gi,'rounded bubble skirt'],
+      [/\bstraight skirt\b/gi,'rounded bubble skirt'],
+      [/\bpencil skirt\b/gi,'rounded bubble skirt'],
+      [/\bmermaid skirt\b/gi,'rounded bubble skirt'],
+      [/\bslim skirt\b/gi,'rounded bubble skirt']
+    ].forEach(function(pair){v=v.replace(pair[0],pair[1]);});
+    return v;
+  }
+
+  function enforceBalloonSkirtCategory(key,value){
+    if(!isBalloonSkirtThemeActive() || !value) return value;
+    const anchor=BALLOON_SKIRT_STRUCTURE[key];
+    const cleaned=cleanBalloonConflicts(value);
+    if(!anchor) return cleaned;
+    // SKIRT gets the strongest replacement so no generic skirt silhouette
+    // can override the dedicated balloon/bubble construction.
+    if(key==='SKIRT') return anchor;
+    return anchor+'; '+cleaned;
+  }
+
+  function enforceBalloonSkirtSelection(){
+    if(!isBalloonSkirtThemeActive()) return;
+    const s=catSelect('SKIRT');
+    if(s){
+      let opt=Array.from(s.options).find(function(o){return o.dataset && o.dataset.balloonSkirtFixed==='1';});
+      if(!opt){
+        opt=document.createElement('option');
+        opt.value=BALLOON_SKIRT_STRUCTURE['SKIRT'];
+        opt.textContent='BALLOON｜専用構造｜Bubble / Puffball / Tucked Hem';
+        opt.dataset.balloonSkirtFixed='1';
+        s.appendChild(opt);
+      }
+      s.value=opt.value;
+    }
+  }
 
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
