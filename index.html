@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜既存設定完全復元＋バルーンスカート機能のみ追加｜2026-10-07 / 27カテゴリ</title>
+<title>PIXAI Prompt Builder｜既存設定完全復元＋6軸EXPRESSION TECHNIQUE統合復元｜バルーンスカート機能維持｜2026-10-07</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜既存設定完全復元＋バルーンスカート機能のみ追加｜2026-10-07 / 27カテゴリ</h1>
+\1PIXAI Prompt Builder｜既存設定完全復元＋6軸EXPRESSION TECHNIQUE統合復元｜バルーンスカート機能維持｜2026-10-07\2
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12474,18 +12474,17 @@ updatePrompt();</script>
 
   function getExpressionTechniquePromptBlock(){
     const defs=[
-      ['POSE','techniquePoseMode','POSE STYLE'],
-      ['GAZE','techniqueGazeMode','GAZE STYLE'],
-      ['SUBJECT ORIENTATION','techniqueOrientationMode','ORIENTATION STYLE'],
-      ['CAMERA ANGLE','techniqueCameraMode','CAMERA STYLE'],
-      ['SHOT TYPE','techniqueShotMode','SHOT STYLE'],
-      ['FRAMING','techniqueFramingMode','FRAMING STYLE']
+      ['POSE','techniquePoseMode'],
+      ['GAZE','techniqueGazeMode'],
+      ['SUBJECT ORIENTATION','techniqueOrientationMode'],
+      ['CAMERA ANGLE','techniqueCameraMode'],
+      ['SHOT TYPE','techniqueShotMode'],
+      ['FRAMING','techniqueFramingMode']
     ];
     const parts=[];
     defs.forEach(function(def){
       const modeEl=byId(def[1]);
       const cat=catSelect(def[0]);
-      const mode=modeEl && modeEl.value && modeEl.value!=='AUTO_RANDOM' ? modeEl.value : 'Random';
       let concrete='';
       if(cat){
         const opt=cat.options[cat.selectedIndex];
@@ -12495,11 +12494,8 @@ updatePrompt();</script>
           if(m) concrete=m[1];
         }
       }
-      if(concrete){
-        parts.push(def[2]+': '+mode+' → '+concrete);
-      }else if(modeEl){
-        parts.push(def[2]+': '+mode);
-      }
+      // 6軸はUIでは独立選択。最終出力では具体的な選択内容だけを1つのブロックへ統合する。
+      if(concrete) parts.push(concrete);
     });
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
