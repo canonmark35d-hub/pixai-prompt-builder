@@ -10903,7 +10903,67 @@ updatePrompt();</script>
   const POSE_EXTRA=["elegant standing pose","soft presentation pose","confident fashion pose","graceful three-quarter pose","subtle walking pose","gentle hand-near-face pose","relaxed standing pose","refined seated pose","light step-forward pose","poised editorial pose"];
   const GAZE_EXTRA=["calm direct gaze","soft camera-facing gaze","confident three-quarter gaze","gentle side glance","refined slightly upward gaze","warm direct gaze","quiet elegant gaze","playful side glance","poised editorial gaze","soft distant gaze"];
 
-  function modeProfile(mode){ return P[mode]; }
+  function modeProfile(mode){
+    if(mode==='balloon_skirt'){
+      const e=(typeof EXPANDED_THEME_CONFIGS!=='undefined' && EXPANDED_THEME_CONFIGS.balloon_skirt) ? EXPANDED_THEME_CONFIGS.balloon_skirt : null;
+      if(e){
+        return {
+          families:e.families,
+          colors:e.colors,
+          materials:e.materials,
+          silhouettes:e.silhouettes,
+          patterns:e.patterns,
+          expressions:[
+            'confident feminine expression','soft elegant smile','cute confident smile','calm refined expression','playful fashion expression',
+            'gentle natural smile','poised editorial expression','warm subtle smile','serene confident gaze','charming feminine expression'
+          ],
+          hair:[
+            'long soft waves','high ponytail','low ponytail','half-up hairstyle','loose straight hair',
+            'soft curled hair','messy elegant bun','side-swept waves','medium layered hair','polished low bun'
+          ],
+          accessories:[
+            'minimal ribbon hair accessory','small satin bow','delicate hair clip','pearl hair pin','slim velvet ribbon',
+            'small floral hair clip','simple headband','delicate side bow','subtle jeweled hair clip','minimal fashion hair accessory'
+          ],
+          sleeves:[
+            'fitted long sleeves','clean short sleeves','soft puff sleeves','three-quarter sleeves','fitted knit sleeves',
+            'structured short sleeves','delicate cap sleeves','relaxed long sleeves','clean sleeveless construction','subtle gathered sleeves'
+          ],
+          collars:[
+            'clean round neckline','boat neckline','square neckline','soft V-neckline','high round neckline',
+            'polo collar','small Peter Pan collar','clean scoop neckline','shirt collar','minimal sweetheart neckline'
+          ],
+          waists:[
+            'fitted waistband','defined natural waist','high fitted waist','clean waistband','structured waist seam',
+            'wide fitted waistband','subtle waist gathering','high-waisted construction','minimal waistband','clean gathered waist'
+          ],
+          skirts:e.silhouettes,
+          hosiery:[
+            'bare legs','sheer black thigh-high stockings','ivory thigh-high stockings','white knee-high socks','matte black knee-high socks',
+            'cream ankle socks','fine sheer stockings','white thigh-high stockings','dark brown thigh-high stockings','delicate lace thigh-high stockings'
+          ],
+          gloves:[
+            'no gloves','short fitted gloves','delicate lace gloves','minimal wrist gloves','soft knit wrist warmers',
+            'short satin gloves','fine mesh gloves','simple fingerless gloves','refined short gloves','minimal fashion gloves'
+          ],
+          shoes:[
+            'classic loafers','Mary Jane shoes','ballet flats','ankle boots','platform loafers',
+            'low-heel pumps','lace-up ankle boots','clean fashion sneakers','strap shoes','refined flat shoes'
+          ],
+          languages:[
+            'modern feminine fashion','clean Japanese street fashion','refined casual fashion','minimal editorial fashion','cute polished fashion',
+            'contemporary feminine styling','soft youthful fashion','structured fashion editorial','Japanese fashion styling','playful refined styling'
+          ],
+          poses:['standing fashion pose','relaxed standing pose','walking fashion pose','sitting fashion pose','one hand on waist','gentle three-quarter pose','casual fashion stance','editorial standing pose','soft feminine pose','confident model pose'],
+          gazes:['looking at viewer','soft direct gaze','looking slightly to the side','looking away naturally','gentle downward gaze','looking toward the distance','calm direct eye contact','looking slightly upward','subtle side glance','relaxed viewer gaze'],
+          backgrounds:['clean fashion studio','bright modern room','minimal luxury interior','Japanese city street','elegant boutique interior','sunlit terrace','refined urban street','soft garden setting','modern cafe interior','clean editorial backdrop'],
+          lighting:['soft natural light','clean studio lighting','bright diffused light','gentle window light','soft editorial illumination','warm natural daylight','balanced fashion lighting','subtle rim light','clean high-key lighting','soft cinematic light'],
+          compositions:['balanced fashion composition','clean full-body editorial composition','centered fashion portrait','minimal fashion editorial framing','balanced character composition','refined street-fashion composition','clean magazine-style composition','soft lifestyle fashion composition','modern editorial framing','polished full-body composition']
+        };
+      }
+    }
+    return P[mode];
+  }
   function modeValue(mode,key,f,v){
     const p=modeProfile(mode); const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
     switch(key){
