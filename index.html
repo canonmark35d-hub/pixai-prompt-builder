@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜★UIタイトル更新★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06</title>
+<title>PIXAI Prompt Builder｜既存設定完全復元＋バルーンスカート機能のみ追加｜2026-10-07 / 27カテゴリ</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜★UIタイトル更新★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06</h1>
+<h1>PIXAI Prompt Builder｜既存設定完全復元＋バルーンスカート機能のみ追加｜2026-10-07 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10108,7 +10108,6 @@ function updatePrompt(){
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
-      if(isBalloonSkirtThemeActive()) value = enforceBalloonSkirtCategory(key, value);
       selected.push("[" + key + "] " + value);
     }
   });
@@ -10903,67 +10902,7 @@ updatePrompt();</script>
   const POSE_EXTRA=["elegant standing pose","soft presentation pose","confident fashion pose","graceful three-quarter pose","subtle walking pose","gentle hand-near-face pose","relaxed standing pose","refined seated pose","light step-forward pose","poised editorial pose"];
   const GAZE_EXTRA=["calm direct gaze","soft camera-facing gaze","confident three-quarter gaze","gentle side glance","refined slightly upward gaze","warm direct gaze","quiet elegant gaze","playful side glance","poised editorial gaze","soft distant gaze"];
 
-  function modeProfile(mode){
-    if(mode==='balloon_skirt'){
-      const e=(typeof EXPANDED_THEME_CONFIGS!=='undefined' && EXPANDED_THEME_CONFIGS.balloon_skirt) ? EXPANDED_THEME_CONFIGS.balloon_skirt : null;
-      if(e){
-        return {
-          families:e.families,
-          colors:e.colors,
-          materials:e.materials,
-          silhouettes:e.silhouettes,
-          patterns:e.patterns,
-          expressions:[
-            'confident feminine expression','soft elegant smile','cute confident smile','calm refined expression','playful fashion expression',
-            'gentle natural smile','poised editorial expression','warm subtle smile','serene confident gaze','charming feminine expression'
-          ],
-          hair:[
-            'long soft waves','high ponytail','low ponytail','half-up hairstyle','loose straight hair',
-            'soft curled hair','messy elegant bun','side-swept waves','medium layered hair','polished low bun'
-          ],
-          accessories:[
-            'minimal ribbon hair accessory','small satin bow','delicate hair clip','pearl hair pin','slim velvet ribbon',
-            'small floral hair clip','simple headband','delicate side bow','subtle jeweled hair clip','minimal fashion hair accessory'
-          ],
-          sleeves:[
-            'fitted long sleeves','clean short sleeves','soft puff sleeves','three-quarter sleeves','fitted knit sleeves',
-            'structured short sleeves','delicate cap sleeves','relaxed long sleeves','clean sleeveless construction','subtle gathered sleeves'
-          ],
-          collars:[
-            'clean round neckline','boat neckline','square neckline','soft V-neckline','high round neckline',
-            'polo collar','small Peter Pan collar','clean scoop neckline','shirt collar','minimal sweetheart neckline'
-          ],
-          waists:[
-            'fitted waistband','defined natural waist','high fitted waist','clean waistband','structured waist seam',
-            'wide fitted waistband','subtle waist gathering','high-waisted construction','minimal waistband','clean gathered waist'
-          ],
-          skirts:e.silhouettes,
-          hosiery:[
-            'bare legs','sheer black thigh-high stockings','ivory thigh-high stockings','white knee-high socks','matte black knee-high socks',
-            'cream ankle socks','fine sheer stockings','white thigh-high stockings','dark brown thigh-high stockings','delicate lace thigh-high stockings'
-          ],
-          gloves:[
-            'no gloves','short fitted gloves','delicate lace gloves','minimal wrist gloves','soft knit wrist warmers',
-            'short satin gloves','fine mesh gloves','simple fingerless gloves','refined short gloves','minimal fashion gloves'
-          ],
-          shoes:[
-            'classic loafers','Mary Jane shoes','ballet flats','ankle boots','platform loafers',
-            'low-heel pumps','lace-up ankle boots','clean fashion sneakers','strap shoes','refined flat shoes'
-          ],
-          languages:[
-            'modern feminine fashion','clean Japanese street fashion','refined casual fashion','minimal editorial fashion','cute polished fashion',
-            'contemporary feminine styling','soft youthful fashion','structured fashion editorial','Japanese fashion styling','playful refined styling'
-          ],
-          poses:['standing fashion pose','relaxed standing pose','walking fashion pose','sitting fashion pose','one hand on waist','gentle three-quarter pose','casual fashion stance','editorial standing pose','soft feminine pose','confident model pose'],
-          gazes:['looking at viewer','soft direct gaze','looking slightly to the side','looking away naturally','gentle downward gaze','looking toward the distance','calm direct eye contact','looking slightly upward','subtle side glance','relaxed viewer gaze'],
-          backgrounds:['clean fashion studio','bright modern room','minimal luxury interior','Japanese city street','elegant boutique interior','sunlit terrace','refined urban street','soft garden setting','modern cafe interior','clean editorial backdrop'],
-          lighting:['soft natural light','clean studio lighting','bright diffused light','gentle window light','soft editorial illumination','warm natural daylight','balanced fashion lighting','subtle rim light','clean high-key lighting','soft cinematic light'],
-          compositions:['balanced fashion composition','clean full-body editorial composition','centered fashion portrait','minimal fashion editorial framing','balanced character composition','refined street-fashion composition','clean magazine-style composition','soft lifestyle fashion composition','modern editorial framing','polished full-body composition']
-        };
-      }
-    }
-    return P[mode];
-  }
+  function modeProfile(mode){ return P[mode]; }
   function modeValue(mode,key,f,v){
     const p=modeProfile(mode); const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
     switch(key){
@@ -11007,6 +10946,35 @@ updatePrompt();</script>
   P.sports.expressions=["confident athletic smile","focused training expression","energetic sports smile","fresh active expression","determined performance expression","relaxed athlete smile","bright competitive expression","calm focused expression","playful athletic smile","confident post-training expression"];
   P.wedding.expressions=["soft bridal smile","gentle romantic smile","elegant bridal expression","warm wedding smile","dreamy romantic expression","refined serene smile","graceful bridal expression","quiet joyful smile","delicate elegant expression","confident modern bridal smile"];
 
+  // BALLOON SKIRT — isolated refinement only; all other themes/categories remain unchanged.
+  P.balloon_skirt.languages=[
+    "sculptural bubble-skirt fashion design; rounded compact silhouette; gathered construction; inward-tucked hem",
+    "refined puffball skirt design; controlled rounded volume; clean wearable fashion construction",
+    "editorial bubble-hem skirt design; fitted waist; compact enclosed lower volume",
+    "structured bubble skirt tailoring; evenly gathered outer layer; shorter inner lining",
+    "romantic rounded bubble-skirt design; neat tucked-under hem; polished feminine styling",
+    "minimal bubble-hem fashion; controlled gathers; compact rounded silhouette",
+    "playful puffball skirt couture; fitted waistband; balanced rounded volume",
+    "classic bubble skirt construction; inward-folded hem; clean garment silhouette",
+    "modern sculptural bubble-hem styling; restrained volume; wearable proportions",
+    "luxury editorial bubble-skirt construction; precise gathers; rounded enclosed hem",
+    "soft structured bubble skirt; refined paneling; controlled lower-body volume",
+    "panelled puffball skirt design; curved seams; tucked-under hem",
+    "contemporary bubble-hem mini skirt; compact volume; fitted waist",
+    "tailored rounded bubble skirt; clean construction; subtle gathered texture",
+    "matte structured bubble-skirt fashion; controlled fullness; neat inward hem",
+    "gingham bubble-hem fashion; rounded silhouette; tidy gathered construction",
+    "denim bubble skirt styling; compact rounded body; clean tucked hem",
+    "taffeta puffball skirt styling; structured rounded volume; polished finish",
+    "pleated bubble-skirt design; radiating folds; enclosed rounded hem",
+    "high-fashion sculptural bubble skirt; compact rounded volume; precise tucked hem"
+  ];
+  P.balloon_skirt.skirts=P.balloon_skirt.silhouettes.map(function(x,i){
+    return "(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); "+x+"; outer skirt fuller than shorter inner lining; lower hem gathered inward and tucked under; wearable fashion garment";
+  });
+  P.balloon_skirt.expressions=["refined confident fashion expression","soft elegant smile","cute polished smile","calm editorial expression","gentle feminine smile","playful refined expression","poised fashion expression","warm natural smile","subtle glamorous smile","dreamy elegant expression"];
+
+
   P.idol.hosiery=["white thigh-high stockings","sparkling thigh-high stockings","lace-trimmed thigh-highs","pastel thigh-high stockings","black stage thigh-highs","white knee-high socks","ribbon thigh-highs","sheer stage stockings","crystal-trimmed thigh-highs","color-coordinated stockings","frilled thigh-high socks","opaque stage tights","satin-finish thigh-highs","lace knee-high socks","patterned idol stockings","ribbon-cuff thigh-highs","soft pastel stockings","glitter-trimmed stockings","elegant stage hosiery","princess thigh-high stockings"];
   P.swimwear.hosiery=["bare legs with clean resort styling","bare legs with subtle ankle accessory","light resort leg styling","bare legs with woven anklet","minimal beach leg styling","sport bare-leg styling","bare legs with shell anklet","clean poolside leg styling","lightweight resort leg wrap","bare legs with delicate ribbon anklet","minimal athletic leg styling","bare legs with pearl anklet","summer resort leg styling","clean yacht-deck leg styling","bare legs with small floral anklet","simple beach leg styling","bare legs with gold anklet","minimal poolside styling","bare legs with shell detail","refined resort leg styling"];
   P.japanese.hosiery=["white tabi socks","split-toe tabi socks","traditional white tabi","lace tabi socks","black tabi socks","short white tabi","embroidered tabi socks","formal tabi socks","summer barefoot geta styling","fine white tabi","patterned tabi socks","soft cotton tabi","formal black tabi","white ankle tabi","decorative tabi socks","minimal tabi styling","traditional tabi footwear styling","summer yukata bare-leg styling","refined white tabi","luxury tabi hosiery"];
@@ -11023,28 +10991,28 @@ updatePrompt();</script>
      ============================================================ */
   const EXPANDED_THEME_CONFIGS = {
     balloon_skirt:{
-      anchor:"balloon skirt fashion, rounded compact bubble silhouette, inward-tucked hem, sculpted lower-body volume with slim bare legs",
+      anchor:"bubble skirt fashion, puffball skirt, rounded compact bubble-hem silhouette, inward-tucked hem, sculpted lower-body volume with slim bare legs",
       families:[
-        "ivory taffeta balloon mini with black boat-neck knit",
-        "white gathered cotton balloon mini with grey track jacket",
-        "charcoal box-pleat balloon mini with cropped polo",
-        "white gingham-detail balloon mini with black square-neck top",
-        "beige box-pleat balloon mini with Tilden knit vest",
-        "black-and-white houndstooth pleated balloon mini with black high-neck top",
-        "butter-yellow two-tier balloon mini with oversized grey sweatshirt",
-        "matte-black two-tier balloon mini with grey henley top",
-        "mint satin two-tier balloon mini with ivory crochet knit",
-        "bright-red faceted panel balloon mini with black nylon jacket",
-        "matte-black six-panel balloon mini with striped shirt",
-        "light-indigo eight-panel denim balloon mini with baby tee",
-        "olive cotton-twill drawstring balloon mini with dusty-pink tee",
-        "glossy silver draped balloon mini with sky-blue sheer top",
-        "black faux-leather spherical balloon mini with striped shirt",
-        "black-and-ivory gingham balloon mini with fitted knit",
-        "soft-blue denim balloon mini with cropped cardigan",
-        "coral taffeta balloon mini with fitted rib top",
-        "cream balloon mini with fine radiating pleats and blouse",
-        "editorial sculptural balloon mini with fitted minimalist top"
+        "ivory taffeta bubble mini skirt with black boat-neck knit",
+        "white gathered cotton bubble mini skirt with grey track jacket",
+        "charcoal box-pleat bubble mini skirt with cropped polo",
+        "white gingham-detail bubble mini skirt with black square-neck top",
+        "beige box-pleat bubble mini skirt with Tilden knit vest",
+        "black-and-white houndstooth pleated bubble mini skirt with black high-neck top",
+        "butter-yellow two-tier bubble mini skirt with oversized grey sweatshirt",
+        "matte-black two-tier bubble mini skirt with grey henley top",
+        "mint satin two-tier bubble mini skirt with ivory crochet knit",
+        "bright-red faceted panel bubble mini skirt with black nylon jacket",
+        "matte-black six-panel bubble mini skirt with striped shirt",
+        "light-indigo eight-panel denim bubble mini skirt with baby tee",
+        "olive cotton-twill drawstring bubble mini skirt with dusty-pink tee",
+        "glossy silver draped bubble mini skirt with sky-blue sheer top",
+        "black faux-leather spherical bubble mini skirt with striped shirt",
+        "black-and-ivory gingham bubble mini skirt with fitted knit",
+        "soft-blue denim bubble mini skirt with cropped cardigan",
+        "coral taffeta bubble mini skirt with fitted rib top",
+        "cream bubble mini skirt with fine radiating pleats and blouse",
+        "editorial sculptural bubble mini skirt with fitted minimalist top"
       ],
       colors:[
         "ivory and black",
@@ -11095,19 +11063,19 @@ updatePrompt();</script>
         "elastic waistband, fine even gathers, one continuous panel, compact inward-tucked hem",
         "fitted waistband, four broad inverted box pleats, restrained rounded volume",
         "fitted waistband, rounded gathered body, gingham decorative detail, tucked-under hem",
-        "wide waistband, broad box pleats, enclosed puffed body, clean tucked-under hem",
+        "wide waistband, broad box pleats, enclosed bubble-skirt body, clean tucked-under hem",
         "close-fitting waist, shallow radiating pleats, compact rounded body, narrow tucked hem",
         "short gathered upper tier, shallow lower bubble panel, rounded tucked hem",
         "smooth upper panel, horizontal tier seam, densely gathered lower bubble panel",
         "short upper tier, gathered lower tier, rounded bubble and tucked hem",
-        "alternating wide and narrow panels, faceted balloon outline, deep inward hem tucks",
-        "wide smooth waistband, six curved vertical panels, compact spherical volume",
+        "alternating wide and narrow panels, faceted bubble-skirt outline, deep inward hem tucks",
+        "wide smooth waistband, six curved vertical panels, compact rounded bubble-skirt volume",
         "upper-hip yoke, eight radiating lower panels, rounded bubble and tucked hem",
-        "full waist gathers, rounded puffed body, side drawstring channels cinching the hem",
+        "full waist gathers, rounded bubble-skirt body, side drawstring channels cinching the hem",
         "six internal lift points creating deep U-shaped drapes",
-        "six curved panels forming a compact spherical volume with tucked hem",
+        "six curved panels forming a compact rounded bubble-skirt volume with tucked hem",
         "fine gathered body with gingham surface accents and rounded enclosed hem",
-        "single rounded balloon panel with clean tucked-under hem",
+        "single rounded bubble-skirt panel with clean tucked-under hem",
         "structured rounded body with soft gathered volume and inward-tucked edge",
         "broad shallow pleats shaping a compact bubble silhouette",
         "sculptural enclosed bubble volume with controlled rounded hem"
@@ -12283,9 +12251,6 @@ updatePrompt();</script>
       });
     }
 
-    // Balloon Skirt is the only BASE theme with a dedicated hard structural override.
-    enforceBalloonSkirtSelection();
-
     // EVENT is additive: do not replace BASE selections. The selected event family is
     // retained in an internal state and rendered as a dedicated EVENT block below.
     if(eventIndex>=0){
@@ -12370,7 +12335,6 @@ updatePrompt();</script>
   window.randomSeasonAwareCategory=function(key){
     const s=catSelect(key); if(!s) return false;
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
-    if(theme==='balloon_skirt' && key==='SKIRT'){ enforceBalloonSkirtSelection(); return true; }
     if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
       ensureSeasonExtraOptionsInSelect(key,eventIndex);
       const design=window.__activeEventDesign || {eventIndex:eventIndex,family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
@@ -12417,7 +12381,7 @@ updatePrompt();</script>
     gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
     sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
     wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
-    balloon_skirt:"(bubble skirt:1.45); (puffball skirt:1.4); (bubble-hem skirt:1.35); (rounded inflated skirt silhouette:1.35); (gathered inward hem:1.3); (tucked-under hem:1.3); (outer skirt gathered over a shorter inner lining:1.3); (rounded bubble-shaped volume:1.3); wearable fashion skirt garment; fitted waistband; compact rounded lower volume; clearly visible bubble-hem construction",
+    balloon_skirt:"(balloon skirt fashion:1.4); (rounded balloon skirt silhouette:1.35); (gathered voluminous skirt:1.3); (compact rounded hem:1.25); (structured balloon volume:1.2); gathered waist; softly inflated skirt shape; clearly visible balloon-skirt construction",
     agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
     korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
     chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
@@ -12432,69 +12396,6 @@ updatePrompt();</script>
     marine:"(marine fashion:1.4); (Japanese sailor-inspired marine look:1.35); (naval-inspired fashion:1.3); (sailor collar:1.25); (double-breasted details:1.2); (nautical stripes:1.2); anchor and rope motifs; pleated marine skirt; refined coastal styling",
     tube_top:"(tube top fashion:1.4); (strapless tube-top styling:1.35); (clean strapless neckline:1.3); (fitted tube top:1.25); (modern feminine top-and-bottom coordination:1.2); visible bare shoulders; optional layered jacket styling; contemporary fashion-editorial look"
   };
-
-  /* ============================================================
-     BALLOON SKIRT — dedicated structural safeguard
-     Only the 🎈バルーンスカート BASE theme uses this override.
-     The model-facing vocabulary deliberately favors the learned
-     "bubble skirt / puffball skirt / bubble-hem" concepts and
-     construction details, avoiding standalone "balloon" imagery.
-     ============================================================ */
-  const BALLOON_SKIRT_STRUCTURE = {
-    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit built around a fitted waistband and a compact rounded bubble skirt",
-    "OUTFIT STRUCTURE":"structured bubble-skirt construction; outer skirt is fuller than a shorter inner lining; lower edge is gathered and tucked inward to form a rounded enclosed hem; controlled compact volume",
-    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
-    "WAIST DESIGN":"fitted clean waistband supporting a rounded bubble skirt; controlled waist gathers",
-    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
-    "OUTFIT PATTERN":"pattern and surface details follow the rounded bubble-skirt panels without changing the compact silhouette"
-  };
-
-  function isBalloonSkirtThemeActive(){
-    return typeof getThemeMode==='function' && getThemeMode()==='balloon_skirt';
-  }
-
-  function cleanBalloonConflicts(value){
-    if(!value) return value;
-    let v=String(value);
-    [
-      [/\bflared skirt\b/gi,'rounded bubble skirt'],
-      [/\bflare skirt\b/gi,'rounded bubble skirt'],
-      [/\ba-line skirt\b/gi,'rounded bubble skirt'],
-      [/\ba line skirt\b/gi,'rounded bubble skirt'],
-      [/\bstraight skirt\b/gi,'rounded bubble skirt'],
-      [/\bpencil skirt\b/gi,'rounded bubble skirt'],
-      [/\bmermaid skirt\b/gi,'rounded bubble skirt'],
-      [/\bslim skirt\b/gi,'rounded bubble skirt']
-    ].forEach(function(pair){v=v.replace(pair[0],pair[1]);});
-    return v;
-  }
-
-  function enforceBalloonSkirtCategory(key,value){
-    if(!isBalloonSkirtThemeActive() || !value) return value;
-    const anchor=BALLOON_SKIRT_STRUCTURE[key];
-    const cleaned=cleanBalloonConflicts(value);
-    if(!anchor) return cleaned;
-    // SKIRT gets the strongest replacement so no generic skirt silhouette
-    // can override the dedicated balloon/bubble construction.
-    if(key==='SKIRT') return anchor;
-    return anchor+'; '+cleaned;
-  }
-
-  function enforceBalloonSkirtSelection(){
-    if(!isBalloonSkirtThemeActive()) return;
-    const s=catSelect('SKIRT');
-    if(s){
-      let opt=Array.from(s.options).find(function(o){return o.dataset && o.dataset.balloonSkirtFixed==='1';});
-      if(!opt){
-        opt=document.createElement('option');
-        opt.value=BALLOON_SKIRT_STRUCTURE['SKIRT'];
-        opt.textContent='BALLOON｜専用構造｜Bubble / Puffball / Tucked Hem';
-        opt.dataset.balloonSkirtFixed='1';
-        s.appendChild(opt);
-      }
-      s.value=opt.value;
-    }
-  }
 
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
@@ -12573,17 +12474,18 @@ updatePrompt();</script>
 
   function getExpressionTechniquePromptBlock(){
     const defs=[
-      ['POSE','techniquePoseMode'],
-      ['GAZE','techniqueGazeMode'],
-      ['SUBJECT ORIENTATION','techniqueOrientationMode'],
-      ['CAMERA ANGLE','techniqueCameraMode'],
-      ['SHOT TYPE','techniqueShotMode'],
-      ['FRAMING','techniqueFramingMode']
+      ['POSE','techniquePoseMode','POSE STYLE'],
+      ['GAZE','techniqueGazeMode','GAZE STYLE'],
+      ['SUBJECT ORIENTATION','techniqueOrientationMode','ORIENTATION STYLE'],
+      ['CAMERA ANGLE','techniqueCameraMode','CAMERA STYLE'],
+      ['SHOT TYPE','techniqueShotMode','SHOT STYLE'],
+      ['FRAMING','techniqueFramingMode','FRAMING STYLE']
     ];
     const parts=[];
     defs.forEach(function(def){
       const modeEl=byId(def[1]);
       const cat=catSelect(def[0]);
+      const mode=modeEl && modeEl.value && modeEl.value!=='AUTO_RANDOM' ? modeEl.value : 'Random';
       let concrete='';
       if(cat){
         const opt=cat.options[cat.selectedIndex];
@@ -12593,9 +12495,11 @@ updatePrompt();</script>
           if(m) concrete=m[1];
         }
       }
-      // The large-group name is internal selection metadata only.
-      // PIXAI receives only the concrete prompt chosen from that group.
-      if(concrete) parts.push(concrete);
+      if(concrete){
+        parts.push(def[2]+': '+mode+' → '+concrete);
+      }else if(modeEl){
+        parts.push(def[2]+': '+mode);
+      }
     });
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
@@ -12810,199 +12714,6 @@ updatePrompt();</script>
   axes.forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',function(){setTimeout(function(){applyAll(false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();},0);});});
 
   window.addEventListener('load',function(){updateTechniqueStatus();});
-})();
-</script>
-<script>
-/* ============================================================
-   BALLOON SKIRT FINAL SAFETY LAYER
-   Balloon Skirt only. Other BASE/EVENT/SCENE modes are untouched.
-   This layer guarantees that selecting 🎈バルーンスカート cannot
-   leave the outfit categories empty even if the larger theme layer
-   fails to populate a category.
-   ============================================================ */
-(function(){
-  'use strict';
-  const BALLOON_FINAL = {
-    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit; fitted feminine top coordinated with a compact rounded bubble skirt",
-    "OUTFIT COLOR":"coordinated ivory, black, soft pastel or refined seasonal fashion palette",
-    "OUTFIT MATERIAL":"structured taffeta, cotton, jacquard, satin or refined matte fabric with controlled body",
-    "OUTFIT STRUCTURE":"fitted upper garment; defined waistband; outer skirt fuller than a shorter inner lining; lower edge gathered inward and tucked under; compact enclosed rounded volume",
-    "SHOULDERS & SLEEVES":"clean short sleeves, fitted sleeves, subtle puff sleeves or refined sleeveless construction",
-    "COLLAR":"clean round neckline, square neckline, boat neckline or refined Peter Pan collar",
-    "WAIST DESIGN":"fitted clean waistband with controlled waist gathers supporting the rounded bubble skirt",
-    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
-    "LEGS & HOSIERY":"bare legs, clean ankle socks, refined thigh-high stockings or delicate lace hosiery",
-    "GLOVES":"no gloves, short fitted gloves, delicate lace gloves or minimal wrist accessories",
-    "SHOES":"Mary Jane shoes, ballet flats, loafers, ankle boots or refined low-heel pumps",
-    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
-    "OUTFIT PATTERN":"fine paneling, subtle gingham, restrained jacquard, tonal pleats or small-scale patterning following the rounded skirt panels",
-    "BACKGROUND":"clean fashion studio, refined boutique, elegant urban street or bright lifestyle setting",
-    "LIGHTING":"soft natural daylight, clean editorial lighting or balanced fashion illumination",
-    "COMPOSITION":"clean full-body fashion composition; outfit clearly visible; balanced editorial framing"
-  };
-  const CLOTHING_KEYS=Object.keys(BALLOON_FINAL);
-  function balloonActive(){
-    const el=document.getElementById('themeModeBulk');
-    return !!el && el.value==='balloon_skirt';
-  }
-  function selectFor(key){
-    const s=document.querySelector('select[data-key="'+CSS.escape(key)+'"]');
-    if(!s) return null;
-    let o=Array.from(s.options).find(x=>x.dataset && x.dataset.balloonFinal==='1');
-    if(!o){
-      o=document.createElement('option');
-      o.value=BALLOON_FINAL[key];
-      o.textContent='🎈 BALLOON専用｜'+key;
-      o.dataset.balloonFinal='1';
-      s.appendChild(o);
-    }
-    s.value=o.value;
-    return s;
-  }
-  function enforce(){
-    if(!balloonActive()) return;
-    CLOTHING_KEYS.forEach(selectFor);
-    if(typeof window.enforceBalloonSkirtSelection==='function'){
-      try{ window.enforceBalloonSkirtSelection(); }catch(e){}
-    }
-  }
-  const oldApply=window.applyThreeAxes;
-  window.applyThreeAxes=function(randomize){
-    if(typeof oldApply==='function'){
-      try{ oldApply(randomize); }catch(e){}
-    }
-    enforce();
-    if(typeof window.updatePrompt==='function') window.updatePrompt();
-  };
-  const oldUpdate=window.updatePrompt;
-  window.updatePrompt=function(){
-    if(balloonActive()) enforce();
-    if(typeof oldUpdate==='function') oldUpdate();
-    if(balloonActive()){
-      const el=document.getElementById('prompt');
-      if(el && !el.value.includes('[SKIRT]')){
-        // Last-resort prompt recovery: preserve fixed blocks and add the
-        // dedicated outfit structure if the main category layer did not run.
-        const lines=[];
-        CLOTHING_KEYS.forEach(k=>lines.push('['+k+'] '+BALLOON_FINAL[k]));
-        el.value += (el.value ? '\n\n' : '') + lines.join('\n\n');
-      }
-    }
-  };
-  const theme=document.getElementById('themeModeBulk');
-  if(theme) theme.addEventListener('change',function(){
-    if(this.value==='balloon_skirt'){
-      setTimeout(function(){enforce();if(typeof window.updatePrompt==='function')window.updatePrompt();},0);
-    }
-  });
-  window.addEventListener('load',function(){
-    if(balloonActive()) setTimeout(function(){enforce();if(typeof window.updatePrompt==='function')window.updatePrompt();},50);
-  });
-})();
-</script>
-<script>
-/* ============================================================
-   DIRECT PROMPT RECOVERY — 2026-10-06
-   Final fallback: if the normal update chain leaves only the
-   fixed STYLE / CHARACTER / FACE blocks, rebuild the variable
-   categories directly from the current select values.
-   This does not replace the existing theme/event/scene logic;
-   it only recovers the final prompt when that chain fails.
-   ============================================================ */
-(function(){
-  'use strict';
-  const KEYS=["EXPRESSION","HAIRSTYLE","HAIR COLOR","EYE COLOR","HAIR ACCESSORIES","OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","LEGS & HOSIERY","GLOVES","SHOES","DESIGN LANGUAGE","POSE","GAZE","SUBJECT ORIENTATION","CAMERA ANGLE","SHOT TYPE","FRAMING","BACKGROUND","LIGHTING","COMPOSITION","OUTFIT PATTERN"];
-  const FIXED='[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.\n\n[CHARACTER] solo; single adult female character; adult woman; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.\n\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.';
-
-  function sel(key){return document.querySelector('select[data-key="'+key.replace(/"/g,'\\"')+'"]');}
-  function firstUsable(s){
-    if(!s) return '';
-    for(let i=0;i<s.options.length;i++){
-      const o=s.options[i];
-      if(o && o.value && !o.disabled) return o.value;
-    }
-    return '';
-  }
-  function ensureAllValues(){
-    const theme=document.getElementById('themeModeBulk');
-    const balloon=theme && theme.value==='balloon_skirt';
-    const balloonVals={
-      "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit; fitted feminine top coordinated with a compact rounded bubble skirt",
-      "OUTFIT COLOR":"coordinated ivory, black, soft pastel or refined seasonal fashion palette",
-      "OUTFIT MATERIAL":"structured taffeta, cotton, jacquard, satin or refined matte fabric with controlled body",
-      "OUTFIT STRUCTURE":"fitted upper garment; defined waistband; outer skirt fuller than a shorter inner lining; lower edge gathered inward and tucked under; compact enclosed rounded volume",
-      "SHOULDERS & SLEEVES":"clean short sleeves, fitted sleeves, subtle puff sleeves or refined sleeveless construction",
-      "COLLAR":"clean round neckline, square neckline, boat neckline or refined Peter Pan collar",
-      "WAIST DESIGN":"fitted clean waistband with controlled waist gathers supporting the rounded bubble skirt",
-      "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
-      "LEGS & HOSIERY":"bare legs, clean ankle socks, refined thigh-high stockings or delicate lace hosiery",
-      "GLOVES":"no gloves, short fitted gloves, delicate lace gloves or minimal wrist accessories",
-      "SHOES":"Mary Jane shoes, ballet flats, loafers, ankle boots or refined low-heel pumps",
-      "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
-      "OUTFIT PATTERN":"fine paneling, subtle gingham, restrained jacquard, tonal pleats or small-scale patterning following the rounded skirt panels"
-    };
-    let count=0;
-    KEYS.forEach(function(key){
-      const s=sel(key); if(!s) return;
-      if(!s.value){
-        let value=balloon && balloonVals[key] ? balloonVals[key] : firstUsable(s);
-        if(value){s.value=value;count++;}
-      }
-      if(balloon && balloonVals[key]){
-        let o=Array.from(s.options).find(function(x){return x.dataset && x.dataset.directBalloon==='1';});
-        if(!o){
-          o=document.createElement('option');
-          o.value=balloonVals[key];
-          o.textContent='🎈 DIRECT BALLOON｜'+key;
-          o.dataset.directBalloon='1';
-          s.appendChild(o);
-        }
-        s.value=o.value;
-      }
-    });
-    return count;
-  }
-  function directBuild(){
-    ensureAllValues();
-    const parts=[];
-    KEYS.forEach(function(key){const s=sel(key);if(s && s.value) parts.push('['+key+'] '+s.value);});
-    const el=document.getElementById('prompt');
-    if(el && parts.length) el.value=FIXED+'\n\n'+parts.join('\n\n');
-    const c=document.getElementById('count');
-    if(c && parts.length) c.textContent='可変 '+parts.length+'/27 選択中';
-  }
-  function recover(){
-    const el=document.getElementById('prompt');
-    if(!el) return;
-    let before=el.value||'';
-    let hasVariable=KEYS.some(function(k){return before.indexOf('['+k+']')!==-1;});
-    if(!hasVariable || before.trim()===FIXED.trim()){
-      try{directBuild();}catch(e){/* final fallback must never break the page */}
-    }
-  }
-
-  const old=window.updatePrompt;
-  window.updatePrompt=function(){
-    let failed=false;
-    try{if(typeof old==='function') old(); else failed=true;}catch(e){failed=true;}
-    const el=document.getElementById('prompt');
-    const value=el ? (el.value||'') : '';
-    const hasVariable=KEYS.some(function(k){return value.indexOf('['+k+']')!==-1;});
-    if(failed || !hasVariable) recover();
-  };
-
-  document.addEventListener('change',function(e){
-    if(e.target && e.target.matches && (e.target.matches('select[data-key]') || e.target.id==='themeModeBulk' || e.target.id==='seasonEventBulk' || e.target.id==='sceneModeBulk')){
-      setTimeout(recover,80);
-    }
-  },true);
-  window.addEventListener('load',function(){setTimeout(recover,150);});
-  setTimeout(recover,300);
-
-  const title='PIXAI Prompt Builder｜★UIタイトル更新・修正版★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06';
-  document.title=title;
-  const h=document.querySelector('h1');
-  if(h) h.textContent=title;
 })();
 </script>
 </body>
