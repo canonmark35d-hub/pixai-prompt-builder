@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜全BASE THEME・EVENT融合再構築版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜4096文字対応・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜全BASE THEME・EVENT融合再構築版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜4096文字対応・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12438,11 +12438,52 @@ updatePrompt();</script>
     return cleaned;
   }
 
+  function fitPromptToPixAI4096(text){
+    const LIMIT=4096;
+    if(!text || text.length<=LIMIT) return text;
+
+    // まず冗長な連動説明を削除。実際の27カテゴリ選択値は残す。
+    let out=text
+      .replace(/\n\[OUTFIT CONCEPT LINK\][^\n]*/g,'')
+      .replace(/\n{3,}/g,'\n\n');
+    if(out.length<=LIMIT) return out;
+
+    // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
+    // EVENT/BASEの重要ブロックはこの段階では削らない。
+    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','CHARACTER','FACE','STYLE']);
+    const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
+    for(let pass=0; pass<3 && out.length>LIMIT; pass++){
+      const maxLen=pass===0?150:(pass===1?115:90);
+      const compacted=blocks.map(block=>{
+        const m=block.match(/^(\n\[([^\]]+)\]\s*)([\s\S]*)$/);
+        if(!m || protectedKeys.has(m[2])) return block;
+        let body=m[3].replace(/\s+/g,' ').trim();
+        if(body.length>maxLen){
+          const parts=body.split(';').map(x=>x.trim()).filter(Boolean);
+          let acc='';
+          for(const part of parts){
+            const next=acc ? acc+'; '+part : part;
+            if(next.length>maxLen) break;
+            acc=next;
+          }
+          body=acc || body.slice(0,maxLen).replace(/\s+\S*$/,'')+'…';
+        }
+        return m[1]+body;
+      }).join('');
+      out=compacted;
+    }
+    if(out.length<=LIMIT) return out;
+
+    // 最終安全弁：末尾のカテゴリから削除するのではなく、最後の文章境界で切る。
+    // EVENT FUSIONとBASE THEMEは先頭側に配置されているため維持される。
+    return out.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
+  }
+
   const originalUpdatePrompt=window.updatePrompt;
   window.updatePrompt=function(){
     originalUpdatePrompt();
     const promptEl=byId('prompt');
-    if(promptEl) promptEl.value=applyBaseThemeEmphasis(promptEl.value);
+    if(promptEl) promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
     if(st) st.textContent='🎛️ 3軸：'+THEME_MODES[theme].icon+' '+THEME_MODES[theme].label+' ＋ '+(eventIndex>=0?('🎃 '+SEASON_EVENT_NAMES[eventIndex]):'イベントOFF')+' ＋ '+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
