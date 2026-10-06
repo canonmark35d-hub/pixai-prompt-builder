@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜全BASE THEME再構築・3軸連動強化版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜全BASE THEME・EVENT融合再構築版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜全BASE THEME再構築・3軸連動強化版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜全BASE THEME・EVENT融合再構築版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12382,8 +12382,42 @@ updatePrompt();</script>
       const opts=Array.from(s.options).filter(function(o){return o.dataset.seasonExtra==='1' && Number(o.dataset.seasonFamily)===f && Number(o.dataset.seasonVariant)===v;});
       if(opts.length) parts.push(opts[0].value);
     });
-    if(!parts.length) return '';
-    return '[EVENT] '+SEASON_EVENT_NAMES[eventIndex]+'; '+parts.join('; ');
+    const eventName=SEASON_EVENT_NAMES[eventIndex];
+    const theme=getThemeMode();
+    const t=EVENT_THEME_LIBRARY[eventName] || {};
+    const base=BASE_THEME_EMPHASIS[theme] || '';
+    const fusionMap={
+      idol:'idol stage costume', swimwear:'swimwear and resort fashion', japanese:'Japanese wafuku and kimono fashion',
+      lolita:'Lolita fashion', gothic_lolita:'Gothic Lolita fashion', sports:'sportswear fashion', wedding:'bridal wedding fashion',
+      balloon_skirt:'balloon skirt fashion', agejo_gyaru:'Agejo Gyaru fashion', korean_beauty:'Korean beauty fashion',
+      chinese_lolita:'Chinese Lolita fashion', harajuku:'Harajuku street fashion', girly:'girly Japanese fashion',
+      steampunk:'steampunk Victorian-industrial fashion', himekaji:'Himekaji princess-casual fashion', poncho:'poncho-centered fashion',
+      wizard_robe:'wizard robe fantasy fashion', oversized:'oversized fashion', princess:'princess couture',
+      marine:'marine and sailor fashion', tube_top:'tube-top fashion'
+    };
+    const baseIdentity=fusionMap[theme] || 'the selected base fashion theme';
+    const palette=t.palette || '';
+    const materials=t.materials || '';
+    const motifs=t.motifs || '';
+    const language=t.language || '';
+    const pattern=t.pattern || '';
+    const accessory=t.accessory || '';
+    const fusion=[
+      'mandatory '+eventName+' integration into the '+baseIdentity+' garment itself',
+      'preserve the recognizable '+baseIdentity+' silhouette and construction',
+      eventName+' color palette: '+palette,
+      eventName+' materials and surface treatment: '+materials,
+      eventName+' garment motifs visibly integrated into fabric, embroidery, print, jacquard, lace, trim and decorative panels: '+motifs,
+      'clearly visible '+eventName+' pattern language: '+pattern,
+      'event-specific garment decoration and hardware throughout the outfit, not only on accessories',
+      'event motifs repeated on major clothing areas such as bodice, sleeves, waist, skirt or lower garment',
+      'event-themed accessory details: '+accessory,
+      'cohesive '+baseIdentity+' × '+eventName+' fashion fusion, unmistakable event identity while retaining the BASE THEME',
+      language
+    ];
+    if(base) fusion.push('BASE THEME anchor remains dominant: '+base);
+    if(!parts.length && !fusion.length) return '';
+    return '[EVENT FUSION] '+eventName+'; '+fusion.join('; ')+(parts.length ? '; coordinated event design variant: '+parts.join('; ') : '');
   }
 
   function applyBaseThemeEmphasis(text){
