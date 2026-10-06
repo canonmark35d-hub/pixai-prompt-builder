@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造強化版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造・衣装出力修正版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造強化版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造・衣装出力修正版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12810,6 +12810,94 @@ updatePrompt();</script>
   axes.forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',function(){setTimeout(function(){applyAll(false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();},0);});});
 
   window.addEventListener('load',function(){updateTechniqueStatus();});
+})();
+</script>
+<script>
+/* ============================================================
+   BALLOON SKIRT FINAL SAFETY LAYER
+   Balloon Skirt only. Other BASE/EVENT/SCENE modes are untouched.
+   This layer guarantees that selecting 🎈バルーンスカート cannot
+   leave the outfit categories empty even if the larger theme layer
+   fails to populate a category.
+   ============================================================ */
+(function(){
+  'use strict';
+  const BALLOON_FINAL = {
+    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit; fitted feminine top coordinated with a compact rounded bubble skirt",
+    "OUTFIT COLOR":"coordinated ivory, black, soft pastel or refined seasonal fashion palette",
+    "OUTFIT MATERIAL":"structured taffeta, cotton, jacquard, satin or refined matte fabric with controlled body",
+    "OUTFIT STRUCTURE":"fitted upper garment; defined waistband; outer skirt fuller than a shorter inner lining; lower edge gathered inward and tucked under; compact enclosed rounded volume",
+    "SHOULDERS & SLEEVES":"clean short sleeves, fitted sleeves, subtle puff sleeves or refined sleeveless construction",
+    "COLLAR":"clean round neckline, square neckline, boat neckline or refined Peter Pan collar",
+    "WAIST DESIGN":"fitted clean waistband with controlled waist gathers supporting the rounded bubble skirt",
+    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
+    "LEGS & HOSIERY":"bare legs, clean ankle socks, refined thigh-high stockings or delicate lace hosiery",
+    "GLOVES":"no gloves, short fitted gloves, delicate lace gloves or minimal wrist accessories",
+    "SHOES":"Mary Jane shoes, ballet flats, loafers, ankle boots or refined low-heel pumps",
+    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
+    "OUTFIT PATTERN":"fine paneling, subtle gingham, restrained jacquard, tonal pleats or small-scale patterning following the rounded skirt panels",
+    "BACKGROUND":"clean fashion studio, refined boutique, elegant urban street or bright lifestyle setting",
+    "LIGHTING":"soft natural daylight, clean editorial lighting or balanced fashion illumination",
+    "COMPOSITION":"clean full-body fashion composition; outfit clearly visible; balanced editorial framing"
+  };
+  const CLOTHING_KEYS=Object.keys(BALLOON_FINAL);
+  function balloonActive(){
+    const el=document.getElementById('themeModeBulk');
+    return !!el && el.value==='balloon_skirt';
+  }
+  function selectFor(key){
+    const s=document.querySelector('select[data-key="'+CSS.escape(key)+'"]');
+    if(!s) return null;
+    let o=Array.from(s.options).find(x=>x.dataset && x.dataset.balloonFinal==='1');
+    if(!o){
+      o=document.createElement('option');
+      o.value=BALLOON_FINAL[key];
+      o.textContent='🎈 BALLOON専用｜'+key;
+      o.dataset.balloonFinal='1';
+      s.appendChild(o);
+    }
+    s.value=o.value;
+    return s;
+  }
+  function enforce(){
+    if(!balloonActive()) return;
+    CLOTHING_KEYS.forEach(selectFor);
+    if(typeof window.enforceBalloonSkirtSelection==='function'){
+      try{ window.enforceBalloonSkirtSelection(); }catch(e){}
+    }
+  }
+  const oldApply=window.applyThreeAxes;
+  window.applyThreeAxes=function(randomize){
+    if(typeof oldApply==='function'){
+      try{ oldApply(randomize); }catch(e){}
+    }
+    enforce();
+    if(typeof window.updatePrompt==='function') window.updatePrompt();
+  };
+  const oldUpdate=window.updatePrompt;
+  window.updatePrompt=function(){
+    if(balloonActive()) enforce();
+    if(typeof oldUpdate==='function') oldUpdate();
+    if(balloonActive()){
+      const el=document.getElementById('prompt');
+      if(el && !el.value.includes('[SKIRT]')){
+        // Last-resort prompt recovery: preserve fixed blocks and add the
+        // dedicated outfit structure if the main category layer did not run.
+        const lines=[];
+        CLOTHING_KEYS.forEach(k=>lines.push('['+k+'] '+BALLOON_FINAL[k]));
+        el.value += (el.value ? '\n\n' : '') + lines.join('\n\n');
+      }
+    }
+  };
+  const theme=document.getElementById('themeModeBulk');
+  if(theme) theme.addEventListener('change',function(){
+    if(this.value==='balloon_skirt'){
+      setTimeout(function(){enforce();if(typeof window.updatePrompt==='function')window.updatePrompt();},0);
+    }
+  });
+  window.addEventListener('load',function(){
+    if(balloonActive()) setTimeout(function(){enforce();if(typeof window.updatePrompt==='function')window.updatePrompt();},50);
+  });
 })();
 </script>
 </body>
