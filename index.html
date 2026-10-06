@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜6軸最終出力統合修正版｜既存機能維持｜2026-10-07-v2</title>
+<title>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・復旧版｜2026-10-07 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-PIXAI Prompt Builder｜6軸最終出力統合修正版｜既存機能維持｜2026-10-07-v2
+<h1>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・復旧版｜2026-10-07 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10905,6 +10905,15 @@ updatePrompt();</script>
   function modeProfile(mode){ return P[mode]; }
   function modeValue(mode,key,f,v){
     const p=modeProfile(mode); const fam=f%20, vari=v%50; const suffix=MODE_VARIANTS[vari];
+    if(mode==='balloon_skirt'){
+      const sil=p.silhouettes[fam];
+      const color=p.colors[fam];
+      const material=p.materials[fam];
+      if(key==='OUTFIT CONCEPT') return '(bubble skirt fashion:1.4); wearable bubble-skirt outfit; fitted waistband and compact rounded skirt; '+sil+'; '+color;
+      if(key==='OUTFIT STRUCTURE') return '(structured bubble-skirt construction:1.45); outer skirt fuller than a shorter inner lining; lower edge gathered and tucked inward to a rounded enclosed hem; controlled compact volume; '+sil;
+      if(key==='SKIRT') return '(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment; '+sil;
+      if(key==='OUTFIT MATERIAL') return material+', structured bubble-skirt textile; visible gathered construction; '+suffix;
+    }
     switch(key){
       case "EXPRESSION": return (p.expressions||["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"])[fam%10]+", "+suffix;
       case "HAIRSTYLE": return p.hair[fam]+", "+suffix;
@@ -10946,35 +10955,6 @@ updatePrompt();</script>
   P.sports.expressions=["confident athletic smile","focused training expression","energetic sports smile","fresh active expression","determined performance expression","relaxed athlete smile","bright competitive expression","calm focused expression","playful athletic smile","confident post-training expression"];
   P.wedding.expressions=["soft bridal smile","gentle romantic smile","elegant bridal expression","warm wedding smile","dreamy romantic expression","refined serene smile","graceful bridal expression","quiet joyful smile","delicate elegant expression","confident modern bridal smile"];
 
-  // BALLOON SKIRT — isolated refinement only; all other themes/categories remain unchanged.
-  P.balloon_skirt.languages=[
-    "sculptural bubble-skirt fashion design; rounded compact silhouette; gathered construction; inward-tucked hem",
-    "refined puffball skirt design; controlled rounded volume; clean wearable fashion construction",
-    "editorial bubble-hem skirt design; fitted waist; compact enclosed lower volume",
-    "structured bubble skirt tailoring; evenly gathered outer layer; shorter inner lining",
-    "romantic rounded bubble-skirt design; neat tucked-under hem; polished feminine styling",
-    "minimal bubble-hem fashion; controlled gathers; compact rounded silhouette",
-    "playful puffball skirt couture; fitted waistband; balanced rounded volume",
-    "classic bubble skirt construction; inward-folded hem; clean garment silhouette",
-    "modern sculptural bubble-hem styling; restrained volume; wearable proportions",
-    "luxury editorial bubble-skirt construction; precise gathers; rounded enclosed hem",
-    "soft structured bubble skirt; refined paneling; controlled lower-body volume",
-    "panelled puffball skirt design; curved seams; tucked-under hem",
-    "contemporary bubble-hem mini skirt; compact volume; fitted waist",
-    "tailored rounded bubble skirt; clean construction; subtle gathered texture",
-    "matte structured bubble-skirt fashion; controlled fullness; neat inward hem",
-    "gingham bubble-hem fashion; rounded silhouette; tidy gathered construction",
-    "denim bubble skirt styling; compact rounded body; clean tucked hem",
-    "taffeta puffball skirt styling; structured rounded volume; polished finish",
-    "pleated bubble-skirt design; radiating folds; enclosed rounded hem",
-    "high-fashion sculptural bubble skirt; compact rounded volume; precise tucked hem"
-  ];
-  P.balloon_skirt.skirts=P.balloon_skirt.silhouettes.map(function(x,i){
-    return "(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); "+x+"; outer skirt fuller than shorter inner lining; lower hem gathered inward and tucked under; wearable fashion garment";
-  });
-  P.balloon_skirt.expressions=["refined confident fashion expression","soft elegant smile","cute polished smile","calm editorial expression","gentle feminine smile","playful refined expression","poised fashion expression","warm natural smile","subtle glamorous smile","dreamy elegant expression"];
-
-
   P.idol.hosiery=["white thigh-high stockings","sparkling thigh-high stockings","lace-trimmed thigh-highs","pastel thigh-high stockings","black stage thigh-highs","white knee-high socks","ribbon thigh-highs","sheer stage stockings","crystal-trimmed thigh-highs","color-coordinated stockings","frilled thigh-high socks","opaque stage tights","satin-finish thigh-highs","lace knee-high socks","patterned idol stockings","ribbon-cuff thigh-highs","soft pastel stockings","glitter-trimmed stockings","elegant stage hosiery","princess thigh-high stockings"];
   P.swimwear.hosiery=["bare legs with clean resort styling","bare legs with subtle ankle accessory","light resort leg styling","bare legs with woven anklet","minimal beach leg styling","sport bare-leg styling","bare legs with shell anklet","clean poolside leg styling","lightweight resort leg wrap","bare legs with delicate ribbon anklet","minimal athletic leg styling","bare legs with pearl anklet","summer resort leg styling","clean yacht-deck leg styling","bare legs with small floral anklet","simple beach leg styling","bare legs with gold anklet","minimal poolside styling","bare legs with shell detail","refined resort leg styling"];
   P.japanese.hosiery=["white tabi socks","split-toe tabi socks","traditional white tabi","lace tabi socks","black tabi socks","short white tabi","embroidered tabi socks","formal tabi socks","summer barefoot geta styling","fine white tabi","patterned tabi socks","soft cotton tabi","formal black tabi","white ankle tabi","decorative tabi socks","minimal tabi styling","traditional tabi footwear styling","summer yukata bare-leg styling","refined white tabi","luxury tabi hosiery"];
@@ -10991,28 +10971,28 @@ updatePrompt();</script>
      ============================================================ */
   const EXPANDED_THEME_CONFIGS = {
     balloon_skirt:{
-      anchor:"bubble skirt fashion, puffball skirt, rounded compact bubble-hem silhouette, inward-tucked hem, sculpted lower-body volume with slim bare legs",
+      anchor:"balloon skirt fashion, rounded compact bubble silhouette, inward-tucked hem, sculpted lower-body volume with slim bare legs",
       families:[
-        "ivory taffeta bubble mini skirt with black boat-neck knit",
-        "white gathered cotton bubble mini skirt with grey track jacket",
-        "charcoal box-pleat bubble mini skirt with cropped polo",
-        "white gingham-detail bubble mini skirt with black square-neck top",
-        "beige box-pleat bubble mini skirt with Tilden knit vest",
-        "black-and-white houndstooth pleated bubble mini skirt with black high-neck top",
-        "butter-yellow two-tier bubble mini skirt with oversized grey sweatshirt",
-        "matte-black two-tier bubble mini skirt with grey henley top",
-        "mint satin two-tier bubble mini skirt with ivory crochet knit",
-        "bright-red faceted panel bubble mini skirt with black nylon jacket",
-        "matte-black six-panel bubble mini skirt with striped shirt",
-        "light-indigo eight-panel denim bubble mini skirt with baby tee",
-        "olive cotton-twill drawstring bubble mini skirt with dusty-pink tee",
-        "glossy silver draped bubble mini skirt with sky-blue sheer top",
-        "black faux-leather spherical bubble mini skirt with striped shirt",
-        "black-and-ivory gingham bubble mini skirt with fitted knit",
-        "soft-blue denim bubble mini skirt with cropped cardigan",
-        "coral taffeta bubble mini skirt with fitted rib top",
-        "cream bubble mini skirt with fine radiating pleats and blouse",
-        "editorial sculptural bubble mini skirt with fitted minimalist top"
+        "ivory taffeta balloon mini with black boat-neck knit",
+        "white gathered cotton balloon mini with grey track jacket",
+        "charcoal box-pleat balloon mini with cropped polo",
+        "white gingham-detail balloon mini with black square-neck top",
+        "beige box-pleat balloon mini with Tilden knit vest",
+        "black-and-white houndstooth pleated balloon mini with black high-neck top",
+        "butter-yellow two-tier balloon mini with oversized grey sweatshirt",
+        "matte-black two-tier balloon mini with grey henley top",
+        "mint satin two-tier balloon mini with ivory crochet knit",
+        "bright-red faceted panel balloon mini with black nylon jacket",
+        "matte-black six-panel balloon mini with striped shirt",
+        "light-indigo eight-panel denim balloon mini with baby tee",
+        "olive cotton-twill drawstring balloon mini with dusty-pink tee",
+        "glossy silver draped balloon mini with sky-blue sheer top",
+        "black faux-leather spherical balloon mini with striped shirt",
+        "black-and-ivory gingham balloon mini with fitted knit",
+        "soft-blue denim balloon mini with cropped cardigan",
+        "coral taffeta balloon mini with fitted rib top",
+        "cream balloon mini with fine radiating pleats and blouse",
+        "editorial sculptural balloon mini with fitted minimalist top"
       ],
       colors:[
         "ivory and black",
@@ -11063,19 +11043,19 @@ updatePrompt();</script>
         "elastic waistband, fine even gathers, one continuous panel, compact inward-tucked hem",
         "fitted waistband, four broad inverted box pleats, restrained rounded volume",
         "fitted waistband, rounded gathered body, gingham decorative detail, tucked-under hem",
-        "wide waistband, broad box pleats, enclosed bubble-skirt body, clean tucked-under hem",
+        "wide waistband, broad box pleats, enclosed puffed body, clean tucked-under hem",
         "close-fitting waist, shallow radiating pleats, compact rounded body, narrow tucked hem",
         "short gathered upper tier, shallow lower bubble panel, rounded tucked hem",
         "smooth upper panel, horizontal tier seam, densely gathered lower bubble panel",
         "short upper tier, gathered lower tier, rounded bubble and tucked hem",
-        "alternating wide and narrow panels, faceted bubble-skirt outline, deep inward hem tucks",
-        "wide smooth waistband, six curved vertical panels, compact rounded bubble-skirt volume",
+        "alternating wide and narrow panels, faceted balloon outline, deep inward hem tucks",
+        "wide smooth waistband, six curved vertical panels, compact spherical volume",
         "upper-hip yoke, eight radiating lower panels, rounded bubble and tucked hem",
-        "full waist gathers, rounded bubble-skirt body, side drawstring channels cinching the hem",
+        "full waist gathers, rounded puffed body, side drawstring channels cinching the hem",
         "six internal lift points creating deep U-shaped drapes",
-        "six curved panels forming a compact rounded bubble-skirt volume with tucked hem",
+        "six curved panels forming a compact spherical volume with tucked hem",
         "fine gathered body with gingham surface accents and rounded enclosed hem",
-        "single rounded bubble-skirt panel with clean tucked-under hem",
+        "single rounded balloon panel with clean tucked-under hem",
         "structured rounded body with soft gathered volume and inward-tucked edge",
         "broad shallow pleats shaping a compact bubble silhouette",
         "sculptural enclosed bubble volume with controlled rounded hem"
@@ -12226,44 +12206,53 @@ updatePrompt();</script>
     if(theme!=='normal') ensureThemeOptions(theme);
     if(scene!=='normal') ensureSceneOptions(scene);
 
-    // BASE is the primary design system. Use separate but coordinated family/variant
-    // selections so all themes get substantially more structural diversity instead
-    // of repeating one identical 27-category family/variant combination.
-    let outfitFamily=Math.floor(Math.random()*20), outfitVariant=Math.floor(Math.random()*50);
-    let beautyFamily=Math.floor(Math.random()*20), beautyVariant=Math.floor(Math.random()*50);
-    let poseFamily=Math.floor(Math.random()*20), poseVariant=Math.floor(Math.random()*50);
-    let detailFamily=Math.floor(Math.random()*20), detailVariant=Math.floor(Math.random()*50);
+    // BASE THEME is the primary axis. When it is ON, every theme-managed
+    // category is selected from that theme's own candidate pool. EVENT and
+    // SCENE are additive axes and must not silently replace the BASE THEME.
+    const outfitFamily=Math.floor(Math.random()*20), outfitVariant=Math.floor(Math.random()*50);
+    const beautyFamily=Math.floor(Math.random()*20), beautyVariant=Math.floor(Math.random()*50);
+    const poseFamily=Math.floor(Math.random()*20), poseVariant=Math.floor(Math.random()*50);
 
     if(theme!=='normal'){
-      const outfitKeys=["OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","LEGS & HOSIERY","GLOVES","SHOES","DESIGN LANGUAGE","OUTFIT PATTERN","BACKGROUND","LIGHTING","COMPOSITION"];
+      const outfitKeys=["OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","LEGS & HOSIERY","GLOVES","SHOES","DESIGN LANGUAGE","OUTFIT PATTERN"];
       const beautyKeys=["EXPRESSION","HAIRSTYLE","HAIR COLOR","EYE COLOR","HAIR ACCESSORIES"];
       const poseKeys=["POSE","GAZE","SUBJECT ORIENTATION","CAMERA ANGLE","SHOT TYPE","FRAMING"];
-      const detailKeys=[];
       outfitKeys.forEach(function(key){ themeValueForFamily(theme,key,outfitFamily,outfitVariant); });
       beautyKeys.forEach(function(key){ themeValueForFamily(theme,key,beautyFamily,beautyVariant); });
       poseKeys.forEach(function(key){ themeValueForFamily(theme,key,poseFamily,poseVariant); });
-      detailKeys.forEach(function(key){ themeValueForFamily(theme,key,detailFamily,detailVariant); });
-    } else {
-      // Normal mode keeps the existing candidate pool and respects seasonal/scene selections.
+      // Theme owns the environmental categories unless SCENE is explicitly ON.
+      if(scene==='normal'){
+        ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){ themeValueForFamily(theme,key,outfitFamily,outfitVariant); });
+      }
+    } else if(eventIndex<0 && scene==='normal'){
+      // No bulk axes active: preserve the original random-category behavior.
       CAT_KEYS.forEach(function(key){
         const s=catSelect(key); if(!s) return;
         if(!isSeasonOption(s.options[s.selectedIndex]) && !isSceneOption(s.options[s.selectedIndex])) originalRandomSelect(s);
       });
     }
 
-    // EVENT is additive: do not replace BASE selections. The selected event family is
-    // retained in an internal state and rendered as a dedicated EVENT block below.
+    // EVENT is additive when a BASE THEME is active. In normal mode it keeps
+    // the established coordinated event candidates; with BASE THEME it is
+    // rendered through EVENT FUSION so the theme silhouette remains dominant.
     if(eventIndex>=0){
-      const ef=Math.floor(Math.random()*20), ev=Math.floor(Math.random()*10);
-      window.__activeEventDesign={eventIndex:eventIndex,family:ef,variant:ev};
+      const design=window.__activeEventDesign || {eventIndex:eventIndex,family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
+      design.eventIndex=eventIndex;
+      window.__activeEventDesign=design;
       EVENT_OVERLAY_KEYS.forEach(function(key){ ensureSeasonExtraOptionsInSelect(key,eventIndex); });
+      if(theme==='normal'){
+        EVENT_OVERLAY_KEYS.forEach(function(key){ eventValueForFamily(key,eventIndex,design.family,design.variant); });
+      }
     } else {
       window.__activeEventDesign=null;
     }
 
-    // SCENE owns only environmental/cinematic categories and therefore remains additive.
+    // SCENE owns environmental/cinematic categories and intentionally wins
+    // only for BACKGROUND / LIGHTING / COMPOSITION.
     if(scene!=='normal'){
-      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));});
+      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){
+        sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));
+      });
     }
     updatePrompt();
   }
@@ -12381,7 +12370,7 @@ updatePrompt();</script>
     gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
     sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
     wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
-    balloon_skirt:"(balloon skirt fashion:1.4); (rounded balloon skirt silhouette:1.35); (gathered voluminous skirt:1.3); (compact rounded hem:1.25); (structured balloon volume:1.2); gathered waist; softly inflated skirt shape; clearly visible balloon-skirt construction",
+    balloon_skirt:"(bubble skirt fashion:1.45); (puffball skirt:1.4); (bubble-hem skirt:1.35); (rounded compact skirt silhouette:1.35); (gathered inward hem:1.3); (tucked-under hem:1.3); (outer skirt gathered over a shorter inner lining:1.3); fitted waistband; wearable fashion skirt garment; clearly visible bubble-hem construction; no balloon object",
     agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
     korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
     chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
@@ -12418,7 +12407,7 @@ updatePrompt();</script>
     const fusionMap={
       idol:'idol stage costume', swimwear:'swimwear and resort fashion', japanese:'Japanese wafuku and kimono fashion',
       lolita:'Lolita fashion', gothic_lolita:'Gothic Lolita fashion', sports:'sportswear fashion', wedding:'bridal wedding fashion',
-      balloon_skirt:'balloon skirt fashion', agejo_gyaru:'Agejo Gyaru fashion', korean_beauty:'Korean beauty fashion',
+      balloon_skirt:'bubble-skirt fashion with a rounded compact bubble hem', agejo_gyaru:'Agejo Gyaru fashion', korean_beauty:'Korean beauty fashion',
       chinese_lolita:'Chinese Lolita fashion', harajuku:'Harajuku street fashion', girly:'girly Japanese fashion',
       steampunk:'steampunk Victorian-industrial fashion', himekaji:'Himekaji princess-casual fashion', poncho:'poncho-centered fashion',
       wizard_robe:'wizard robe fantasy fashion', oversized:'oversized fashion', princess:'princess couture',
@@ -12450,14 +12439,7 @@ updatePrompt();</script>
   }
 
   function applyBaseThemeEmphasis(text){
-    // 6軸は最終出力では個別カテゴリを残さず、[EXPRESSION TECHNIQUE] へ統合する。
-    const techniqueKeys=['POSE','GAZE','SUBJECT ORIENTATION','CAMERA ANGLE','SHOT TYPE','FRAMING'];
-    let cleaned=text;
-    techniqueKeys.forEach(function(key){
-      const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-      cleaned=cleaned.replace(new RegExp('\\n\\['+escaped+'\\][^\\n]*','g'),'');
-    });
-    cleaned=cleaned.replace(/\[EXPRESSION TECHNIQUE\][\s\S]*?(?=\n\[|$)/g,'').replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
+    let cleaned=text.replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
     cleaned=cleaned.replace(/\[EVENT\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
     const theme=getThemeMode();
     const emphasis=BASE_THEME_EMPHASIS[theme];
@@ -12471,108 +12453,58 @@ updatePrompt();</script>
       const anchor=cleaned.indexOf('\n[EXPRESSION]');
       cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+eventBlock+cleaned.slice(anchor) : eventBlock+'\n'+cleaned;
     }
-    const techniqueBlock=getExpressionTechniquePromptBlock();
-    if(techniqueBlock){
-      const anchor=cleaned.indexOf('\n[EXPRESSION]');
-      cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+techniqueBlock+cleaned.slice(anchor) : techniqueBlock+'\n'+cleaned;
-    }
     return cleaned;
   }
 
   function getExpressionTechniquePromptBlock(){
     const defs=[
-      ['POSE','techniquePoseMode'],
-      ['GAZE','techniqueGazeMode'],
-      ['SUBJECT ORIENTATION','techniqueOrientationMode'],
-      ['CAMERA ANGLE','techniqueCameraMode'],
-      ['SHOT TYPE','techniqueShotMode'],
-      ['FRAMING','techniqueFramingMode']
+      ['POSE','POSE STYLE','techniquePoseMode'],
+      ['GAZE','GAZE STYLE','techniqueGazeMode'],
+      ['SUBJECT ORIENTATION','ORIENTATION STYLE','techniqueOrientationMode'],
+      ['CAMERA ANGLE','CAMERA STYLE','techniqueCameraMode'],
+      ['SHOT TYPE','SHOT STYLE','techniqueShotMode'],
+      ['FRAMING','FRAMING STYLE','techniqueFramingMode']
     ];
     const parts=[];
     defs.forEach(function(def){
-      const cat=catSelect(def[0]);
+      const s=catSelect(def[0]);
       let concrete='';
-      if(cat){
-        const opt=cat.options[cat.selectedIndex];
-        if(opt && opt.dataset && opt.dataset.techniqueManaged==='1') concrete=opt.dataset.techConcrete || '';
-        if(!concrete && cat.value){
-          const m=String(cat.value).match(/TECH｜[^｜]+｜(.+)$/);
-          if(m) concrete=m[1];
-        }
+      if(s){
+        const opt=s.options[s.selectedIndex];
+        if(opt && opt.dataset && opt.dataset.techniqueManaged==='1') concrete=opt.dataset.techConcrete||'';
       }
-      // UIは6軸を独立選択するが、PIXAIへの最終出力は必ず1ブロックに統合する。
-      if(concrete) parts.push(def[1].replace('techniquePoseMode','POSE STYLE').replace('techniqueGazeMode','GAZE STYLE').replace('techniqueOrientationMode','ORIENTATION STYLE').replace('techniqueCameraMode','CAMERA STYLE').replace('techniqueShotMode','SHOT STYLE').replace('techniqueFramingMode','FRAMING STYLE')+': '+concrete);
+      if(concrete) parts.push(def[1]+': '+concrete);
     });
-    return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
+    return parts.length===6 ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
 
-  function fitPromptToPixAI4096(text){
-    const LIMIT=4096;
-    if(!text || text.length<=LIMIT) return text;
-
-    // まず冗長な連動説明を削除。実際の27カテゴリ選択値は残す。
-    let out=text
-      .replace(/\n\[OUTFIT CONCEPT LINK\][^\n]*/g,'')
-      .replace(/\n{3,}/g,'\n\n');
-    if(out.length<=LIMIT) return out;
-
-    // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
-    // EVENT/BASEの重要ブロックはこの段階では削らない。
-    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','CHARACTER','FACE','STYLE']);
-    const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
-    for(let pass=0; pass<3 && out.length>LIMIT; pass++){
-      const maxLen=pass===0?150:(pass===1?115:90);
-      const compacted=blocks.map(block=>{
-        const m=block.match(/^(\n\[([^\]]+)\]\s*)([\s\S]*)$/);
-        if(!m || protectedKeys.has(m[2])) return block;
-        let body=m[3].replace(/\s+/g,' ').trim();
-        if(body.length>maxLen){
-          const parts=body.split(';').map(x=>x.trim()).filter(Boolean);
-          let acc='';
-          for(const part of parts){
-            const next=acc ? acc+'; '+part : part;
-            if(next.length>maxLen) break;
-            acc=next;
-          }
-          body=acc || body.slice(0,maxLen).replace(/\s+\S*$/,'')+'…';
-        }
-        return m[1]+body;
-      }).join('');
-      out=compacted;
-    }
-    if(out.length<=LIMIT) return out;
-
-    // 最終安全弁：重要ブロックを残したまま、低優先度カテゴリの本文をさらに圧縮する。
-    // それでも超える場合は、重要ブロック以外を後方から削って4096文字以内を保証する。
-    const priority=['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE'];
-    const parsed=out.split(/(?=\n\[[^\]]+\])/);
-    const important=[], optional=[];
-    parsed.forEach(function(block){
-      const m=block.match(/^\n?\[([^\]]+)\]/);
-      if(m && priority.indexOf(m[1])>=0) important.push(block); else optional.push(block);
+  function replaceExpressionTechniqueOutput(text){
+    let cleaned=String(text||'');
+    // Remove the six legacy standalone blocks and any previous integrated block.
+    ['POSE','GAZE','SUBJECT ORIENTATION','CAMERA ANGLE','SHOT TYPE','FRAMING'].forEach(function(key){
+      const re=new RegExp('\\n\\['+key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\][^\\n]*(?=\\n\\[|$)','g');
+      cleaned=cleaned.replace(re,'');
     });
-    let keep=important.join('');
-    if(keep.length>LIMIT) return keep.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
-    for(let i=0;i<optional.length;i++){
-      const candidate=keep+optional[i];
-      if(candidate.length<=LIMIT) keep=candidate;
-      else {
-        const room=LIMIT-keep.length-1;
-        if(room>30){
-          const body=optional[i].replace(/\s+/g,' ').trim();
-          keep += '\n'+body.slice(0,room).replace(/\s+\S*$/,'')+'…';
-        }
-        break;
-      }
+    cleaned=cleaned.replace(/\n\[EXPRESSION TECHNIQUE\][^\n]*/g,'');
+    const block=getExpressionTechniquePromptBlock();
+    if(!block) return cleaned.replace(/\n{3,}/g,'\n\n');
+    const anchor=cleaned.indexOf('\n[BACKGROUND]');
+    if(anchor>=0) cleaned=cleaned.slice(0,anchor)+'\n'+block+cleaned.slice(anchor);
+    else {
+      const anchor2=cleaned.indexOf('\n[EXPRESSION]');
+      cleaned=anchor2>=0 ? cleaned.slice(0,anchor2)+'\n'+block+cleaned.slice(anchor2) : cleaned+'\n'+block;
     }
-    return keep.slice(0,LIMIT);
+    return cleaned.replace(/\n{3,}/g,'\n\n');
   }
 
   const originalUpdatePrompt=window.updatePrompt;
   window.updatePrompt=function(){
     originalUpdatePrompt();
     const promptEl=byId('prompt');
-    if(promptEl) promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+    if(promptEl){
+      promptEl.value=applyBaseThemeEmphasis(promptEl.value);
+      promptEl.value=replaceExpressionTechniqueOutput(promptEl.value);
+    }
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
     if(st) st.textContent='🎛️ 3軸：'+THEME_MODES[theme].icon+' '+THEME_MODES[theme].label+' ＋ '+(eventIndex>=0?('🎃 '+SEASON_EVENT_NAMES[eventIndex]):'イベントOFF')+' ＋ '+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
