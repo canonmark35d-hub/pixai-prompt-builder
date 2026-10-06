@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・復旧版｜2026-10-07 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・カテゴリ汚染修正最終版｜2026-10-07 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・復旧版｜2026-10-07 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜3軸テーマ連動＋6軸統合出力・カテゴリ汚染修正最終版｜2026-10-07 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10915,11 +10915,11 @@ updatePrompt();</script>
       if(key==='OUTFIT MATERIAL') return material+', structured bubble-skirt textile; visible gathered construction; '+suffix;
     }
     switch(key){
-      case "EXPRESSION": return (p.expressions||["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"])[fam%10]+", "+suffix;
-      case "HAIRSTYLE": return p.hair[fam]+", "+suffix;
-      case "HAIR COLOR": return MODE_HAIR_COLORS[fam]+", "+suffix;
-      case "EYE COLOR": return MODE_EYE+", "+suffix;
-      case "HAIR ACCESSORIES": return p.accessories[fam]+", "+suffix;
+      case "EXPRESSION": return (p.expressions||["calm confident expression","soft elegant smile","gentle refined expression","subtle confident smile","warm natural expression","poised expression","playful refined expression","serene expression","cute confident expression","quiet elegant expression"])[fam%10];
+      case "HAIRSTYLE": return p.hair[fam];
+      case "HAIR COLOR": return MODE_HAIR_COLORS[fam];
+      case "EYE COLOR": return MODE_EYE;
+      case "HAIR ACCESSORIES": return p.accessories[fam];
       case "OUTFIT CONCEPT": return p.silhouettes[fam]+", "+p.colors[fam]+", "+p.languages[fam]+", "+suffix;
       case "OUTFIT COLOR": return p.colors[fam]+", coordinated thematic palette, "+suffix;
       case "OUTFIT MATERIAL": return p.materials[fam]+", "+suffix;
@@ -10938,9 +10938,9 @@ updatePrompt();</script>
       case "CAMERA ANGLE": return ANGLES[(fam+vari)%5];
       case "SHOT TYPE": return SHOTS[(fam+vari)%5];
       case "FRAMING": return FRAMING[(fam+vari)%5];
-      case "BACKGROUND": return p.backgrounds[fam]+", "+suffix;
-      case "LIGHTING": return p.lighting[fam]+", "+suffix;
-      case "COMPOSITION": return p.compositions[fam]+", "+suffix;
+      case "BACKGROUND": return p.backgrounds[fam];
+      case "LIGHTING": return p.lighting[fam];
+      case "COMPOSITION": return p.compositions[fam];
       case "OUTFIT PATTERN": return p.patterns[fam]+", "+suffix;
       default: return p.languages[fam]+", "+suffix;
     }
@@ -12457,23 +12457,19 @@ updatePrompt();</script>
   }
 
   function getExpressionTechniquePromptBlock(){
-    const defs=[
-      ['POSE','POSE STYLE','techniquePoseMode'],
-      ['GAZE','GAZE STYLE','techniqueGazeMode'],
-      ['SUBJECT ORIENTATION','ORIENTATION STYLE','techniqueOrientationMode'],
-      ['CAMERA ANGLE','CAMERA STYLE','techniqueCameraMode'],
-      ['SHOT TYPE','SHOT STYLE','techniqueShotMode'],
-      ['FRAMING','FRAMING STYLE','techniqueFramingMode']
-    ];
+    const labels={
+      'POSE':'POSE STYLE',
+      'GAZE':'GAZE STYLE',
+      'SUBJECT ORIENTATION':'ORIENTATION STYLE',
+      'CAMERA ANGLE':'CAMERA STYLE',
+      'SHOT TYPE':'SHOT STYLE',
+      'FRAMING':'FRAMING STYLE'
+    };
+    const selections=(typeof window.__getTechniqueSelections==='function') ? window.__getTechniqueSelections() : [];
     const parts=[];
-    defs.forEach(function(def){
-      const s=catSelect(def[0]);
-      let concrete='';
-      if(s){
-        const opt=s.options[s.selectedIndex];
-        if(opt && opt.dataset && opt.dataset.techniqueManaged==='1') concrete=opt.dataset.techConcrete||'';
-      }
-      if(concrete) parts.push(def[1]+': '+concrete);
+    selections.forEach(function(item){
+      const label=labels[item.key];
+      if(label && item.concrete) parts.push(label+': '+item.concrete);
     });
     return parts.length===6 ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
@@ -12636,6 +12632,19 @@ updatePrompt();</script>
   Object.values(TECH).forEach(initSelector);
   hideManagedCategories();
 
+  // Expose only the concrete selections needed by the final prompt renderer.
+  // The six UI axes remain independent; their final text is combined into one block.
+  window.__getTechniqueSelections=function(){
+    return Object.values(TECH).map(function(def){
+      const st=state[def.key];
+      return {
+        key:def.key,
+        select:def.select,
+        group:st ? st.group : '',
+        concrete:st ? st.value : ''
+      };
+    });
+  };
   window.__applyTechniqueModes=function(randomizeGroup){applyAll(!!randomizeGroup);if(typeof window.updatePrompt==='function')window.updatePrompt();};
   window.__randomizeTechniqueConcrete=function(){applyAll(false);};
 
