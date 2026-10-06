@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造・衣装出力修正版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜★UIタイトル更新★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・バルーンスカート専用構造・衣装出力修正版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜★UIタイトル更新★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12898,6 +12898,111 @@ updatePrompt();</script>
   window.addEventListener('load',function(){
     if(balloonActive()) setTimeout(function(){enforce();if(typeof window.updatePrompt==='function')window.updatePrompt();},50);
   });
+})();
+</script>
+<script>
+/* ============================================================
+   DIRECT PROMPT RECOVERY — 2026-10-06
+   Final fallback: if the normal update chain leaves only the
+   fixed STYLE / CHARACTER / FACE blocks, rebuild the variable
+   categories directly from the current select values.
+   This does not replace the existing theme/event/scene logic;
+   it only recovers the final prompt when that chain fails.
+   ============================================================ */
+(function(){
+  'use strict';
+  const KEYS=["EXPRESSION","HAIRSTYLE","HAIR COLOR","EYE COLOR","HAIR ACCESSORIES","OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","LEGS & HOSIERY","GLOVES","SHOES","DESIGN LANGUAGE","POSE","GAZE","SUBJECT ORIENTATION","CAMERA ANGLE","SHOT TYPE","FRAMING","BACKGROUND","LIGHTING","COMPOSITION","OUTFIT PATTERN"];
+  const FIXED='[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.\n\n[CHARACTER] solo; single adult female character; adult woman; perfect 8-head proportions; tall; slender fashion-model physique; elongated body proportions; medium-large breasts; narrow waist; slim hips; compact pelvis; slender thighs; long legs; elongated lower-body proportions; long femur proportion; long shin proportion; slender calves; refined ankles; balanced model-like body proportions; lean lower body; elegant straight leg line.\n\n[FACE] large soft expressive eyes; rounded almond-shaped eyes; defined natural eyelashes; natural iris texture; subtle natural eye highlights.';
+
+  function sel(key){return document.querySelector('select[data-key="'+key.replace(/"/g,'\\"')+'"]');}
+  function firstUsable(s){
+    if(!s) return '';
+    for(let i=0;i<s.options.length;i++){
+      const o=s.options[i];
+      if(o && o.value && !o.disabled) return o.value;
+    }
+    return '';
+  }
+  function ensureAllValues(){
+    const theme=document.getElementById('themeModeBulk');
+    const balloon=theme && theme.value==='balloon_skirt';
+    const balloonVals={
+      "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit; fitted feminine top coordinated with a compact rounded bubble skirt",
+      "OUTFIT COLOR":"coordinated ivory, black, soft pastel or refined seasonal fashion palette",
+      "OUTFIT MATERIAL":"structured taffeta, cotton, jacquard, satin or refined matte fabric with controlled body",
+      "OUTFIT STRUCTURE":"fitted upper garment; defined waistband; outer skirt fuller than a shorter inner lining; lower edge gathered inward and tucked under; compact enclosed rounded volume",
+      "SHOULDERS & SLEEVES":"clean short sleeves, fitted sleeves, subtle puff sleeves or refined sleeveless construction",
+      "COLLAR":"clean round neckline, square neckline, boat neckline or refined Peter Pan collar",
+      "WAIST DESIGN":"fitted clean waistband with controlled waist gathers supporting the rounded bubble skirt",
+      "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
+      "LEGS & HOSIERY":"bare legs, clean ankle socks, refined thigh-high stockings or delicate lace hosiery",
+      "GLOVES":"no gloves, short fitted gloves, delicate lace gloves or minimal wrist accessories",
+      "SHOES":"Mary Jane shoes, ballet flats, loafers, ankle boots or refined low-heel pumps",
+      "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
+      "OUTFIT PATTERN":"fine paneling, subtle gingham, restrained jacquard, tonal pleats or small-scale patterning following the rounded skirt panels"
+    };
+    let count=0;
+    KEYS.forEach(function(key){
+      const s=sel(key); if(!s) return;
+      if(!s.value){
+        let value=balloon && balloonVals[key] ? balloonVals[key] : firstUsable(s);
+        if(value){s.value=value;count++;}
+      }
+      if(balloon && balloonVals[key]){
+        let o=Array.from(s.options).find(function(x){return x.dataset && x.dataset.directBalloon==='1';});
+        if(!o){
+          o=document.createElement('option');
+          o.value=balloonVals[key];
+          o.textContent='🎈 DIRECT BALLOON｜'+key;
+          o.dataset.directBalloon='1';
+          s.appendChild(o);
+        }
+        s.value=o.value;
+      }
+    });
+    return count;
+  }
+  function directBuild(){
+    ensureAllValues();
+    const parts=[];
+    KEYS.forEach(function(key){const s=sel(key);if(s && s.value) parts.push('['+key+'] '+s.value);});
+    const el=document.getElementById('prompt');
+    if(el && parts.length) el.value=FIXED+'\n\n'+parts.join('\n\n');
+    const c=document.getElementById('count');
+    if(c && parts.length) c.textContent='可変 '+parts.length+'/27 選択中';
+  }
+  function recover(){
+    const el=document.getElementById('prompt');
+    if(!el) return;
+    let before=el.value||'';
+    let hasVariable=KEYS.some(function(k){return before.indexOf('['+k+']')!==-1;});
+    if(!hasVariable || before.trim()===FIXED.trim()){
+      try{directBuild();}catch(e){/* final fallback must never break the page */}
+    }
+  }
+
+  const old=window.updatePrompt;
+  window.updatePrompt=function(){
+    let failed=false;
+    try{if(typeof old==='function') old(); else failed=true;}catch(e){failed=true;}
+    const el=document.getElementById('prompt');
+    const value=el ? (el.value||'') : '';
+    const hasVariable=KEYS.some(function(k){return value.indexOf('['+k+']')!==-1;});
+    if(failed || !hasVariable) recover();
+  };
+
+  document.addEventListener('change',function(e){
+    if(e.target && e.target.matches && (e.target.matches('select[data-key]') || e.target.id==='themeModeBulk' || e.target.id==='seasonEventBulk' || e.target.id==='sceneModeBulk')){
+      setTimeout(recover,80);
+    }
+  },true);
+  window.addEventListener('load',function(){setTimeout(recover,150);});
+  setTimeout(recover,300);
+
+  const title='PIXAI Prompt Builder｜★UIタイトル更新・修正版★｜27カテゴリ出力復旧・4096文字対応・6軸具体プロンプト・バルーンスカート専用構造｜2026-10-06';
+  document.title=title;
+  const h=document.querySelector('h1');
+  if(h) h.textContent=title;
 })();
 </script>
 </body>
