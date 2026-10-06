@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜4096文字対応・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜4096文字対応・表現技法6軸優先・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜4096文字対応・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜4096文字対応・表現技法6軸優先・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12435,7 +12435,44 @@ updatePrompt();</script>
       const anchor=cleaned.indexOf('\n[EXPRESSION]');
       cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+eventBlock+cleaned.slice(anchor) : eventBlock+'\n'+cleaned;
     }
+    const techniqueBlock=getExpressionTechniquePromptBlock();
+    if(techniqueBlock){
+      const anchor=cleaned.indexOf('\n[EXPRESSION]');
+      cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+techniqueBlock+cleaned.slice(anchor) : techniqueBlock+'\n'+cleaned;
+    }
     return cleaned;
+  }
+
+  function getExpressionTechniquePromptBlock(){
+    const defs=[
+      ['POSE','techniquePoseMode','POSE STYLE'],
+      ['GAZE','techniqueGazeMode','GAZE STYLE'],
+      ['SUBJECT ORIENTATION','techniqueOrientationMode','ORIENTATION STYLE'],
+      ['CAMERA ANGLE','techniqueCameraMode','CAMERA STYLE'],
+      ['SHOT TYPE','techniqueShotMode','SHOT STYLE'],
+      ['FRAMING','techniqueFramingMode','FRAMING STYLE']
+    ];
+    const parts=[];
+    defs.forEach(function(def){
+      const modeEl=byId(def[1]);
+      const cat=catSelect(def[0]);
+      const mode=modeEl && modeEl.value && modeEl.value!=='AUTO_RANDOM' ? modeEl.value : 'Random';
+      let concrete='';
+      if(cat){
+        const opt=cat.options[cat.selectedIndex];
+        if(opt && opt.dataset && opt.dataset.techniqueManaged==='1') concrete=opt.dataset.techConcrete || '';
+        if(!concrete && cat.value){
+          const m=String(cat.value).match(/TECH｜[^｜]+｜(.+)$/);
+          if(m) concrete=m[1];
+        }
+      }
+      if(concrete){
+        parts.push(def[2]+': '+mode+' → '+concrete);
+      }else if(modeEl){
+        parts.push(def[2]+': '+mode);
+      }
+    });
+    return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
 
   function fitPromptToPixAI4096(text){
@@ -12450,7 +12487,7 @@ updatePrompt();</script>
 
     // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
     // EVENT/BASEの重要ブロックはこの段階では削らない。
-    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','CHARACTER','FACE','STYLE']);
+    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','CHARACTER','FACE','STYLE']);
     const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
     for(let pass=0; pass<3 && out.length>LIMIT; pass++){
       const maxLen=pass===0?150:(pass===1?115:90);
@@ -12474,9 +12511,30 @@ updatePrompt();</script>
     }
     if(out.length<=LIMIT) return out;
 
-    // 最終安全弁：末尾のカテゴリから削除するのではなく、最後の文章境界で切る。
-    // EVENT FUSIONとBASE THEMEは先頭側に配置されているため維持される。
-    return out.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
+    // 最終安全弁：重要ブロックを残したまま、低優先度カテゴリの本文をさらに圧縮する。
+    // それでも超える場合は、重要ブロック以外を後方から削って4096文字以内を保証する。
+    const priority=['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE'];
+    const parsed=out.split(/(?=\n\[[^\]]+\])/);
+    const important=[], optional=[];
+    parsed.forEach(function(block){
+      const m=block.match(/^\n?\[([^\]]+)\]/);
+      if(m && priority.indexOf(m[1])>=0) important.push(block); else optional.push(block);
+    });
+    let keep=important.join('');
+    if(keep.length>LIMIT) return keep.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
+    for(let i=0;i<optional.length;i++){
+      const candidate=keep+optional[i];
+      if(candidate.length<=LIMIT) keep=candidate;
+      else {
+        const room=LIMIT-keep.length-1;
+        if(room>30){
+          const body=optional[i].replace(/\s+/g,' ').trim();
+          keep += '\n'+body.slice(0,room).replace(/\s+\S*$/,'')+'…';
+        }
+        break;
+      }
+    }
+    return keep.slice(0,LIMIT);
   }
 
   const originalUpdatePrompt=window.updatePrompt;
