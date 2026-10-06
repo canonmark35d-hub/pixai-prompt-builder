@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜4096文字対応・表現技法6軸優先・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜4096文字対応・表現技法6軸優先・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜4096文字対応・6軸具体プロンプト出力版・BASE×EVENT融合版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12445,18 +12445,17 @@ updatePrompt();</script>
 
   function getExpressionTechniquePromptBlock(){
     const defs=[
-      ['POSE','techniquePoseMode','POSE STYLE'],
-      ['GAZE','techniqueGazeMode','GAZE STYLE'],
-      ['SUBJECT ORIENTATION','techniqueOrientationMode','ORIENTATION STYLE'],
-      ['CAMERA ANGLE','techniqueCameraMode','CAMERA STYLE'],
-      ['SHOT TYPE','techniqueShotMode','SHOT STYLE'],
-      ['FRAMING','techniqueFramingMode','FRAMING STYLE']
+      ['POSE','techniquePoseMode'],
+      ['GAZE','techniqueGazeMode'],
+      ['SUBJECT ORIENTATION','techniqueOrientationMode'],
+      ['CAMERA ANGLE','techniqueCameraMode'],
+      ['SHOT TYPE','techniqueShotMode'],
+      ['FRAMING','techniqueFramingMode']
     ];
     const parts=[];
     defs.forEach(function(def){
       const modeEl=byId(def[1]);
       const cat=catSelect(def[0]);
-      const mode=modeEl && modeEl.value && modeEl.value!=='AUTO_RANDOM' ? modeEl.value : 'Random';
       let concrete='';
       if(cat){
         const opt=cat.options[cat.selectedIndex];
@@ -12466,11 +12465,9 @@ updatePrompt();</script>
           if(m) concrete=m[1];
         }
       }
-      if(concrete){
-        parts.push(def[2]+': '+mode+' → '+concrete);
-      }else if(modeEl){
-        parts.push(def[2]+': '+mode);
-      }
+      // The large-group name is internal selection metadata only.
+      // PIXAI receives only the concrete prompt chosen from that group.
+      if(concrete) parts.push(concrete);
     });
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
