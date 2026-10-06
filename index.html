@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜既存設定完全復元＋6軸EXPRESSION TECHNIQUE統合復元｜バルーンスカート機能維持｜2026-10-07</title>
+<title>PIXAI Prompt Builder｜6軸最終出力統合修正版｜既存機能維持｜2026-10-07-v2</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-\1PIXAI Prompt Builder｜既存設定完全復元＋6軸EXPRESSION TECHNIQUE統合復元｜バルーンスカート機能維持｜2026-10-07\2
+PIXAI Prompt Builder｜6軸最終出力統合修正版｜既存機能維持｜2026-10-07-v2
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12450,7 +12450,14 @@ updatePrompt();</script>
   }
 
   function applyBaseThemeEmphasis(text){
-    let cleaned=text.replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
+    // 6軸は最終出力では個別カテゴリを残さず、[EXPRESSION TECHNIQUE] へ統合する。
+    const techniqueKeys=['POSE','GAZE','SUBJECT ORIENTATION','CAMERA ANGLE','SHOT TYPE','FRAMING'];
+    let cleaned=text;
+    techniqueKeys.forEach(function(key){
+      const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      cleaned=cleaned.replace(new RegExp('\\n\\['+escaped+'\\][^\\n]*','g'),'');
+    });
+    cleaned=cleaned.replace(/\[EXPRESSION TECHNIQUE\][\s\S]*?(?=\n\[|$)/g,'').replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
     cleaned=cleaned.replace(/\[EVENT\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
     const theme=getThemeMode();
     const emphasis=BASE_THEME_EMPHASIS[theme];
@@ -12483,7 +12490,6 @@ updatePrompt();</script>
     ];
     const parts=[];
     defs.forEach(function(def){
-      const modeEl=byId(def[1]);
       const cat=catSelect(def[0]);
       let concrete='';
       if(cat){
@@ -12494,8 +12500,8 @@ updatePrompt();</script>
           if(m) concrete=m[1];
         }
       }
-      // 6軸はUIでは独立選択。最終出力では具体的な選択内容だけを1つのブロックへ統合する。
-      if(concrete) parts.push(concrete);
+      // UIは6軸を独立選択するが、PIXAIへの最終出力は必ず1ブロックに統合する。
+      if(concrete) parts.push(def[1].replace('techniquePoseMode','POSE STYLE').replace('techniqueGazeMode','GAZE STYLE').replace('techniqueOrientationMode','ORIENTATION STYLE').replace('techniqueCameraMode','CAMERA STYLE').replace('techniqueShotMode','SHOT STYLE').replace('techniqueFramingMode','FRAMING STYLE')+': '+concrete);
     });
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
