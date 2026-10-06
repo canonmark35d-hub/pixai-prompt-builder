@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜全BASE THEME連動強化版｜2026-10-05 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜全BASE THEME再構築・3軸連動強化版｜2026-10-06 / 27カテゴリ - Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜全BASE THEME連動強化版｜2026-10-05 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜全BASE THEME再構築・3軸連動強化版｜2026-10-06 / 27カテゴリ</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -9921,6 +9921,7 @@ function chooseSeasonalOption(key,eventIndex,avoidValue){
 
 function chooseCoordinatedEventFamily(eventIndex){
   const family=Math.floor(Math.random()*20), variant=Math.floor(Math.random()*10);
+  window.__activeEventDesign={eventIndex:eventIndex,family:family,variant:variant};
   CAT_KEYS.forEach(function(key){
     const s=catSelect(key); if(!s) return;
     ensureSeasonExtraOptionsInSelect(key,eventIndex);
@@ -12196,29 +12197,44 @@ updatePrompt();</script>
     if(theme!=='normal') ensureThemeOptions(theme);
     if(scene!=='normal') ensureSceneOptions(scene);
 
-    const tf=Math.floor(Math.random()*20), tv=Math.floor(Math.random()*50);
-    const ef=Math.floor(Math.random()*20), ev=Math.floor(Math.random()*10);
-    const sf=Math.floor(Math.random()*10), sv=Math.floor(Math.random()*50);
+    // BASE is the primary design system. Use separate but coordinated family/variant
+    // selections so all themes get substantially more structural diversity instead
+    // of repeating one identical 27-category family/variant combination.
+    let outfitFamily=Math.floor(Math.random()*20), outfitVariant=Math.floor(Math.random()*50);
+    let beautyFamily=Math.floor(Math.random()*20), beautyVariant=Math.floor(Math.random()*50);
+    let poseFamily=Math.floor(Math.random()*20), poseVariant=Math.floor(Math.random()*50);
+    let detailFamily=Math.floor(Math.random()*20), detailVariant=Math.floor(Math.random()*50);
 
     if(theme!=='normal'){
-      CAT_KEYS.forEach(function(key){ themeValueForFamily(theme,key,tf,tv); });
+      const outfitKeys=["OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","SHOULDERS & SLEEVES","COLLAR","WAIST DESIGN","SKIRT","LEGS & HOSIERY","GLOVES","SHOES","DESIGN LANGUAGE","OUTFIT PATTERN","BACKGROUND","LIGHTING","COMPOSITION"];
+      const beautyKeys=["EXPRESSION","HAIRSTYLE","HAIR COLOR","EYE COLOR","HAIR ACCESSORIES"];
+      const poseKeys=["POSE","GAZE","SUBJECT ORIENTATION","CAMERA ANGLE","SHOT TYPE","FRAMING"];
+      const detailKeys=[];
+      outfitKeys.forEach(function(key){ themeValueForFamily(theme,key,outfitFamily,outfitVariant); });
+      beautyKeys.forEach(function(key){ themeValueForFamily(theme,key,beautyFamily,beautyVariant); });
+      poseKeys.forEach(function(key){ themeValueForFamily(theme,key,poseFamily,poseVariant); });
+      detailKeys.forEach(function(key){ themeValueForFamily(theme,key,detailFamily,detailVariant); });
     } else {
+      // Normal mode keeps the existing candidate pool and respects seasonal/scene selections.
       CAT_KEYS.forEach(function(key){
         const s=catSelect(key); if(!s) return;
-        if(!isSeasonOption(s.options[s.selectedIndex]) && !isSceneOption(s.options[s.selectedIndex])){
-          originalRandomSelect(s);
-        }
+        if(!isSeasonOption(s.options[s.selectedIndex]) && !isSceneOption(s.options[s.selectedIndex])) originalRandomSelect(s);
       });
     }
 
-    // Apply the existing event family only to event-overlay categories.
+    // EVENT is additive: do not replace BASE selections. The selected event family is
+    // retained in an internal state and rendered as a dedicated EVENT block below.
     if(eventIndex>=0){
-      EVENT_OVERLAY_KEYS.forEach(function(key){ eventValueForFamily(key,eventIndex,ef,ev); });
+      const ef=Math.floor(Math.random()*20), ev=Math.floor(Math.random()*10);
+      window.__activeEventDesign={eventIndex:eventIndex,family:ef,variant:ev};
+      EVENT_OVERLAY_KEYS.forEach(function(key){ ensureSeasonExtraOptionsInSelect(key,eventIndex); });
+    } else {
+      window.__activeEventDesign=null;
     }
 
-    // Scene is intentionally limited to environment/cinematic categories.
+    // SCENE owns only environmental/cinematic categories and therefore remains additive.
     if(scene!=='normal'){
-      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){sceneValueForFamily(key,scene,sf,sv);});
+      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));});
     }
     updatePrompt();
   }
@@ -12271,18 +12287,33 @@ updatePrompt();</script>
     if(!s) return false;
     const key=s.getAttribute ? s.getAttribute('data-key') : '';
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    // A category random action changes only its own axis; active BASE/EVENT/SCENE axes
+    // remain intact instead of taking priority over one another.
+    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
+      ensureSeasonExtraOptionsInSelect(key,eventIndex);
+      const design=window.__activeEventDesign || {family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
+      window.__activeEventDesign={eventIndex:eventIndex,family:design.family,variant:design.variant};
+      return eventValueForFamily(key,eventIndex,design.family,design.variant);
+    }
     if(scene!=='normal' && SCENE_OVERLAY_KEYS.indexOf(key)>=0) return sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));
-    if(theme!=='normal') return themeValueForFamily(theme,key,Math.floor(Math.random()*20),Math.floor(Math.random()*50));
-    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0) return eventValueForFamily(key,eventIndex,Math.floor(Math.random()*20),Math.floor(Math.random()*10));
+    if(theme!=='normal'){
+      const f=Math.floor(Math.random()*20), v=Math.floor(Math.random()*50);
+      if(themeCandidates(s,theme).length) return themeValueForFamily(theme,key,f,v);
+    }
     return originalRandomSelect(s);
   };
 
   window.randomSeasonAwareCategory=function(key){
     const s=catSelect(key); if(!s) return false;
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
+      ensureSeasonExtraOptionsInSelect(key,eventIndex);
+      const design=window.__activeEventDesign || {eventIndex:eventIndex,family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
+      design.eventIndex=eventIndex; window.__activeEventDesign=design;
+      return eventValueForFamily(key,eventIndex,design.family,design.variant);
+    }
     if(scene!=='normal' && SCENE_OVERLAY_KEYS.indexOf(key)>=0) return sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));
-    if(theme!=='normal') return themeValueForFamily(theme,key,Math.floor(Math.random()*20),Math.floor(Math.random()*50));
-    if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0) return eventValueForFamily(key,eventIndex,Math.floor(Math.random()*20),Math.floor(Math.random()*10));
+    if(theme!=='normal' && themeCandidates(s,theme).length) return themeValueForFamily(theme,key,Math.floor(Math.random()*20),Math.floor(Math.random()*50));
     if(eventIndex>=0) return chooseSeasonalOption(key,eventIndex,s.value);
     return originalRandomSeasonAwareCategory(key);
   };
@@ -12291,7 +12322,7 @@ updatePrompt();</script>
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
       randomThreeAxes();
-      showStatus('3軸の選択範囲を維持して可変カテゴリをランダム設定しました');
+      showStatus('BASE・EVENT・SCENEの選択範囲を同時に維持して可変カテゴリをランダム設定しました');
       return;
     }
     CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);});
@@ -12301,7 +12332,7 @@ updatePrompt();</script>
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
       randomThreeAxes(); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));});
-      showStatus('3軸の組み合わせを維持して全カテゴリをランダム設定しました');
+      showStatus('BASE・EVENT・SCENEの組み合わせを維持して全カテゴリをランダム設定しました');
       return;
     }
     CAT_KEYS.forEach(function(key){randomSeasonAwareCategory(key);});
@@ -12310,7 +12341,7 @@ updatePrompt();</script>
   };
   window.randomOne=function(type,key){
     if(type==='cat') randomSeasonAwareCategory(key); else originalRandomSelect(negSelect(key));
-    updatePrompt(); showStatus((type==='cat'?'可変「'+key+'"':'ネガ「'+key+'"')+'をランダム設定しました');
+    updatePrompt(); showStatus((type==='cat'?'可変「'+key+'」':'ネガ「'+key+'」')+'をランダム設定しました');
   };
 
   const BASE_THEME_EMPHASIS = {
@@ -12337,15 +12368,40 @@ updatePrompt();</script>
     tube_top:"(tube top fashion:1.4); (strapless tube-top styling:1.35); (clean strapless neckline:1.3); (fitted tube top:1.25); (modern feminine top-and-bottom coordination:1.2); visible bare shoulders; optional layered jacket styling; contemporary fashion-editorial look"
   };
 
+  function getActiveEventPromptBlock(){
+    const eventIndex=getSeasonBulkIndex();
+    if(eventIndex<0) return '';
+    const design=window.__activeEventDesign || {eventIndex:eventIndex,family:0,variant:0};
+    const f=Math.max(0,Math.min(19,Number(design.family)||0));
+    const v=Math.max(0,Math.min(9,Number(design.variant)||0));
+    const keys=["OUTFIT CONCEPT","OUTFIT COLOR","OUTFIT MATERIAL","OUTFIT STRUCTURE","HAIR ACCESSORIES","OUTFIT PATTERN"];
+    const parts=[];
+    keys.forEach(function(key){
+      const s=catSelect(key); if(!s) return;
+      ensureSeasonExtraOptionsInSelect(key,eventIndex);
+      const opts=Array.from(s.options).filter(function(o){return o.dataset.seasonExtra==='1' && Number(o.dataset.seasonFamily)===f && Number(o.dataset.seasonVariant)===v;});
+      if(opts.length) parts.push(opts[0].value);
+    });
+    if(!parts.length) return '';
+    return '[EVENT] '+SEASON_EVENT_NAMES[eventIndex]+'; '+parts.join('; ');
+  }
+
   function applyBaseThemeEmphasis(text){
-    const cleaned=text.replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
+    let cleaned=text.replace(/\[BASE THEME\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
+    cleaned=cleaned.replace(/\[EVENT\][\s\S]*?(?=\n\[|$)/g,'').replace(/\n{3,}/g,'\n\n');
     const theme=getThemeMode();
     const emphasis=BASE_THEME_EMPHASIS[theme];
-    if(!emphasis) return cleaned;
-    const faceEnd=cleaned.indexOf('\n[EXPRESSION]');
-    const block='[BASE THEME] '+emphasis;
-    if(faceEnd>=0) return cleaned.slice(0,faceEnd)+'\n'+block+cleaned.slice(faceEnd);
-    return block+'\n'+cleaned;
+    if(emphasis){
+      const faceEnd=cleaned.indexOf('\n[EXPRESSION]');
+      const block='[BASE THEME] '+emphasis;
+      cleaned=faceEnd>=0 ? cleaned.slice(0,faceEnd)+'\n'+block+cleaned.slice(faceEnd) : block+'\n'+cleaned;
+    }
+    const eventBlock=getActiveEventPromptBlock();
+    if(eventBlock){
+      const anchor=cleaned.indexOf('\n[EXPRESSION]');
+      cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+eventBlock+cleaned.slice(anchor) : eventBlock+'\n'+cleaned;
+    }
+    return cleaned;
   }
 
   const originalUpdatePrompt=window.updatePrompt;
