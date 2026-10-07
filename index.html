@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜バルーン出力スコープ修正版 v8｜2026-10-07 / Safari対応</title>
+<title>PIXAI Prompt Builder｜表現技法単一出力保証版 v9｜2026-10-07 / Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜バルーン出力スコープ修正版 v8｜2026-10-07</h1>
+<h1>PIXAI Prompt Builder｜表現技法単一出力保証版 v9｜2026-10-07</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。通常の27カテゴリは既存選択肢を維持します。季節・イベントは20イベントそれぞれに専用の詳細背景20種類を持ち、単独一括設定でも「BASE THEME＋EVENT＋SCENE」の3軸設定でも同じイベント専用背景ロジックを使用します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10094,6 +10094,29 @@ function strengthenOutfitCategory(key, value){
 }
 
 
+
+// v9 FINAL OUTPUT RULE:
+// The six expression-technique source categories remain selectable internally,
+// but PIXAI output must contain ONLY one merged [EXPRESSION TECHNIQUE] block.
+function sanitizeExpressionTechniqueOutput(text){
+  if(!text) return text;
+  let out=String(text);
+
+  // Remove all legacy standalone blocks regardless of position, blank lines,
+  // CRLF/LF differences, or whether the block is the final block.
+  out=out.replace(/(?:^|\r?\n)\s*\[(?:POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\]\s*[^\r\n]*(?=\r?\n|$)/g,'');
+
+  // If multiple integrated blocks somehow exist, keep only the first.
+  let seen=false;
+  out=out.replace(/(?:^|\r?\n)\s*\[EXPRESSION TECHNIQUE\]\s*[^\r\n]*/g,function(m){
+    if(seen) return '';
+    seen=true;
+    return m;
+  });
+
+  return out.replace(/\r?\n{3,}/g,'\n\n').trim();
+}
+
 function updatePrompt(){
   syncFramingWithShotType();
   const selected = [];
@@ -12637,8 +12660,10 @@ updatePrompt();</script>
     if(promptEl){
       // Keep the six UI controls, but never emit their legacy six standalone
       // blocks. The final PIXAI prompt uses one integrated EXPRESSION TECHNIQUE block.
-      promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*(?=\n\[|$)/g,'');
-      promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+      promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
+      promptEl.value=sanitizeExpressionTechniqueOutput(
+        fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value))
+      );
 
       // v7 integrity guard: selected UI categories must be represented in output.
       const selectedKeys=CAT_KEYS.filter(function(key){
@@ -12651,10 +12676,13 @@ updatePrompt();</script>
       });
       if(selectedKeys.length && represented.length < Math.min(selectedKeys.length, 10)){
         originalUpdatePrompt();
-        promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*(?=\n\[|$)/g,'');
-        promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+        promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
+        promptEl.value=sanitizeExpressionTechniqueOutput(
+        fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value))
+      );
       }
     }
+    if(promptEl) promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
     if(st) st.textContent='🎛️ 3軸：'+THEME_MODES[theme].icon+' '+THEME_MODES[theme].label+' ＋ '+(eventIndex>=0?('🎃 '+SEASON_EVENT_NAMES[eventIndex]):'イベントOFF')+' ＋ '+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
