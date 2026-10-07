@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜27カテゴリ出力保証×表現技法復旧版 v7｜2026-10-07 / Safari対応</title>
+<title>PIXAI Prompt Builder｜バルーン出力スコープ修正版 v8｜2026-10-07 / Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜27カテゴリ出力保証×表現技法復旧版 v7｜2026-10-07</h1>
+<h1>PIXAI Prompt Builder｜バルーン出力スコープ修正版 v8｜2026-10-07</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。通常の27カテゴリは既存選択肢を維持します。季節・イベントは20イベントそれぞれに専用の詳細背景20種類を持ち、単独一括設定でも「BASE THEME＋EVENT＋SCENE」の3軸設定でも同じイベント専用背景ロジックを使用します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -10109,7 +10109,9 @@ function updatePrompt(){
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
-      if(isBalloonSkirtThemeActive()) value = enforceBalloonSkirtCategory(key, value);
+      if(window.__balloonSkirtAPI && window.__balloonSkirtAPI.isActive()){
+        value = window.__balloonSkirtAPI.enforceCategory(key, value);
+      }
       selected.push("[" + key + "] " + value);
     }
   });
@@ -12436,6 +12438,14 @@ updatePrompt();</script>
       s.value=opt.value;
     }
   }
+
+  // v8: expose only the balloon helpers needed by the global prompt builder.
+  // This prevents ReferenceError caused by crossing the 3-axis IIFE scope.
+  window.__balloonSkirtAPI={
+    isActive:isBalloonSkirtThemeActive,
+    enforceCategory:enforceBalloonSkirtCategory,
+    enforceSelection:enforceBalloonSkirtSelection
+  };
 
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
