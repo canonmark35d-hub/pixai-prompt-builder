@@ -135,10 +135,10 @@ button.secondary,button.dice{background:#eee;color:#333}
 <h2>📷 表現技法・大分類設定</h2>
 <p class="note">大枠だけ選択すると、そのグループ内から具体的なポーズ・目線・人物方向・カメラアングル・画角・構図を自動選択します。「自動ランダム」は毎回大分類も具体項目も自動で変化します。</p>
 <div class="technique-grid">
-  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Standing">Standing</option><option value="Sitting">Sitting</option><option value="Kneeling">Kneeling</option><option value="Lying / Reclining">Lying / Reclining</option><option value="Walking / Moving">Walking / Moving</option><option value="Running / Jumping">Running / Jumping</option><option value="Dancing">Dancing</option><option value="Fashion Model">Fashion Model</option><option value="Cute / Idol">Cute / Idol</option><option value="Dynamic / Special">Dynamic / Special</option></select></div>
-  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Direct / Viewer">Direct / Viewer</option><option value="Left / Right">Left / Right</option><option value="Over Shoulder">Over Shoulder</option><option value="Upward">Upward</option><option value="Downward">Downward</option><option value="Away / Distance">Away / Distance</option><option value="Object / Scene">Object / Scene</option></select></div>
+  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Standing">Standing</option><option value="Sitting">Sitting</option><option value="Kneeling">Kneeling</option><option value="Lying / Reclining">Lying / Reclining</option><option value="Walking / Moving">Walking / Moving</option><option value="Running / Jumping">Running / Jumping</option><option value="Dancing">Dancing</option><option value="Fashion Model">Fashion Model</option><option value="Cute / Idol">Cute / Idol</option><option value="Dynamic / Special">Dynamic / Special</option><option value="Forward Lean / Bow">Forward Lean / Bow</option><option value="Floor / Crawling">Floor / Crawling</option></select></div>
+  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Direct / Viewer">Direct / Viewer</option><option value="Left / Right">Left / Right</option><option value="Over Shoulder">Over Shoulder</option><option value="Look Back at Viewer">Look Back at Viewer</option><option value="Upward">Upward</option><option value="Downward">Downward</option><option value="Away / Distance">Away / Distance</option><option value="Object / Scene">Object / Scene</option></select></div>
   <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">Front</option><option value="Three-Quarter Left">Three-Quarter Left</option><option value="Three-Quarter Right">Three-Quarter Right</option><option value="Side Left">Side Left</option><option value="Side Right">Side Right</option><option value="Back">Back</option><option value="Back Three-Quarter">Back Three-Quarter</option><option value="Mixed / Head Turn">Mixed / Head Turn</option></select></div>
-  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">Front</option><option value="Side / Rear">Side / Rear</option><option value="Three-Quarter">Three-Quarter</option><option value="Eye-Level">Eye-Level</option><option value="Slight High">Slight High</option><option value="High / Overhead">High / Overhead</option><option value="Slight Low">Slight Low</option><option value="Low / Worm’s-Eye">Low / Worm’s-Eye</option><option value="Dutch / Dynamic">Dutch / Dynamic</option></select></div>
+  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">Front</option><option value="Side / Rear">Side / Rear</option><option value="Three-Quarter">Three-Quarter</option><option value="Eye-Level">Eye-Level</option><option value="Slight High">Slight High</option><option value="High / Overhead">High / Overhead</option><option value="Slight Low">Slight Low</option><option value="Low / Upward View">Low / Upward View</option><option value="Low / Worm’s-Eye">Low / Worm’s-Eye</option><option value="Dutch / Dynamic">Dutch / Dynamic</option></select></div>
   <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Wide / Environment">Wide / Environment</option><option value="Full Body">Full Body</option><option value="Cowboy Shot">Cowboy Shot</option><option value="Three-Quarter / Knee">Three-Quarter / Knee</option><option value="Upper Body">Upper Body</option><option value="Portrait">Portrait</option><option value="Close-Up">Close-Up</option><option value="Detail / Macro">Detail / Macro</option></select></div>
   <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Centered">Centered</option><option value="Left / Right Offset">Left / Right Offset</option><option value="Symmetrical">Symmetrical</option><option value="Rule of Thirds">Rule of Thirds</option><option value="Negative Space">Negative Space</option><option value="Environmental">Environmental</option><option value="Depth / Layered">Depth / Layered</option><option value="Architectural">Architectural</option><option value="Dynamic / Diagonal">Dynamic / Diagonal</option><option value="Editorial / Magazine">Editorial / Magazine</option></select></div>
 </div>
@@ -9814,6 +9814,29 @@ const EVENT_THEME_LIBRARY = {
   "Golden Week": {palette:"sunny yellow, red, white, blue, gold",materials:"linen, cotton, satin, lightweight twill, woven textile",motifs:"sun, travel badge, ribbon, bunting, landmark-inspired emblem",hair:"travel-ready ponytail, casual waves, braided half-up hair, cheerful bun",accessory:"travel ribbon, sun clip, small badge ornament, floral clip",shoes:"comfortable fashion sneakers, loafers, sandals, ankle boots",pattern:"sun, bunting, travel emblem, stripe, celebratory graphic",background:"Japanese travel destination, sunny landmark plaza, scenic garden, lively holiday street",lighting:"bright holiday daylight, clear blue-sky light, warm sunset",language:"Golden Week travel couture, polished holiday fashion, modern Japanese leisure styling"}
 };
 
+const HALLOWEEN_BACKGROUND_DETAILS = [
+  'haunted mansion banquet hall with an overflowing Halloween dessert table / pumpkin spice cake / bat-shaped cookies / orange-glazed donuts / chocolate cupcakes / candy bowls / dripping candles / gothic silverware',
+  'candlelit gothic hall packed with Halloween desserts / black-and-orange layer cake / ghost cookies / spiderweb donuts / caramel apples / candy jars / ornate plates',
+  'moonlit forest clearing with a rustic dessert cart / pumpkin cake / spiderweb donuts / caramel apples / black chocolate sweets / candy jars / lanterns',
+  'old castle dining chamber with an elaborate Halloween dessert buffet / layered pumpkin cake / ghost-shaped cookies / black cocoa donuts / berry tarts / wrapped candies / ornate plates',
+  'witchy patisserie interior overflowing with pumpkin cakes / black cocoa donuts / orange macarons / caramel apples / chocolate bats / candy jars / potion bottles',
+  'haunted cafe dessert counter covered with pumpkin-shaped cakes / bat donuts / ghost cupcakes / black-and-orange macarons / chocolate truffles / candy corn / tiny pumpkins',
+  'gothic tea party room with a crowded dessert table / Halloween layer cake / spiderweb donuts / ghost meringues / caramel apples / chocolate cookies / candy bowls / antique teacups',
+  'dark fantasy bakery decorated with oversized pumpkin cakes / black chocolate donuts / bat cookies / skull-shaped sweets / orange cream cupcakes / berry tarts / candy jars / candles',
+  'moonlit Halloween dessert garden with a long banquet table / pumpkin bundt cake / orange-glazed donuts / black chocolate cake / ghost cookies / caramel apples / lanterns / scattered candy',
+  'Victorian Halloween salon with a lavish cake table / tall pumpkin cake / bat-shaped donuts / spiderweb cupcakes / chocolate truffles / orange macarons / wrapped sweets / candleholders',
+  'mysterious witch cottage kitchen filled with freshly baked pumpkin cake / black cocoa donuts / ghost cookies / caramel apples / chocolate cupcakes / candy jars / potion bottles / copper cookware',
+  'masquerade Halloween ballroom with an elaborate dessert buffet / tiered pumpkin cake / bat donuts / blood-orange tarts / black chocolate eclairs / ghost macarons / candy bowls / crystal glasses',
+  'enchanted Halloween patisserie with floating candles and a crowded dessert display / pumpkin mousse cake / bat donuts / spiderweb cookies / chocolate cupcakes / caramel apples / candy jars / glowing potion bottles',
+  'castle kitchen banquet scene with giant pumpkin cake / black sesame donuts / ghost-shaped cookies / orange cream pastries / chocolate bats / candy corn / jars of sweets / warm oven glow',
+  'night festival dessert stall surrounded by pumpkins and lanterns / pumpkin cheesecake / orange-glazed donuts / bat cookies / caramel apples / chocolate cupcakes / candy bags / decorative ribbons',
+  'gothic rooftop Halloween party with a long dessert table / black forest pumpkin cake / bat-shaped donuts / spiderweb brownies / orange macarons / chocolate truffles / candy bowls / miniature pumpkins',
+  'abandoned manor conservatory transformed into a Halloween dessert salon / tall layered cake / ghost donuts / pumpkin cupcakes / chocolate cookies / caramel apples / candy jars / dried flowers / candles',
+  'occult library tea room with a crowded Halloween sweets table / pumpkin spice cake / black cocoa donuts / skull cookies / berry tarts / chocolate truffles / wrapped candies / brass candleholders',
+  'moonlit castle terrace with an ornate Halloween banquet / pumpkin cake / bat donuts / spiderweb cupcakes / black chocolate sweets / orange macarons / caramel apples / lanterns / velvet tablecloth',
+  'dark carnival dessert pavilion filled with pumpkins and gothic decorations / giant frosted cake / bat-shaped donuts / ghost cookies / caramel apples / chocolate cupcakes / candy jars / striped sweets / lanterns'
+];
+
 const EVENT_EXTRA_VARIANTS = 200;
 const EVENT_EXISTING_VARIANTS = 15;
 const EVENT_TOTAL_VARIANTS = EVENT_EXISTING_VARIANTS + EVENT_EXTRA_VARIANTS;
@@ -9852,7 +9875,7 @@ function eventExtraValue(eventName, key, familyIndex, variantIndex){
     "CAMERA ANGLE": ["eye-level","slightly low angle","slightly high angle","fashion-editorial three-quarter angle","subtle low angle"][variantIndex%5] + ", coordinated with event styling",
     "SHOT TYPE": ["full body fashion shot","three-quarter body shot","cowboy shot","full body editorial portrait","knee-up fashion portrait"][familyIndex%5] + ", preserving the complete event silhouette",
     "FRAMING": ["full silhouette visible","centered fashion framing","environmental fashion framing","balanced full-body composition","slightly wider fashion framing"][variantIndex%5] + ", event details clearly visible",
-    "BACKGROUND": t.background.split(", ")[familyIndex % t.background.split(", ").length] + ", " + eventName + " setting, fully integrated with the outfit",
+    "BACKGROUND": (eventName === "Halloween" && Array.isArray(HALLOWEEN_BACKGROUND_DETAILS) ? HALLOWEEN_BACKGROUND_DETAILS[familyIndex % HALLOWEEN_BACKGROUND_DETAILS.length] : t.background.split(", ")[familyIndex % t.background.split(", ").length]) + ", " + eventName + " setting, fully integrated with the outfit",
     "LIGHTING": t.lighting.split(", ")[variantIndex % t.lighting.split(", ").length] + ", coordinated " + eventName + " illumination",
     "COMPOSITION": ["silhouette-first centered composition","event accessory and outfit both clearly visible","fashion editorial composition with environmental context","balanced character-and-background composition","dynamic event fashion composition"][familyIndex%5] + ", " + eventName + " visual hierarchy",
     "OUTFIT PATTERN": t.pattern.split(", ")[familyIndex % t.pattern.split(", ").length] + " motif, " + material + " texture, " + eventName + " event pattern"
@@ -12581,34 +12604,7 @@ updatePrompt();</script>
       const anchor=cleaned.indexOf('\n[EXPRESSION]');
       cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+eventBlock+cleaned.slice(anchor) : eventBlock+'\n'+cleaned;
     }
-    const techniqueBlock=getExpressionTechniquePromptBlock();
-    if(techniqueBlock){
-      const anchor=cleaned.indexOf('\n[EXPRESSION]');
-      cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+techniqueBlock+cleaned.slice(anchor) : techniqueBlock+'\n'+cleaned;
-    }
     return cleaned;
-  }
-
-  function getExpressionTechniquePromptBlock(){
-    // The six UI selectors are independent, but their concrete selections are
-    // stored explicitly by the expression-technique controller. Do not read
-    // the hidden legacy category values here, because shot/framing compatibility
-    // may legitimately adjust those hidden values.
-    const state=window.__expressionTechniqueState || {};
-    const defs=[
-      ['POSE','techniquePoseMode'],
-      ['GAZE','techniqueGazeMode'],
-      ['SUBJECT ORIENTATION','techniqueOrientationMode'],
-      ['CAMERA ANGLE','techniqueCameraMode'],
-      ['SHOT TYPE','techniqueShotMode'],
-      ['FRAMING','techniqueFramingMode']
-    ];
-    const parts=[];
-    defs.forEach(function(def){
-      const saved=state[def[0]];
-      if(saved && saved.value) parts.push(saved.value);
-    });
-    return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
 
   function fitPromptToPixAI4096(text){
@@ -12721,12 +12717,15 @@ updatePrompt();</script>
       'Dancing':['dancing','ballet-inspired pose','twirling pose','spinning pose','dance step pose','arms raised while dancing','dynamic dance pose','graceful dance pose','idol performance dance pose','fashion dance pose'],
       'Fashion Model':['fashion runway pose','editorial model pose','red-carpet pose','formal presentation pose','three-quarter fashion pose','hand-on-hip fashion pose','long-leg fashion pose','crossed-leg fashion pose','poised campaign pose','luxury fashion pose'],
       'Cute / Idol':['finger-heart gesture','heart gesture near the chest','gentle wave pose','both hands framing the face','one hand under the chin','one hand near the face','hands clasped in front','playful idol pose','cute presentation pose','cheerful performance pose'],
-      'Dynamic / Special':['squatting down','crouching','low squat','bending forward','leaning forward','leaning backward','leaning against a wall','standing against a wall','leaning against a railing','stretching','arms raised overhead','looking over the shoulder pose','over-the-shoulder pose','one hand extended toward the viewer','both hands lightly extended']
+      'Dynamic / Special':['squatting down','crouching','low squat','bending forward','leaning forward','leaning backward','leaning against a wall','standing against a wall','leaning against a railing','stretching','arms raised overhead','looking over the shoulder pose','over-the-shoulder pose','one hand extended toward the viewer','both hands lightly extended'],
+      'Forward Lean / Bow':['leaning forward','bending forward from the waist','deep forward lean','elegant forward bow','slight forward bow','torso inclined forward','forward-leaning fashion pose','leaning forward while standing','leaning forward while seated','forward bend with straight back'],
+      'Floor / Crawling':['on all fours','hands-and-knees pose','four-point stance','crawling posture','low crawling pose','kneeling on hands and knees','grounded four-point pose','forward crawling posture','side-facing crawling pose','four-point fashion pose']
     }},
     GAZE:{select:'techniqueGazeMode',key:'GAZE',groups:{
       'AUTO_RANDOM':['__AUTO__'],'Direct / Viewer':['looking at viewer','looking directly at the camera','facing the viewer with direct eye contact','looking straight ahead','soft direct gaze','calm direct gaze','confident direct gaze','gentle gaze toward the viewer'],
       'Left / Right':['looking to the right','looking to the left','looking toward the right side','looking toward the left side','looking slightly left of camera','looking slightly right of camera','glancing sideways','looking to the side'],
       'Over Shoulder':['looking back over the shoulder','looking over the right shoulder','looking over the left shoulder','looking back','looking behind','back-facing gaze','over-the-shoulder gaze'],
+      'Look Back at Viewer':['turning back to look at the viewer','looking back at the viewer over the shoulder','looking toward the viewer while turned away','looking back toward the viewer','direct eye contact while looking back','over-the-shoulder eye contact'],
       'Upward':['looking upward','looking slightly upward','looking high into the distance','looking toward the sky','looking up at the sky','shy upward gaze','gentle upward gaze'],
       'Downward':['looking down','looking slightly downward','looking toward the ground','looking toward the floor','reserved downward gaze','soft downward gaze'],
       'Away / Distance':['looking away','looking into the distance','looking toward the horizon','gazing into the distance','looking past the viewer','distant contemplative gaze'],
@@ -12743,7 +12742,7 @@ updatePrompt();</script>
       'Mixed / Head Turn':['torso facing camera with head turned left','torso facing camera with head turned right','body angled left with face toward camera','body angled right with face toward camera','torso turned left with head facing camera','torso turned right with head facing camera']
     }},
     CAMERA:{select:'techniqueCameraMode',key:'CAMERA ANGLE',groups:{
-      'AUTO_RANDOM':['__AUTO__'],'Front':['from front','front view','straight-on camera position'],'Side / Rear':['from the right side','from the left side','from behind','back view','three-quarter camera view','three-quarter rear view'],'Three-Quarter':['three-quarter camera view','three-quarter front view','three-quarter rear view','diagonal three-quarter camera view'],'Eye-Level':['eye-level','eye-height camera position','camera at face height','camera at chest height','level angle'],'Slight High':['camera slightly above eye height','slightly high angle','from slightly above','subtle high-angle view'],'High / Overhead':['from above','from the front and above','overhead view','high-angle view','bird’s-eye perspective','aerial perspective'],'Slight Low':['camera slightly below eye height','slightly low angle','from slightly below','subtle low-angle view'],'Low / Worm’s-Eye':['from below','low-angle view','from the front and below','worm’s-eye perspective','three-quarter low angle'],'Dutch / Dynamic':['dutch angle','tilted angle','dynamic angle','dynamic camera perspective','diagonal camera angle']
+      'AUTO_RANDOM':['__AUTO__'],'Front':['from front','front view','straight-on camera position'],'Side / Rear':['from the right side','from the left side','from behind','back view','three-quarter camera view','three-quarter rear view'],'Three-Quarter':['three-quarter camera view','three-quarter front view','three-quarter rear view','diagonal three-quarter camera view'],'Eye-Level':['eye-level','eye-height camera position','camera at face height','camera at chest height','level angle'],'Slight High':['camera slightly above eye height','slightly high angle','from slightly above','subtle high-angle view'],'High / Overhead':['from above','from the front and above','overhead view','high-angle view','bird’s-eye perspective','aerial perspective','top-down view','directly overhead view','view from directly above'],'Slight Low':['camera slightly below eye height','slightly low angle','from slightly below','subtle low-angle view'],'Low / Upward View':['view from below','upward-looking view','low viewpoint looking upward','strong low-angle view','upward perspective from below'],'Low / Worm’s-Eye':['from below','low-angle view','from the front and below','worm’s-eye perspective','three-quarter low angle'],'Dutch / Dynamic':['dutch angle','tilted angle','dynamic angle','dynamic camera perspective','diagonal camera angle']
     }},
     SHOT:{select:'techniqueShotMode',key:'SHOT TYPE',groups:{
       'AUTO_RANDOM':['__AUTO__'],'Wide / Environment':['wide shot','extreme wide shot','long shot','extreme long shot','environmental full-body shot','panoramic view','vista','distant view','far shot'],'Full Body':['full body shot','full-body fashion shot','head-to-toe shot','full figure shot','full-length portrait','complete silhouette shot'],'Cowboy Shot':['cowboy shot','cowboy shot framing','cowboy-style knee-up shot'],'Three-Quarter / Knee':['medium-long shot','three-quarter body shot','knee-up shot','thigh-up shot','three-quarter portrait'],'Upper Body':['waist-up shot','upper-body shot','chest-up shot','bust shot','head-and-shoulders shot','medium shot'],'Portrait':['portrait shot','headshot','medium close-up','close-up portrait','tight portrait shot'],'Close-Up':['close-up shot','face close-up','intense closeup shot','extreme close-up','extreme closeup shot'],'Detail / Macro':['eye close-up','eye closeup shot','close-up of eyes','lips close-up','macro photo','macro shot','zoomed in','enlarged']
@@ -12860,10 +12859,10 @@ updatePrompt();</script>
   function repairTechniqueSelectors(){
     try{
       var data={
-        techniquePoseMode:["AUTO_RANDOM","Standing","Sitting","Kneeling","Lying / Reclining","Walking / Moving","Running / Jumping","Dancing","Fashion Model","Cute / Idol","Dynamic / Special"],
-        techniqueGazeMode:["AUTO_RANDOM","Direct / Viewer","Left / Right","Over Shoulder","Upward","Downward","Away / Distance","Object / Scene"],
+        techniquePoseMode:["AUTO_RANDOM","Standing","Sitting","Kneeling","Lying / Reclining","Walking / Moving","Running / Jumping","Dancing","Fashion Model","Cute / Idol","Dynamic / Special","Forward Lean / Bow","Floor / Crawling"],
+        techniqueGazeMode:["AUTO_RANDOM","Direct / Viewer","Left / Right","Over Shoulder","Look Back at Viewer","Upward","Downward","Away / Distance","Object / Scene"],
         techniqueOrientationMode:["AUTO_RANDOM","Front","Three-Quarter Left","Three-Quarter Right","Side Left","Side Right","Back","Back Three-Quarter","Mixed / Head Turn"],
-        techniqueCameraMode:["AUTO_RANDOM","Front","Side / Rear","Three-Quarter","Eye-Level","Slight High","High / Overhead","Slight Low","Low / Worm’s-Eye","Dutch / Dynamic"],
+        techniqueCameraMode:["AUTO_RANDOM","Front","Side / Rear","Three-Quarter","Eye-Level","Slight High","High / Overhead","Slight Low","Low / Upward View","Low / Worm’s-Eye","Dutch / Dynamic"],
         techniqueShotMode:["AUTO_RANDOM","Wide / Environment","Full Body","Cowboy Shot","Three-Quarter / Knee","Upper Body","Portrait","Close-Up","Detail / Macro"],
         techniqueFramingMode:["AUTO_RANDOM","Centered","Left / Right Offset","Symmetrical","Rule of Thirds","Negative Space","Environmental","Depth / Layered","Architectural","Dynamic / Diagonal","Editorial / Magazine"]
       };
