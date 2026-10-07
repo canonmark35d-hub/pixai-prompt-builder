@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜表現技法6分類復旧×バルーン軽量化版 v6｜2026-10-07 / 27カテゴリ - Safari対応</title>
+<title>PIXAI Prompt Builder｜27カテゴリ出力保証×表現技法復旧版 v7｜2026-10-07 / Safari対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜表現技法6分類復旧×バルーン軽量化版 v6｜2026-10-07 / 27カテゴリ</h1>
+<h1>PIXAI Prompt Builder｜27カテゴリ出力保証×表現技法復旧版 v7｜2026-10-07</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。通常の27カテゴリは既存選択肢を維持します。季節・イベントは20イベントそれぞれに専用の詳細背景20種類を持ち、単独一括設定でも「BASE THEME＋EVENT＋SCENE」の3軸設定でも同じイベント専用背景ロジックを使用します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12536,64 +12536,88 @@ updatePrompt();</script>
 
   function fitPromptToPixAI4096(text){
     const LIMIT=4096;
-    if(!text || text.length<=LIMIT) return text;
+    if(!text) return text;
 
-    // まず冗長な連動説明を削除。実際の27カテゴリ選択値は残す。
-    let out=text
+    let out=String(text)
       .replace(/\n\[OUTFIT CONCEPT LINK\][^\n]*/g,'')
-      .replace(/\n{3,}/g,'\n\n');
+      .replace(/\n{3,}/g,'\n\n')
+      .trim();
     if(out.length<=LIMIT) return out;
 
-    // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
-    // EVENT/BASEの重要ブロックはこの段階では削らない。
-    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','CHARACTER','FACE','STYLE']);
-    const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
-    for(let pass=0; pass<3 && out.length>LIMIT; pass++){
-      const maxLen=pass===0?150:(pass===1?115:90);
-      const compacted=blocks.map(block=>{
-        const m=block.match(/^(\n\[([^\]]+)\]\s*)([\s\S]*)$/);
-        if(!m || protectedKeys.has(m[2])) return block;
-        let body=m[3].replace(/\s+/g,' ').trim();
-        if(body.length>maxLen){
-          const parts=body.split(';').map(x=>x.trim()).filter(Boolean);
-          let acc='';
-          for(const part of parts){
-            const next=acc ? acc+'; '+part : part;
-            if(next.length>maxLen) break;
-            acc=next;
-          }
-          body=acc || body.slice(0,maxLen).replace(/\s+\S*$/,'')+'…';
-        }
-        return m[1]+body;
-      }).join('');
-      out=compacted;
+    // v7: Never solve an over-limit prompt by dropping selected categories.
+    // Parse every [BLOCK], keep every block header, then compact bodies evenly.
+    const matches=[...out.matchAll(/(?:^|\n)\[([^\]]+)\]\s*([\s\S]*?)(?=\n\[[^\]]+\]|$)/g)];
+    if(!matches.length) return out.slice(0,LIMIT);
+
+    const protectedKeys=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE']);
+    let blocks=matches.map(m=>({key:m[1], body:m[2].replace(/\s+/g,' ').trim()}));
+
+    function render(arr){
+      return arr.map(b=>'['+b.key+'] '+b.body).join('\n\n');
     }
-    if(out.length<=LIMIT) return out;
-
-    // 最終安全弁：重要ブロックを残したまま、低優先度カテゴリの本文をさらに圧縮する。
-    // それでも超える場合は、重要ブロック以外を後方から削って4096文字以内を保証する。
-    const priority=['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE'];
-    const parsed=out.split(/(?=\n\[[^\]]+\])/);
-    const important=[], optional=[];
-    parsed.forEach(function(block){
-      const m=block.match(/^\n?\[([^\]]+)\]/);
-      if(m && priority.indexOf(m[1])>=0) important.push(block); else optional.push(block);
-    });
-    let keep=important.join('');
-    if(keep.length>LIMIT) return keep.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
-    for(let i=0;i<optional.length;i++){
-      const candidate=keep+optional[i];
-      if(candidate.length<=LIMIT) keep=candidate;
-      else {
-        const room=LIMIT-keep.length-1;
-        if(room>30){
-          const body=optional[i].replace(/\s+/g,' ').trim();
-          keep += '\n'+body.slice(0,room).replace(/\s+\S*$/,'')+'…';
-        }
-        break;
+    function compactBody(body,maxLen){
+      if(body.length<=maxLen) return body;
+      const semis=body.split(';').map(x=>x.trim()).filter(Boolean);
+      let acc='';
+      for(const part of semis){
+        const next=acc ? acc+'; '+part : part;
+        if(next.length>maxLen) break;
+        acc=next;
       }
+      if(acc) return acc;
+      return body.slice(0,maxLen).replace(/\s+\S*$/,'').trim();
     }
-    return keep.slice(0,LIMIT);
+
+    // Progressive equal compaction. All block names survive every pass.
+    const passes=[
+      {protected:260, normal:125},
+      {protected:220, normal:100},
+      {protected:190, normal:82},
+      {protected:165, normal:68},
+      {protected:145, normal:56}
+    ];
+    for(const pass of passes){
+      blocks=blocks.map(b=>({
+        key:b.key,
+        body:compactBody(b.body, protectedKeys.has(b.key)?pass.protected:pass.normal)
+      }));
+      out=render(blocks);
+      if(out.length<=LIMIT) return out;
+    }
+
+    // Final proportional pass: reserve every header first, then share remaining
+    // characters across every block instead of deleting later categories.
+    const headerCost=blocks.reduce((sum,b)=>sum+b.key.length+5,0); // [] + space + separators
+    const bodyBudget=Math.max(blocks.length*24, LIMIT-headerCost-(blocks.length-1)*2);
+    const protectedCount=blocks.filter(b=>protectedKeys.has(b.key)).length || 1;
+    const normalCount=Math.max(1,blocks.length-protectedCount);
+    const protectedBudget=Math.floor(bodyBudget*0.42);
+    const normalBudget=bodyBudget-protectedBudget;
+    const pEach=Math.max(40,Math.floor(protectedBudget/protectedCount));
+    const nEach=Math.max(24,Math.floor(normalBudget/normalCount));
+    blocks=blocks.map(b=>({
+      key:b.key,
+      body:compactBody(b.body, protectedKeys.has(b.key)?pEach:nEach)
+    }));
+    out=render(blocks);
+
+    // In the extremely unlikely case it is still long, shorten bodies one
+    // character cycle at a time but never remove a selected block.
+    let guard=0;
+    while(out.length>LIMIT && guard<5000){
+      let changed=false;
+      for(let i=blocks.length-1;i>=0 && out.length>LIMIT;i--){
+        const minLen=protectedKeys.has(blocks[i].key)?32:18;
+        if(blocks[i].body.length>minLen){
+          blocks[i].body=blocks[i].body.slice(0,-1).trimEnd();
+          changed=true;
+          out=render(blocks);
+        }
+      }
+      if(!changed) break;
+      guard++;
+    }
+    return out.slice(0,LIMIT);
   }
 
   const originalUpdatePrompt=window.updatePrompt;
@@ -12605,6 +12629,21 @@ updatePrompt();</script>
       // blocks. The final PIXAI prompt uses one integrated EXPRESSION TECHNIQUE block.
       promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*(?=\n\[|$)/g,'');
       promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+
+      // v7 integrity guard: selected UI categories must be represented in output.
+      const selectedKeys=CAT_KEYS.filter(function(key){
+        const s=catSelect(key); return !!(s && s.value);
+      });
+      const represented=selectedKeys.filter(function(key){
+        return promptEl.value.indexOf('['+key+']')>=0 ||
+          (['POSE','GAZE','SUBJECT ORIENTATION','CAMERA ANGLE','SHOT TYPE','FRAMING'].indexOf(key)>=0 &&
+           promptEl.value.indexOf('[EXPRESSION TECHNIQUE]')>=0);
+      });
+      if(selectedKeys.length && represented.length < Math.min(selectedKeys.length, 10)){
+        originalUpdatePrompt();
+        promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*(?=\n\[|$)/g,'');
+        promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+      }
     }
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
