@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜バルーンスカート強調調整版 v11｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</title>
+<title>PIXAI Prompt Builder｜選択肢の空表示対策版 v13｜2026-10-07 / 日本語選択・英語プロンプト出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜バルーンスカート強調調整版 v11｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</h1>
+<h1>PIXAI Prompt Builder｜選択肢の空表示対策版 v13｜2026-10-07 / 日本語選択・英語プロンプト出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -133,16 +133,16 @@ button.secondary,button.dice{background:#eee;color:#333}
 </section>
 <section class="panel technique-panel" id="techniquePanel">
 <h2>📷 表現技法・大分類設定</h2>
-<p class="note">大枠だけ選択すると、そのグループ内から具体的なポーズ・目線・人物方向・カメラアングル・画角・構図を自動選択します。「自動ランダム」は毎回大分類も具体項目も自動で変化します。</p>
+<p class="note">選択肢は日本語表示、出力プロンプトは英語です。大枠だけ選択すると、そのグループ内から具体的なポーズ・目線・人物方向・カメラアングル・画角・構図を自動選択します。「自動ランダム」は毎回大分類も具体項目も自動で変化します。</p>
 <div class="technique-grid">
-  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"></select></div>
-  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"></select></div>
-  <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"></select></div>
-  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"></select></div>
-  <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"></select></div>
-  <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"></select></div>
+  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Standing">立つ</option><option value="Sitting">座る</option><option value="Kneeling">ひざをつく</option><option value="Lying / Reclining">寝転ぶ・横たわる</option><option value="Walking / Moving">歩く・移動する</option><option value="Running / Jumping">走る・ジャンプする</option><option value="Dancing">踊る</option><option value="Fashion Model">ファッションモデル風</option><option value="Cute / Idol">可愛い・アイドル風</option><option value="Dynamic / Special">しゃがむ・傾くなどの特殊ポーズ</option></select></div>
+  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Direct / Viewer">こちらを見る</option><option value="Left / Right">左右を見る</option><option value="Over Shoulder">肩越しに振り返る</option><option value="Upward">上を見る</option><option value="Downward">下を見る</option><option value="Away / Distance">目線を外す・遠くを見る</option><option value="Object / Scene">物や周囲を見る</option></select></div>
+  <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">正面</option><option value="Three-Quarter Left">斜め左向き</option><option value="Three-Quarter Right">斜め右向き</option><option value="Side Left">真横・左向き</option><option value="Side Right">真横・右向き</option><option value="Back">後ろ向き</option><option value="Back Three-Quarter">斜め後ろ向き</option><option value="Mixed / Head Turn">身体と顔の向きを変える</option></select></div>
+  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">正面</option><option value="Side / Rear">横・後ろから</option><option value="Three-Quarter">斜めから</option><option value="Eye-Level">目線の高さ・水平</option><option value="Slight High">少し上から</option><option value="High / Overhead">上から・真上から</option><option value="Slight Low">少し下から</option><option value="Low / Worm’s-Eye">下から・地面近くから</option><option value="Dutch / Dynamic">傾けた視点・躍動的</option></select></div>
+  <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Wide / Environment">遠景・背景を広く写す</option><option value="Full Body">全身</option><option value="Cowboy Shot">太もも〜ひざ付近から上</option><option value="Three-Quarter / Knee">ひざ・太ももから上</option><option value="Upper Body">上半身</option><option value="Portrait">顔中心のポートレート</option><option value="Close-Up">顔のアップ・超アップ</option><option value="Detail / Macro">瞳・唇などの部分アップ</option></select></div>
+  <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Centered">人物を中央に配置</option><option value="Left / Right Offset">人物を左右にずらす</option><option value="Symmetrical">左右対称</option><option value="Rule of Thirds">三分割の位置に配置</option><option value="Negative Space">余白を活かす</option><option value="Environmental">人物と背景のバランス</option><option value="Depth / Layered">奥行き・重なりを活かす</option><option value="Architectural">窓・扉・建物で囲む</option><option value="Dynamic / Diagonal">斜め配置・躍動感</option><option value="Editorial / Magazine">ファッション誌・表紙風</option></select></div>
 </div>
-<div class="status" id="techniqueStatus">表現技法：自動ランダム</div>
+<div class="status" id="techniqueStatus">初期化待ち：表示が変わらない場合は、公開ページをSafariで開いてください。</div>
 </section>
 <section class="panel">
 <h2>👗 衣装コンセプト自動連動</h2>
@@ -12726,6 +12726,63 @@ updatePrompt();</script>
     }}
   };
 
+  // Display labels only; English keys and prompt pools remain unchanged.
+  const TECH_LABELS_JA={
+  "AUTO_RANDOM": "🎲 自動ランダム",
+  "Standing": "立つ",
+  "Sitting": "座る",
+  "Kneeling": "ひざをつく",
+  "Lying / Reclining": "寝転ぶ・横たわる",
+  "Walking / Moving": "歩く・移動する",
+  "Running / Jumping": "走る・ジャンプする",
+  "Dancing": "踊る",
+  "Fashion Model": "ファッションモデル風",
+  "Cute / Idol": "可愛い・アイドル風",
+  "Dynamic / Special": "しゃがむ・傾くなどの特殊ポーズ",
+  "Direct / Viewer": "こちらを見る",
+  "Left / Right": "左右を見る",
+  "Over Shoulder": "肩越しに振り返る",
+  "Upward": "上を見る",
+  "Downward": "下を見る",
+  "Away / Distance": "目線を外す・遠くを見る",
+  "Object / Scene": "物や周囲を見る",
+  "Front": "正面",
+  "Three-Quarter Left": "斜め左向き",
+  "Three-Quarter Right": "斜め右向き",
+  "Side Left": "真横・左向き",
+  "Side Right": "真横・右向き",
+  "Back": "後ろ向き",
+  "Back Three-Quarter": "斜め後ろ向き",
+  "Mixed / Head Turn": "身体と顔の向きを変える",
+  "Side / Rear": "横・後ろから",
+  "Three-Quarter": "斜めから",
+  "Eye-Level": "目線の高さ・水平",
+  "Slight High": "少し上から",
+  "High / Overhead": "上から・真上から",
+  "Slight Low": "少し下から",
+  "Low / Worm’s-Eye": "下から・地面近くから",
+  "Dutch / Dynamic": "傾けた視点・躍動的",
+  "Wide / Environment": "遠景・背景を広く写す",
+  "Full Body": "全身",
+  "Cowboy Shot": "太もも〜ひざ付近から上",
+  "Three-Quarter / Knee": "ひざ・太ももから上",
+  "Upper Body": "上半身",
+  "Portrait": "顔中心のポートレート",
+  "Close-Up": "顔のアップ・超アップ",
+  "Detail / Macro": "瞳・唇などの部分アップ",
+  "Centered": "人物を中央に配置",
+  "Left / Right Offset": "人物を左右にずらす",
+  "Symmetrical": "左右対称",
+  "Rule of Thirds": "三分割の位置に配置",
+  "Negative Space": "余白を活かす",
+  "Environmental": "人物と背景のバランス",
+  "Depth / Layered": "奥行き・重なりを活かす",
+  "Architectural": "窓・扉・建物で囲む",
+  "Dynamic / Diagonal": "斜め配置・躍動感",
+  "Editorial / Magazine": "ファッション誌・表紙風"
+};
+  function techniqueLabel(group){return TECH_LABELS_JA[group] || group;}
+
   const MANAGED=Object.values(TECH).map(x=>x.key);
   const state={};
   window.__expressionTechniqueState=window.__expressionTechniqueState || {};
@@ -12775,13 +12832,19 @@ updatePrompt();</script>
   }
   function applyAll(randomizeGroup){Object.values(TECH).forEach(def=>chooseFor(def,def.select,randomizeGroup));updateTechniqueStatus();}
   function updateTechniqueStatus(){
-    const parts=Object.values(TECH).map(def=>{const el=document.getElementById(def.select);return el?el.value:'AUTO_RANDOM';});
+    const parts=Object.values(TECH).map(def=>{const el=document.getElementById(def.select);return techniqueLabel(el?el.value:'AUTO_RANDOM');});
     const st=document.getElementById('techniqueStatus'); if(st) st.textContent='表現技法：'+parts.join(' ｜ ');
   }
   function initSelector(def){
     const sel=document.getElementById(def.select); if(!sel) return;
-    Object.keys(def.groups).forEach(group=>{const o=document.createElement('option');o.value=group;o.textContent=group==='AUTO_RANDOM'?'🎲 自動ランダム':group;sel.appendChild(o);});
-    sel.value='AUTO_RANDOM';
+    // Options are present in the HTML before scripts run (including iOS).
+    // Reconcile without duplicating options or resetting an early selection.
+    Object.keys(def.groups).forEach(group=>{
+      let o=Array.from(sel.options).find(item=>item.value===group);
+      if(!o){o=document.createElement('option');o.value=group;sel.appendChild(o);}
+      o.textContent=techniqueLabel(group);
+    });
+    if(!def.groups[sel.value]) sel.value='AUTO_RANDOM';
     sel.addEventListener('change',function(){chooseFor(def,def.select,false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();});
   }
   function hideManagedCategories(){
@@ -12789,6 +12852,7 @@ updatePrompt();</script>
   }
   Object.values(TECH).forEach(initSelector);
   hideManagedCategories();
+  updateTechniqueStatus();
 
   window.__applyTechniqueModes=function(randomizeGroup){applyAll(!!randomizeGroup);if(typeof window.updatePrompt==='function')window.updatePrompt();};
   window.__randomizeTechniqueConcrete=function(){applyAll(false);};
