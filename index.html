@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜季節イベント背景連動修正版 v10｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</title>
+<title>PIXAI Prompt Builder｜バルーンスカート強調調整版 v11｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,7 +46,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜季節イベント背景連動修正版 v10｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</h1>
+<h1>PIXAI Prompt Builder｜バルーンスカート強調調整版 v11｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12404,7 +12404,7 @@ updatePrompt();</script>
     gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
     sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
     wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
-    balloon_skirt:"(bubble skirt:1.45); (puffball skirt:1.4); (bubble-hem skirt:1.35); (rounded inflated skirt silhouette:1.35); (gathered inward hem:1.3); (tucked-under hem:1.3); (outer skirt gathered over a shorter inner lining:1.3); (rounded bubble-shaped volume:1.3); wearable fashion skirt garment; fitted waistband; compact rounded lower volume; clearly visible bubble-hem construction",
+    balloon_skirt:"bubble-skirt fashion; softly rounded fabric silhouette; inward-tucked hem; fitted waistband; natural fabric folds",
     agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
     korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
     chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
@@ -12427,13 +12427,9 @@ updatePrompt();</script>
      "bubble skirt / puffball skirt / bubble-hem" concepts and
      construction details, avoiding standalone "balloon" imagery.
      ============================================================ */
+  // v11: a single moderate weight; preserve category-specific design details.
   const BALLOON_SKIRT_STRUCTURE = {
-    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit built around a fitted waistband and a compact rounded bubble skirt",
-    "OUTFIT STRUCTURE":"structured bubble-skirt construction; outer skirt is fuller than a shorter inner lining; lower edge is gathered and tucked inward to form a rounded enclosed hem; controlled compact volume",
-    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
-    "WAIST DESIGN":"fitted clean waistband supporting a rounded bubble skirt; controlled waist gathers",
-    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
-    "OUTFIT PATTERN":"pattern and surface details follow the rounded bubble-skirt panels without changing the compact silhouette"
+    "SKIRT":"(bubble skirt:1.15); rounded fabric volume; gathered hem tucked inward; shorter inner lining; soft natural folds"
   };
 
   function isBalloonSkirtThemeActive(){
@@ -12458,14 +12454,12 @@ updatePrompt();</script>
 
   function enforceBalloonSkirtCategory(key,value){
     if(!isBalloonSkirtThemeActive() || !value) return value;
-    const anchor=BALLOON_SKIRT_STRUCTURE[key];
-    const cleaned=cleanBalloonConflicts(value);
-    if(!anchor) return cleaned;
-    // SKIRT gets the strongest replacement so no generic skirt silhouette
-    // can override the dedicated balloon/bubble construction.
-    if(key==='SKIRT') return anchor;
-    return anchor+'; '+cleaned;
+    if(key==='SKIRT') return BALLOON_SKIRT_STRUCTURE.SKIRT;
+    // Keep the selected material, pattern and construction without adding a
+    // repeated bubble-shape instruction to each clothing category.
+    return cleanBalloonConflicts(value);
   }
+
 
   function enforceBalloonSkirtSelection(){
     if(!isBalloonSkirtThemeActive()) return;
@@ -12507,7 +12501,7 @@ updatePrompt();</script>
     const fusionMap={
       idol:'idol stage costume', swimwear:'swimwear and resort fashion', japanese:'Japanese wafuku and kimono fashion',
       lolita:'Lolita fashion', gothic_lolita:'Gothic Lolita fashion', sports:'sportswear fashion', wedding:'bridal wedding fashion',
-      balloon_skirt:'balloon skirt fashion', agejo_gyaru:'Agejo Gyaru fashion', korean_beauty:'Korean beauty fashion',
+      balloon_skirt:'bubble-skirt fashion', agejo_gyaru:'Agejo Gyaru fashion', korean_beauty:'Korean beauty fashion',
       chinese_lolita:'Chinese Lolita fashion', harajuku:'Harajuku street fashion', girly:'girly Japanese fashion',
       steampunk:'steampunk Victorian-industrial fashion', himekaji:'Himekaji princess-casual fashion', poncho:'poncho-centered fashion',
       wizard_robe:'wizard robe fantasy fashion', oversized:'oversized fashion', princess:'princess couture',
@@ -12533,7 +12527,7 @@ updatePrompt();</script>
       'cohesive '+baseIdentity+' × '+eventName+' fashion fusion, unmistakable event identity while retaining the BASE THEME',
       language
     ];
-    if(base) fusion.push('BASE THEME anchor remains dominant: '+base);
+    if(base && theme!=='balloon_skirt') fusion.push('BASE THEME anchor remains dominant: '+base);
     if(!parts.length && !fusion.length) return '';
     return '[EVENT FUSION] '+eventName+'; '+fusion.join('; ')+(parts.length ? '; coordinated event design variant: '+parts.join('; ') : '');
   }
