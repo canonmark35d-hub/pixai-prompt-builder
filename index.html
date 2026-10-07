@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜表現技法単一出力保証版 v9｜2026-10-07 / Safari対応</title>
+<title>PIXAI Prompt Builder｜季節イベント背景連動修正版 v10｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -46,8 +46,8 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜表現技法単一出力保証版 v9｜2026-10-07</h1>
-<p class="note">固定プロンプトは自動で常時含まれます。通常の27カテゴリは既存選択肢を維持します。季節・イベントは20イベントそれぞれに専用の詳細背景20種類を持ち、単独一括設定でも「BASE THEME＋EVENT＋SCENE」の3軸設定でも同じイベント専用背景ロジックを使用します。</p>
+<h1>PIXAI Prompt Builder｜季節イベント背景連動修正版 v10｜2026-10-07 / 27カテゴリ・6軸統合・4096文字対応</h1>
+<p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
 <textarea id="prompt" readonly="" spellcheck="false">[STYLE] BUNBUN style; masterpiece; best quality; ultra detailed; high resolution; natural color rendering; accurate local colors; controlled global color balance; natural skin color; accurate clothing color.
@@ -81,7 +81,7 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option>
   </select>
 </div>
-<p class="note">一括設定中は選択イベント専用候補だけを各カテゴリへ自動適用します。BACKGROUNDは各イベント専用の詳細背景20種類から選択され、3軸テーマ・イベント・シーン設定でも同じイベント専用背景ロジックを使用します。個別カテゴリは引き続き変更できます。</p>
+<p class="note">一括設定中は、選択したイベントの候補だけを各カテゴリへ自動適用します。ランダム設定でも他の季節・通常候補には切り替わりません。個別カテゴリは引き続き変更できます。</p>
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
@@ -127,7 +127,7 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="cinematic">🎬 シネマティック</option>
   </select>
 </div>
-<p class="note">①ベーステーマ＝衣装・人物の基本設計、②季節・イベント＝既存イベント候補、③シーン・ムード＝背景・照明・構図などを担当します。3つは同時にONにできます。OFFなら従来の候補を使用します。</p>
+<p class="note">①ベーステーマ＝衣装・人物の基本設計、②季節・イベント＝衣装へのイベント融合＋背景を優先連動、③シーン・ムード＝イベント背景を保ちながら雰囲気・照明・構図を反映します。3つは同時にONにできます。OFFなら従来の候補を使用します。</p>
 <div class="status" id="themeModeStatus">🎛️ 3軸：すべてOFF</div>
 <div class="status" id="sceneModeStatus">③ シーン・ムード：OFF</div>
 </section>
@@ -135,12 +135,12 @@ button.secondary,button.dice{background:#eee;color:#333}
 <h2>📷 表現技法・大分類設定</h2>
 <p class="note">大枠だけ選択すると、そのグループ内から具体的なポーズ・目線・人物方向・カメラアングル・画角・構図を自動選択します。「自動ランダム」は毎回大分類も具体項目も自動で変化します。</p>
 <div class="technique-grid">
-  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Standing">Standing</option><option value="Sitting">Sitting</option><option value="Kneeling">Kneeling</option><option value="Lying / Reclining">Lying / Reclining</option><option value="Walking / Moving">Walking / Moving</option><option value="Running / Jumping">Running / Jumping</option><option value="Dancing">Dancing</option><option value="Fashion Model">Fashion Model</option><option value="Cute / Idol">Cute / Idol</option><option value="Dynamic / Special">Dynamic / Special</option></select></div>
-  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="At Viewer">At Viewer</option><option value="Away / Distant">Away / Distant</option><option value="Side Glance">Side Glance</option><option value="Upward">Upward</option><option value="Downward">Downward</option><option value="Over Shoulder">Over Shoulder</option><option value="Eyes Closed / Soft">Eyes Closed / Soft</option></select></div>
-  <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">Front</option><option value="Three-Quarter Left">Three-Quarter Left</option><option value="Three-Quarter Right">Three-Quarter Right</option><option value="Side Left">Side Left</option><option value="Side Right">Side Right</option><option value="Back">Back</option><option value="Back Three-Quarter">Back Three-Quarter</option><option value="Mixed / Head Turn">Mixed / Head Turn</option></select></div>
-  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Front">Front</option><option value="Side / Rear">Side / Rear</option><option value="Three-Quarter">Three-Quarter</option><option value="Eye-Level">Eye-Level</option><option value="Slight High">Slight High</option><option value="High / Overhead">High / Overhead</option><option value="Slight Low">Slight Low</option><option value="Low / Worm’s-Eye">Low / Worm’s-Eye</option><option value="Dutch / Dynamic">Dutch / Dynamic</option></select></div>
-  <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Wide / Environment">Wide / Environment</option><option value="Full Body">Full Body</option><option value="Cowboy Shot">Cowboy Shot</option><option value="Three-Quarter / Knee">Three-Quarter / Knee</option><option value="Upper Body">Upper Body</option><option value="Portrait">Portrait</option><option value="Close-Up">Close-Up</option><option value="Detail / Macro">Detail / Macro</option></select></div>
-  <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Centered">Centered</option><option value="Left / Right Offset">Left / Right Offset</option><option value="Symmetrical">Symmetrical</option><option value="Rule of Thirds">Rule of Thirds</option><option value="Negative Space">Negative Space</option><option value="Environmental">Environmental</option><option value="Depth / Layered">Depth / Layered</option><option value="Architectural">Architectural</option><option value="Dynamic / Diagonal">Dynamic / Diagonal</option><option value="Editorial / Magazine">Editorial / Magazine</option></select></div>
+  <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"></select></div>
+  <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"></select></div>
+  <div class="technique-row"><label for="techniqueOrientationMode">③ 人物方向</label><select id="techniqueOrientationMode"></select></div>
+  <div class="technique-row"><label for="techniqueCameraMode">④ カメラアングル</label><select id="techniqueCameraMode"></select></div>
+  <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"></select></div>
+  <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"></select></div>
 </div>
 <div class="status" id="techniqueStatus">表現技法：自動ランダム</div>
 </section>
@@ -9814,7 +9814,6 @@ const EVENT_THEME_LIBRARY = {
   "Golden Week": {palette:"sunny yellow, red, white, blue, gold",materials:"linen, cotton, satin, lightweight twill, woven textile",motifs:"sun, travel badge, ribbon, bunting, landmark-inspired emblem",hair:"travel-ready ponytail, casual waves, braided half-up hair, cheerful bun",accessory:"travel ribbon, sun clip, small badge ornament, floral clip",shoes:"comfortable fashion sneakers, loafers, sandals, ankle boots",pattern:"sun, bunting, travel emblem, stripe, celebratory graphic",background:"Japanese travel destination, sunny landmark plaza, scenic garden, lively holiday street",lighting:"bright holiday daylight, clear blue-sky light, warm sunset",language:"Golden Week travel couture, polished holiday fashion, modern Japanese leisure styling"}
 };
 
-const EVENT_BACKGROUND_LIBRARY = {"Halloween":["gothic Halloween banquet hall, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","witch confectionery workshop, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","haunted mansion tea salon, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","moonlit pumpkin garden, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","dark Halloween patisserie, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","old castle dessert room, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","witch market street, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","Halloween ballroom, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","haunted library party, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","foggy graveyard feast, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","abandoned chapel dessert hall, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","Victorian Halloween parlor, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","moonlit forest picnic, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","dark carnival avenue, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","gothic greenhouse party, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","castle Halloween kitchen, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","Halloween candy boutique, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","gothic rooftop party, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","black rose Halloween cafe, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments","Halloween festival plaza, densely decorated with carved pumpkins, black candles, dark roses, gothic tableware, Halloween cakes, decorated donuts, cookies, colorful candies and antique ornaments"],"Christmas":["grand Christmas tree salon, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas patisserie, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","snowy Christmas market, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","fireplace holiday salon, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","grand hotel Christmas lobby, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","snowy palace terrace, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas bakery kitchen, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas tea room, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","winter conservatory, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","festive city plaza, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas library, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas dining hall, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas rooftop party, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas cafe, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","toy workshop, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","snowy forest picnic, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","garland-covered grand staircase, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas candy boutique, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","Christmas ballroom, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights","luxury holiday celebration room, densely decorated with towering Christmas trees, wrapped gifts, wreaths, golden ornaments, festive cakes, cookies, chocolates, candy canes and warm lights"],"New Year":["Japanese New Year reception room, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","shrine-inspired New Year courtyard, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","gold-screen tatami salon, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year dining room, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year palace garden, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","festive Japanese hotel lobby, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year sweets salon, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year shrine approach, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year tea room, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","modern New Year apartment, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","garden pavilion, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year banquet hall, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","traditional merchant street, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year confectionery shop, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","shrine courtyard at dawn, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year photography salon, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","luxury ryokan lobby, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","New Year rooftop terrace, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","Japanese-style ceremonial corridor, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments","opulent New Year celebration room, densely decorated with kadomatsu, shimenawa, gold folding screens, plum blossoms, lacquerware, festive food, wagashi and red-gold ornaments"],"Valentine's Day":["Valentine patisserie, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","rose-filled salon, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","chocolate workshop, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine cafe, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine ballroom, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","rooftop Valentine dinner, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","chocolate gift boutique, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","hotel Valentine lounge, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine tea room, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine bakery kitchen, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","rose garden picnic, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","rose-covered grand staircase, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine library, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine conservatory, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine dining hall, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","heart-themed market street, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine dressing salon, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","Valentine night garden, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","vintage Valentine parlor, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments","lavish Valentine celebration room, densely decorated with roses, heart cakes, chocolates, macarons, ribboned gifts, candles and elegant red-pink ornaments"],"White Day":["pearl-white confectionery, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","white floral salon, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day tea room, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day gift boutique, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","spring patisserie, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","crystal conservatory, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day hotel lounge, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day bakery kitchen, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","white garden table, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","silver-white ballroom, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day candy atelier, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","luminous cafe, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day rooftop tea, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","ornate white parlor, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","flower shop cafe, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","white-rose grand staircase, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","White Day library salon, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","pastel candy market, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","ivory dining salon, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons","lavish White Day celebration room, densely decorated with white roses, pearl ornaments, white chocolates, macarons, candies, crystal tableware and pale-blue ribbons"],"Hinamatsuri":["Hinamatsuri tatami room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Japanese hina salon, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri dessert room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri banquet space, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","spring tatami alcove, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","grand hina gallery, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri garden pavilion, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Japanese confectionery shop, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri tea room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","palace-inspired hina room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","modern Hinamatsuri home, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","hanging-ornament corridor, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","spring hina conservatory, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri photo salon, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","Hinamatsuri cafe, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","traditional festive dining room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","moonlit peach garden, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","ryokan Hinamatsuri lobby, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","peach-blossom grand staircase, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments","lavish Hinamatsuri celebration room, densely decorated with hina dolls, peach blossoms, gold screens, lanterns, wagashi, hina-arare and layered Japanese ornaments"],"Tanabata":["Tanabata bamboo garden, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Milky Way terrace, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata shrine courtyard, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata sweets salon, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","celestial ballroom, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","riverside Tanabata festival, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","starry Tanabata cafe, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","celestial conservatory, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","traditional Tanabata room, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata rooftop party, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Milky Way corridor, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata market street, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","moonlit bamboo grove, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","hotel bamboo installation, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata patisserie, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","celestial library, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","Tanabata garden tea party, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","streamer-covered staircase, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","fantasy Tanabata pavilion, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments","lavish Tanabata celebration, densely decorated with bamboo, colorful tanzaku, star lanterns, celestial ribbons, galaxy sweets and Milky Way ornaments"],"Cherry Blossom Season":["cherry blossom garden, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura cafe, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","riverside sakura promenade, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","spring sakura salon, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura picnic lawn, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","cherry blossom conservatory, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","night sakura garden, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura patisserie, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","Japanese room overlooking sakura, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","spring palace courtyard, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura market street, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","cherry blossom bridge, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","hotel sakura lobby, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura rooftop tea party, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura library salon, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura ballroom, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","spring garden pavilion, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","sakura confectionery shop, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","cherry blossom avenue, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details","lavish sakura celebration, densely filled with blooming sakura branches, drifting petals, lanterns, pink cakes, wagashi, tea sets and spring picnic details"],"Summer Festival":["Japanese summer festival street, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","lantern matsuri avenue, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","riverside summer festival, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","shrine matsuri courtyard, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","festival sweets stall area, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","festival tea pavilion, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","night market lane, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","summer festival bridge, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","festival game alley, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","matsuri merchant street, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","summer festival garden party, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","lantern shrine staircase, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","matsuri candy shop, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","festival rooftop, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","summer matsuri courtyard, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","festival riverside picnic, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","busy festival intersection, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","ryokan matsuri entrance, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","summer festival dessert cafe, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners","lavish matsuri scene, densely filled with paper lanterns, festival food stalls, candy apples, shaved ice, goldfish motifs, masks, fans and colorful banners"],"Fireworks Night":["riverside fireworks festival, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","rooftop fireworks party, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","festival bridge under fireworks, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","luxury fireworks terrace, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","night riverbank picnic, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","fireworks garden pavilion, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","city rooftop fireworks scene, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","summer cafe terrace, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","Japanese fireworks balcony, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","harbor fireworks celebration, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","hotel fireworks lounge, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","fireworks night market, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","hilltop fireworks picnic, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","festival courtyard under fireworks, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","romantic fireworks bridge, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","fireworks dessert salon, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","riverside shrine festival, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","waterfront fireworks deck, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","city plaza fireworks event, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections","lavish fireworks celebration, densely arranged with lanterns, festival foods, sweets, fans, picnic details and brilliant layered fireworks with reflections"],"Moon Viewing":["moon-viewing Japanese garden, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","tsukimi pavilion, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","luxury moon-viewing terrace, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","tatami moon-viewing room, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","moon-viewing sweets salon, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","lakeside tsukimi picnic, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","Japanese garden pavilion, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","rooftop moon-viewing party, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","moonlit bamboo terrace, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","hotel tsukimi lounge, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","tsukimi confectionery shop, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","moon-viewing bridge, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","silver conservatory, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","autumn moon tea party, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","tsukimi library salon, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","moon-decorated staircase, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","moonlit shrine courtyard, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","tsukimi dining room, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","pampas field picnic, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon","lavish tsukimi celebration, densely arranged with pampas grass, dango, rabbit-shaped sweets, tea sets, lanterns, silver ornaments and a huge full moon"],"Autumn Leaves Season":["maple garden, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","golden ginkgo avenue, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn salon, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn palace courtyard, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","maple-viewing pavilion, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn patisserie, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","crimson forest terrace, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn library, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","ginkgo garden cafe, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn market street, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","maple bridge, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","hotel autumn lobby, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn rooftop tea, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","rustic autumn dining hall, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","maple-covered staircase, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn conservatory, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","Japanese maple room, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","crimson forest picnic, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","autumn sweets boutique, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments","lavish autumn celebration, densely decorated with maple and ginkgo leaves, chestnut cakes, apple pastries, tea sets, candles and warm autumn ornaments"],"Harvest Season":["golden harvest market, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","country estate harvest table, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","orchard harvest picnic, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest dining hall, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","farmhouse harvest kitchen, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest festival street, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","wheat-field banquet, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","orchard market, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest bakery, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","country conservatory, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest garden party, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","elegant harvest barn, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","vineyard harvest terrace, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest sweets shop, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","wheat-decorated staircase, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","autumn field picnic, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","hotel harvest lobby, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","harvest tea room, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","country market square, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns","lavish harvest celebration, densely filled with pumpkins, apples, wheat, bread, pies, baskets, flowers, produce and rustic lanterns"],"Snow Season":["snow palace courtyard, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","winter fireplace salon, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","frosted conservatory, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","snowy city street, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","winter patisserie, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","ice garden, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","mountain lodge lounge, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","snowy palace terrace, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","winter market, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","frosted forest picnic, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","hotel winter lobby, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","snow season tea room, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","ice-blue ballroom, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","winter library, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","snowy rooftop party, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","frozen lakeside pavilion, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","frosted grand staircase, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","winter candy boutique, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","snow-covered Japanese garden, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall","lavish snow celebration, densely decorated with frosted trees, snowflakes, crystal ornaments, white desserts, hot drinks, lanterns and sparkling snowfall"],"Rainy Season":["rainy hydrangea garden, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy-season cafe, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","wet city alley, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","covered rainy terrace, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy patisserie, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","Japanese rainy garden pavilion, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","hotel rainy lounge, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rain-soaked shopping street, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy glass conservatory, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","covered rooftop terrace, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","hydrangea tea room, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","misty rainy forest, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy shrine courtyard, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy dining room, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","wet riverside promenade, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy candy boutique, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","covered rainy market, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","hydrangea grand staircase, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","rainy library, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall","lavish rainy-season scene, densely filled with hydrangeas, transparent umbrellas, wet reflections, raindrop sweets, tea tables, lanterns and layered rainfall"],"Spring Season":["fresh spring garden, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","botanical conservatory, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","sunny spring cafe, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring meadow picnic, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring salon, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring patisserie, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","garden pavilion, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring market street, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","fresh green park avenue, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring rooftop tea, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring library, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","flower-covered staircase, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring greenhouse cafe, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","riverside spring picnic, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","hotel spring lobby, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring candy boutique, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","sunlit courtyard, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","spring tea room, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","pastel spring festival plaza, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets","lavish spring celebration, densely filled with tulips, daisies, fresh greenery, floral cakes, fruit desserts, tea sets, ribbons and picnic baskets"],"Easter":["pastel Easter garden party, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter patisserie, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter tea room, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","spring Easter picnic, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","grand Easter salon, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter candy boutique, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter conservatory, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter bakery kitchen, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter garden pavilion, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter market street, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","hotel Easter lobby, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter rooftop brunch, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter grand staircase, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter library salon, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","spring Easter cafe, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter greenhouse, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter courtyard, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","Easter confectionery workshop, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","pastel Easter ballroom, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons","lavish Easter celebration, densely decorated with painted eggs, rabbit ornaments, chocolate eggs, bunny cookies, pastel cakes, candies, tulips, baskets and ribbons"],"Birthday Celebration":["luxury birthday salon, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday dessert room, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","rooftop birthday party, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday patisserie, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","hotel birthday ballroom, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday cafe, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","garden birthday party, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday candy boutique, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday grand staircase, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday tea room, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday rooftop picnic, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday library salon, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday bakery kitchen, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday dining room, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday conservatory, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","confetti party room, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday market celebration, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","birthday photo salon, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","night garden birthday, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti","lavish birthday celebration, densely packed with tiered cakes, cupcakes, donuts, cookies, candies, balloons, gifts, flowers, candles, ribbons and confetti"],"Anniversary Celebration":["anniversary dining salon, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary ballroom, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary city terrace, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary patisserie, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","candlelit anniversary restaurant, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","hotel anniversary lounge, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","garden anniversary party, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary grand staircase, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary tea room, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","rooftop anniversary celebration, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary library salon, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary conservatory, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","rose anniversary cafe, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary banquet hall, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","night garden anniversary dinner, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary sweets boutique, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","ornate anniversary parlor, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","waterside anniversary pavilion, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","anniversary photo salon, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details","lavish anniversary celebration, densely decorated with roses, elegant cakes, chocolates, candles, crystal ornaments, ribboned gifts and champagne-gold details"],"Golden Week":["Golden Week travel plaza, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","Japanese sightseeing street, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","scenic holiday garden, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","holiday rooftop cafe, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","Golden Week resort terrace, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","travel concourse, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","seaside promenade, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","holiday amusement plaza, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","mountain-view picnic, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","hotel Golden Week lobby, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","Japanese landmark plaza, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","Golden Week garden cafe, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","holiday market street, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","riverside Golden Week picnic, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","countryside travel station, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","holiday shopping avenue, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","Golden Week resort garden, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","coastal cafe terrace, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","sightseeing observation deck, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations","lavish Golden Week travel celebration, densely filled with regional sweets, souvenir displays, cafe tables, flowers, travel bags, picnic items, colorful banners and bright holiday decorations"]};
 const EVENT_EXTRA_VARIANTS = 200;
 const EVENT_EXISTING_VARIANTS = 15;
 const EVENT_TOTAL_VARIANTS = EVENT_EXISTING_VARIANTS + EVENT_EXTRA_VARIANTS;
@@ -9853,7 +9852,7 @@ function eventExtraValue(eventName, key, familyIndex, variantIndex){
     "CAMERA ANGLE": ["eye-level","slightly low angle","slightly high angle","fashion-editorial three-quarter angle","subtle low angle"][variantIndex%5] + ", coordinated with event styling",
     "SHOT TYPE": ["full body fashion shot","three-quarter body shot","cowboy shot","full body editorial portrait","knee-up fashion portrait"][familyIndex%5] + ", preserving the complete event silhouette",
     "FRAMING": ["full silhouette visible","centered fashion framing","environmental fashion framing","balanced full-body composition","slightly wider fashion framing"][variantIndex%5] + ", event details clearly visible",
-    "BACKGROUND": ((EVENT_BACKGROUND_LIBRARY[eventName] && EVENT_BACKGROUND_LIBRARY[eventName][familyIndex % EVENT_BACKGROUND_LIBRARY[eventName].length]) || t.background.split(", ")[familyIndex % t.background.split(", ").length]) + ", " + variation + ", event-specific environmental storytelling, fully integrated with the outfit",
+    "BACKGROUND": t.background.split(", ")[familyIndex % t.background.split(", ").length] + ", " + eventName + " setting, fully integrated with the outfit",
     "LIGHTING": t.lighting.split(", ")[variantIndex % t.lighting.split(", ").length] + ", coordinated " + eventName + " illumination",
     "COMPOSITION": ["silhouette-first centered composition","event accessory and outfit both clearly visible","fashion editorial composition with environmental context","balanced character-and-background composition","dynamic event fashion composition"][familyIndex%5] + ", " + eventName + " visual hierarchy",
     "OUTFIT PATTERN": t.pattern.split(", ")[familyIndex % t.pattern.split(", ").length] + " motif, " + material + " texture, " + eventName + " event pattern"
@@ -10094,29 +10093,6 @@ function strengthenOutfitCategory(key, value){
 }
 
 
-
-// v9 FINAL OUTPUT RULE:
-// The six expression-technique source categories remain selectable internally,
-// but PIXAI output must contain ONLY one merged [EXPRESSION TECHNIQUE] block.
-function sanitizeExpressionTechniqueOutput(text){
-  if(!text) return text;
-  let out=String(text);
-
-  // Remove all legacy standalone blocks regardless of position, blank lines,
-  // CRLF/LF differences, or whether the block is the final block.
-  out=out.replace(/(?:^|\r?\n)\s*\[(?:POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\]\s*[^\r\n]*(?=\r?\n|$)/g,'');
-
-  // If multiple integrated blocks somehow exist, keep only the first.
-  let seen=false;
-  out=out.replace(/(?:^|\r?\n)\s*\[EXPRESSION TECHNIQUE\]\s*[^\r\n]*/g,function(m){
-    if(seen) return '';
-    seen=true;
-    return m;
-  });
-
-  return out.replace(/\r?\n{3,}/g,'\n\n').trim();
-}
-
 function updatePrompt(){
   syncFramingWithShotType();
   const selected = [];
@@ -10132,9 +10108,7 @@ function updatePrompt(){
       }
       value = getOutfitPromptValue(key, value, genre, catSelect("OUTFIT CONCEPT") ? catSelect("OUTFIT CONCEPT").value : "");
       if(key !== "OUTFIT CONCEPT") value = strengthenOutfitCategory(key, value);
-      if(window.__balloonSkirtAPI && window.__balloonSkirtAPI.isActive()){
-        value = window.__balloonSkirtAPI.enforceCategory(key, value);
-      }
+      if(typeof window.isBalloonSkirtThemeActive==='function' && window.isBalloonSkirtThemeActive()) value = window.enforceBalloonSkirtCategory(key, value);
       selected.push("[" + key + "] " + value);
     }
   });
@@ -12219,6 +12193,47 @@ updatePrompt();</script>
     if(opts.length){s.value=opts[0].value; return true;} return false;
   }
 
+  // v10: event owns the location; scene adds atmosphere without replacing it.
+  const EVENT_SCENE_MOOD = {
+    day:'clear daytime atmosphere, natural daylight',
+    night:'nighttime atmosphere, softly illuminated event decorations',
+    stage:'live-performance staging, theatrical event lighting',
+    outdoor:'open-air event setting, natural surroundings',
+    luxury:'luxurious event decor, refined ornamental details',
+    urban:'urban event surroundings, city architecture',
+    fantasy:'enchanted event atmosphere, subtle magical accents',
+    cinematic:'cinematic event atmosphere, dramatic depth and contrast'
+  };
+  function applyEventBackground(eventIndex,scene,randomize){
+    const s=catSelect('BACKGROUND'); if(!s || eventIndex<0) return false;
+    const d=window.__activeEventDesign;
+    const f=!randomize && d && d.eventIndex===eventIndex ? d.family : Math.floor(Math.random()*20);
+    const v=!randomize && d && d.eventIndex===eventIndex ? d.variant : Math.floor(Math.random()*10);
+    ensureSeasonExtraOptionsInSelect('BACKGROUND',eventIndex);
+    const candidate=Array.from(s.options).find(o=>o.dataset.seasonExtra==='1' && Number(o.dataset.seasonFamily)===f && Number(o.dataset.seasonVariant)===v);
+    if(!candidate) return false;
+    const base=candidate.value;
+    Array.from(s.options).filter(o=>o.dataset.eventSceneBackground==='1').forEach(o=>o.remove());
+    if(scene==='normal'){s.value=base; return true;}
+    const o=document.createElement('option');
+    o.value=base+'; '+EVENT_SCENE_MOOD[scene];
+    o.textContent='EVENT × SCENE｜'+SEASON_EVENT_NAMES[eventIndex]+'｜'+o.value;
+    o.dataset.eventSceneBackground='1'; o.dataset.seasonEvent=String(eventIndex);
+    s.appendChild(o); s.value=o.value; return true;
+  }
+  function clearEventBackground(){
+    const s=catSelect('BACKGROUND'); if(!s) return;
+    const current=s.options[s.selectedIndex];
+    const wasEvent=current && current.dataset.seasonEvent!==undefined;
+    Array.from(s.options).filter(o=>o.dataset.eventSceneBackground==='1').forEach(o=>o.remove());
+    if(wasEvent){
+      const scene=getSceneMode(), theme=getThemeMode();
+      if(scene!=='normal') sceneValueForFamily('BACKGROUND',scene,Math.floor(Math.random()*10),0);
+      else if(theme!=='normal') themeValueForFamily(theme,'BACKGROUND',Math.floor(Math.random()*20),0);
+      else {s.selectedIndex=0; originalRandomSelect(s);}
+    }
+  }
+
   function applyThreeAxes(randomize){
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     if(theme!=='normal') ensureThemeOptions(theme);
@@ -12264,7 +12279,10 @@ updatePrompt();</script>
 
     // SCENE owns only environmental/cinematic categories and therefore remains additive.
     if(scene!=='normal'){
-      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));});
+      ["BACKGROUND","LIGHTING","COMPOSITION"].forEach(function(key){if(key==='BACKGROUND' && eventIndex>=0) return; sceneValueForFamily(key,scene,Math.floor(Math.random()*10),Math.floor(Math.random()*50));});
+    }
+    if(eventIndex>=0){
+      applyEventBackground(eventIndex,scene,false);
     }
     updatePrompt();
   }
@@ -12305,7 +12323,8 @@ updatePrompt();</script>
         applySeasonEventBulk(idx);
         applyThreeAxes(true);
       } else {
-        updatePrompt();
+        clearEventBackground();
+        applyThreeAxes(true);
       }
     });
   }
@@ -12319,6 +12338,7 @@ updatePrompt();</script>
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
     // A category random action changes only its own axis; active BASE/EVENT/SCENE axes
     // remain intact instead of taking priority over one another.
+    if(key==='BACKGROUND' && eventIndex>=0) return applyEventBackground(eventIndex,scene,true);
     if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
       ensureSeasonExtraOptionsInSelect(key,eventIndex);
       const design=window.__activeEventDesign || {family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
@@ -12337,6 +12357,7 @@ updatePrompt();</script>
     const s=catSelect(key); if(!s) return false;
     const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
     if(theme==='balloon_skirt' && key==='SKIRT'){ enforceBalloonSkirtSelection(); return true; }
+    if(key==='BACKGROUND' && eventIndex>=0) return applyEventBackground(eventIndex,scene,true);
     if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
       ensureSeasonExtraOptionsInSelect(key,eventIndex);
       const design=window.__activeEventDesign || {eventIndex:eventIndex,family:Math.floor(Math.random()*20),variant:Math.floor(Math.random()*10)};
@@ -12383,7 +12404,7 @@ updatePrompt();</script>
     gothic_lolita:"(Gothic Lolita fashion:1.4); (Japanese Gothic Lolita:1.35); (dark Lolita aesthetic:1.3); (bell-shaped gothic skirt:1.25); (black lace and ruffles:1.2); (ornamental corset detailing:1.2); dark romantic styling; gothic accessories; refined Victorian influence",
     sports:"(sports fashion:1.4); (athletic fashion styling:1.35); (authentic sportswear construction:1.3); (performance athletic silhouette:1.25); (functional activewear details:1.2); sporty technical fabric; coordinated athletic footwear; clean dynamic sports styling",
     wedding:"(bridal wedding fashion:1.4); (elegant bridal gown styling:1.35); (wedding couture:1.3); (bridal silhouette:1.25); (lace and delicate embellishment:1.2); (refined bridal details:1.2); coordinated bridal accessories; luxurious ceremonial styling",
-    balloon_skirt:"(bubble skirt:1.3); rounded bubble-hem silhouette; fitted waistband; softly gathered fabric; lower hem tucked inward; compact sculpted skirt volume; wearable fashion garment",
+    balloon_skirt:"(bubble skirt:1.45); (puffball skirt:1.4); (bubble-hem skirt:1.35); (rounded inflated skirt silhouette:1.35); (gathered inward hem:1.3); (tucked-under hem:1.3); (outer skirt gathered over a shorter inner lining:1.3); (rounded bubble-shaped volume:1.3); wearable fashion skirt garment; fitted waistband; compact rounded lower volume; clearly visible bubble-hem construction",
     agejo_gyaru:"(Agejo Gyaru fashion:1.4); (Japanese glam gyaru fashion:1.35); (black and pink glam styling:1.3); (sexy feminine fashion:1.25); (corset-inspired detailing:1.2); (lace and rose embellishment:1.2); fur accents; rhinestones and pearls; platform footwear; glamorous night-out styling",
     korean_beauty:"(Korean beauty fashion:1.4); (Korean ulzzang-inspired fashion:1.35); (effortless Korean styling:1.3); (elongated clean silhouette:1.25); (high-waisted leg-lengthening styling:1.2); refined minimal details; polished feminine casualwear; modern Seoul fashion aesthetic",
     chinese_lolita:"(Chinese Lolita fashion:1.4); (Qi Lolita:1.35); (Chinese traditional fashion fused with Lolita:1.3); (mandarin collar:1.25); (Chinese frog closures:1.25); (brocade and Chinese embroidery:1.2); (Lolita bell skirt:1.2); (Chinese knot ornaments:1.2); peony and oriental motifs; refined Chinese Lolita styling",
@@ -12402,17 +12423,17 @@ updatePrompt();</script>
   /* ============================================================
      BALLOON SKIRT — dedicated structural safeguard
      Only the 🎈バルーンスカート BASE theme uses this override.
-     The model-facing vocabulary now uses one primary "bubble skirt"
-     anchor plus concise bubble-hem construction cues, reducing
-     redundant weighted terms while avoiding standalone "balloon" imagery.
+     The model-facing vocabulary deliberately favors the learned
+     "bubble skirt / puffball skirt / bubble-hem" concepts and
+     construction details, avoiding standalone "balloon" imagery.
      ============================================================ */
   const BALLOON_SKIRT_STRUCTURE = {
-    "OUTFIT CONCEPT":"wearable fashion outfit centered on a compact bubble skirt",
-    "OUTFIT STRUCTURE":"bubble-hem skirt construction with a fitted waistband, softly gathered fabric, and a lower hem tucked inward to create controlled rounded volume",
-    "SKIRT":"(bubble skirt:1.35); rounded bubble-hem silhouette; fitted waistband; softly gathered fabric; lower hem tucked inward; compact sculpted skirt volume; wearable fashion garment",
-    "WAIST DESIGN":"clean fitted waistband supporting the rounded skirt volume",
-    "DESIGN LANGUAGE":"refined sculptural bubble-hem fashion; compact rounded silhouette; controlled volume",
-    "OUTFIT PATTERN":"surface details follow the rounded skirt panels while preserving the bubble-hem silhouette"
+    "OUTFIT CONCEPT":"wearable bubble-skirt fashion outfit built around a fitted waistband and a compact rounded bubble skirt",
+    "OUTFIT STRUCTURE":"structured bubble-skirt construction; outer skirt is fuller than a shorter inner lining; lower edge is gathered and tucked inward to form a rounded enclosed hem; controlled compact volume",
+    "SKIRT":"(bubble skirt:1.5); (puffball skirt:1.4); (bubble-hem skirt:1.35); rounded compact skirt silhouette; fitted waistband; evenly gathered outer skirt; shorter inner lining; lower hem gathered inward and tucked under; enclosed rounded volume; wearable fashion garment",
+    "WAIST DESIGN":"fitted clean waistband supporting a rounded bubble skirt; controlled waist gathers",
+    "DESIGN LANGUAGE":"sculptural bubble-hem fashion design; rounded compact silhouette; controlled gathered construction; wearable editorial skirt design",
+    "OUTFIT PATTERN":"pattern and surface details follow the rounded bubble-skirt panels without changing the compact silhouette"
   };
 
   function isBalloonSkirtThemeActive(){
@@ -12454,7 +12475,7 @@ updatePrompt();</script>
       if(!opt){
         opt=document.createElement('option');
         opt.value=BALLOON_SKIRT_STRUCTURE['SKIRT'];
-        opt.textContent='BALLOON｜軽量専用構造｜Bubble Hem / Tucked Hem';
+        opt.textContent='BALLOON｜専用構造｜Bubble / Puffball / Tucked Hem';
         opt.dataset.balloonSkirtFixed='1';
         s.appendChild(opt);
       }
@@ -12462,13 +12483,8 @@ updatePrompt();</script>
     }
   }
 
-  // v8: expose only the balloon helpers needed by the global prompt builder.
-  // This prevents ReferenceError caused by crossing the 3-axis IIFE scope.
-  window.__balloonSkirtAPI={
-    isActive:isBalloonSkirtThemeActive,
-    enforceCategory:enforceBalloonSkirtCategory,
-    enforceSelection:enforceBalloonSkirtSelection
-  };
+  window.isBalloonSkirtThemeActive=isBalloonSkirtThemeActive;
+  window.enforceBalloonSkirtCategory=enforceBalloonSkirtCategory;
 
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
@@ -12569,88 +12585,71 @@ updatePrompt();</script>
 
   function fitPromptToPixAI4096(text){
     const LIMIT=4096;
-    if(!text) return text;
+    if(!text || text.length<=LIMIT) return text;
 
-    let out=String(text)
+    // まず冗長な連動説明を削除。実際の27カテゴリ選択値は残す。
+    // Leave room for the selected background and six-axis technique block.
+    text=text.replace(/(\[EVENT FUSION\] )([^\n]*)/,function(_,label,body){
+      if(body.length<=1100) return label+body;
+      let kept='';
+      body.split(';').some(function(part){const next=kept?kept+';'+part:part;if(next.length>1100)return true;kept=next;return false;});
+      return label+kept;
+    });
+    let out=text
       .replace(/\n\[OUTFIT CONCEPT LINK\][^\n]*/g,'')
-      .replace(/\n{3,}/g,'\n\n')
-      .trim();
+      .replace(/\n{3,}/g,'\n\n');
     if(out.length<=LIMIT) return out;
 
-    // v7: Never solve an over-limit prompt by dropping selected categories.
-    // Parse every [BLOCK], keep every block header, then compact bodies evenly.
-    const matches=[...out.matchAll(/(?:^|\n)\[([^\]]+)\]\s*([\s\S]*?)(?=\n\[[^\]]+\]|$)/g)];
-    if(!matches.length) return out.slice(0,LIMIT);
-
-    const protectedKeys=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE']);
-    let blocks=matches.map(m=>({key:m[1], body:m[2].replace(/\s+/g,' ').trim()}));
-
-    function render(arr){
-      return arr.map(b=>'['+b.key+'] '+b.body).join('\n\n');
-    }
-    function compactBody(body,maxLen){
-      if(body.length<=maxLen) return body;
-      const semis=body.split(';').map(x=>x.trim()).filter(Boolean);
-      let acc='';
-      for(const part of semis){
-        const next=acc ? acc+'; '+part : part;
-        if(next.length>maxLen) break;
-        acc=next;
-      }
-      if(acc) return acc;
-      return body.slice(0,maxLen).replace(/\s+\S*$/,'').trim();
-    }
-
-    // Progressive equal compaction. All block names survive every pass.
-    const passes=[
-      {protected:260, normal:125},
-      {protected:220, normal:100},
-      {protected:190, normal:82},
-      {protected:165, normal:68},
-      {protected:145, normal:56}
-    ];
-    for(const pass of passes){
-      blocks=blocks.map(b=>({
-        key:b.key,
-        body:compactBody(b.body, protectedKeys.has(b.key)?pass.protected:pass.normal)
-      }));
-      out=render(blocks);
-      if(out.length<=LIMIT) return out;
-    }
-
-    // Final proportional pass: reserve every header first, then share remaining
-    // characters across every block instead of deleting later categories.
-    const headerCost=blocks.reduce((sum,b)=>sum+b.key.length+5,0); // [] + space + separators
-    const bodyBudget=Math.max(blocks.length*24, LIMIT-headerCost-(blocks.length-1)*2);
-    const protectedCount=blocks.filter(b=>protectedKeys.has(b.key)).length || 1;
-    const normalCount=Math.max(1,blocks.length-protectedCount);
-    const protectedBudget=Math.floor(bodyBudget*0.42);
-    const normalBudget=bodyBudget-protectedBudget;
-    const pEach=Math.max(40,Math.floor(protectedBudget/protectedCount));
-    const nEach=Math.max(24,Math.floor(normalBudget/normalCount));
-    blocks=blocks.map(b=>({
-      key:b.key,
-      body:compactBody(b.body, protectedKeys.has(b.key)?pEach:nEach)
-    }));
-    out=render(blocks);
-
-    // In the extremely unlikely case it is still long, shorten bodies one
-    // character cycle at a time but never remove a selected block.
-    let guard=0;
-    while(out.length>LIMIT && guard<5000){
-      let changed=false;
-      for(let i=blocks.length-1;i>=0 && out.length>LIMIT;i--){
-        const minLen=protectedKeys.has(blocks[i].key)?32:18;
-        if(blocks[i].body.length>minLen){
-          blocks[i].body=blocks[i].body.slice(0,-1).trimEnd();
-          changed=true;
-          out=render(blocks);
+    // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
+    // EVENT/BASEの重要ブロックはこの段階では削らない。
+    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','CHARACTER','FACE','STYLE','BACKGROUND']);
+    const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
+    for(let pass=0; pass<3 && out.length>LIMIT; pass++){
+      const maxLen=pass===0?150:(pass===1?115:90);
+      const compacted=blocks.map(block=>{
+        const m=block.match(/^(\n\[([^\]]+)\]\s*)([\s\S]*)$/);
+        if(!m || protectedKeys.has(m[2])) return block;
+        let body=m[3].replace(/\s+/g,' ').trim();
+        if(body.length>maxLen){
+          const parts=body.split(';').map(x=>x.trim()).filter(Boolean);
+          let acc='';
+          for(const part of parts){
+            const next=acc ? acc+'; '+part : part;
+            if(next.length>maxLen) break;
+            acc=next;
+          }
+          body=acc || body.slice(0,maxLen).replace(/\s+\S*$/,'')+'…';
         }
-      }
-      if(!changed) break;
-      guard++;
+        return m[1]+body;
+      }).join('');
+      out=compacted;
     }
-    return out.slice(0,LIMIT);
+    if(out.length<=LIMIT) return out;
+
+    // 最終安全弁：重要ブロックを残したまま、低優先度カテゴリの本文をさらに圧縮する。
+    // それでも超える場合は、重要ブロック以外を後方から削って4096文字以内を保証する。
+    const priority=['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','BACKGROUND'];
+    const parsed=out.split(/(?=\n\[[^\]]+\])/);
+    const important=[], optional=[];
+    parsed.forEach(function(block){
+      const m=block.match(/^\n?\[([^\]]+)\]/);
+      if(m && priority.indexOf(m[1])>=0) important.push(block); else optional.push(block);
+    });
+    let keep=important.join('');
+    if(keep.length>LIMIT) return keep.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
+    for(let i=0;i<optional.length;i++){
+      const candidate=keep+optional[i];
+      if(candidate.length<=LIMIT) keep=candidate;
+      else {
+        const room=LIMIT-keep.length-1;
+        if(room>30){
+          const body=optional[i].replace(/\s+/g,' ').trim();
+          keep += '\n'+body.slice(0,room).replace(/\s+\S*$/,'')+'…';
+        }
+        break;
+      }
+    }
+    return keep.slice(0,LIMIT);
   }
 
   const originalUpdatePrompt=window.updatePrompt;
@@ -12660,29 +12659,9 @@ updatePrompt();</script>
     if(promptEl){
       // Keep the six UI controls, but never emit their legacy six standalone
       // blocks. The final PIXAI prompt uses one integrated EXPRESSION TECHNIQUE block.
-      promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
-      promptEl.value=sanitizeExpressionTechniqueOutput(
-        fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value))
-      );
-
-      // v7 integrity guard: selected UI categories must be represented in output.
-      const selectedKeys=CAT_KEYS.filter(function(key){
-        const s=catSelect(key); return !!(s && s.value);
-      });
-      const represented=selectedKeys.filter(function(key){
-        return promptEl.value.indexOf('['+key+']')>=0 ||
-          (['POSE','GAZE','SUBJECT ORIENTATION','CAMERA ANGLE','SHOT TYPE','FRAMING'].indexOf(key)>=0 &&
-           promptEl.value.indexOf('[EXPRESSION TECHNIQUE]')>=0);
-      });
-      if(selectedKeys.length && represented.length < Math.min(selectedKeys.length, 10)){
-        originalUpdatePrompt();
-        promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
-        promptEl.value=sanitizeExpressionTechniqueOutput(
-        fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value))
-      );
-      }
+      promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*/g,'');
+      promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
     }
-    if(promptEl) promptEl.value=sanitizeExpressionTechniqueOutput(promptEl.value);
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
     if(st) st.textContent='🎛️ 3軸：'+THEME_MODES[theme].icon+' '+THEME_MODES[theme].label+' ＋ '+(eventIndex>=0?('🎃 '+SEASON_EVENT_NAMES[eventIndex]):'イベントOFF')+' ＋ '+SCENE_MODES[scene].icon+' '+SCENE_MODES[scene].label;
@@ -12807,36 +12786,14 @@ updatePrompt();</script>
   }
   function initSelector(def){
     const sel=document.getElementById(def.select); if(!sel) return;
-    Object.keys(def.groups).forEach(group=>{
-      let o=Array.from(sel.options).find(x=>x.value===group);
-      if(!o){
-        o=document.createElement('option');
-        o.value=group;
-        o.textContent=group==='AUTO_RANDOM'?'🎲 自動ランダム':group;
-        sel.appendChild(o);
-      }
-    });
-    if(!sel.value || !def.groups[sel.value]) sel.value='AUTO_RANDOM';
+    Object.keys(def.groups).forEach(group=>{const o=document.createElement('option');o.value=group;o.textContent=group==='AUTO_RANDOM'?'🎲 自動ランダム':group;sel.appendChild(o);});
+    sel.value='AUTO_RANDOM';
     sel.addEventListener('change',function(){chooseFor(def,def.select,false);if(typeof window.updatePrompt==='function')window.updatePrompt();updateTechniqueStatus();});
   }
   function hideManagedCategories(){
     MANAGED.forEach(key=>{const s=catSelect(key);if(!s)return;const sec=s.closest('section.cat');if(sec)sec.classList.add('technique-managed-hidden');});
   }
   Object.values(TECH).forEach(initSelector);
-  // Safari safety net: restore technique selectors if another initialization step empties them.
-  Object.values(TECH).forEach(def=>{
-    const sel=document.getElementById(def.select);
-    if(!sel) return;
-    if(sel.options.length===0){
-      Object.keys(def.groups).forEach(group=>{
-        const o=document.createElement('option');
-        o.value=group;
-        o.textContent=group==='AUTO_RANDOM'?'🎲 自動ランダム':group;
-        sel.appendChild(o);
-      });
-      sel.value='AUTO_RANDOM';
-    }
-  });
   hideManagedCategories();
 
   window.__applyTechniqueModes=function(randomizeGroup){applyAll(!!randomizeGroup);if(typeof window.updatePrompt==='function')window.updatePrompt();};
