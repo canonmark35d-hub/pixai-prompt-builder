@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜宝石イベント・宝石別選択版 v22.3｜2026-10-08 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜宝石イベント・宝石別選択版 v22.3｜2026-10-08 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -63,6 +63,16 @@ button.secondary,button.dice{background:#eee;color:#333}
 </section>
 <section class="panel">
 <h2>🎲 ランダム設定</h2>
+<div class="bulk-mode-v222" style="padding:12px;border:1px solid #aaa;border-radius:12px;margin:10px 0 14px">
+<label for="bulkModeV222"><strong>🔒 一括変更の対象（固定する側を選択）</strong></label>
+<select id="bulkModeV222" style="width:100%;margin:8px 0">
+<option value="variables">① 表現技法を固定 → 可変カテゴリだけ変更</option>
+<option value="technique">② 可変カテゴリを固定 → 表現技法の大分類＋明細だけ変更</option>
+<option value="all">③ 全カテゴリ変更（表現技法＋可変カテゴリ）</option>
+</select>
+<button type="button" id="bulkExecuteV222" style="width:100%">🎲 選択した対象だけ一括変更</button>
+<p class="note" id="bulkModeNoteV222" aria-live="polite">表現技法6項目を保持し、可変カテゴリだけを変更します。モード切替だけでは選択値は変わりません。</p>
+</div>
 <p class="note">固定プロンプトは変更されません。</p>
 <div class="actions">
 <button id="randomAll" onclick="randomAll()" type="button">🎲 全カテゴリランダム</button>
@@ -80,10 +90,15 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="0">Halloween</option><option value="1">Christmas</option><option value="2">New Year</option><option value="3">Valentine's Day</option><option value="4">White Day</option>
     <option value="5">Hinamatsuri</option><option value="6">Tanabata</option><option value="7">Cherry Blossom Season</option><option value="8">Summer Festival</option><option value="9">Fireworks Night</option>
     <option value="10">Moon Viewing</option><option value="11">Autumn Leaves Season</option><option value="12">Harvest Season</option><option value="13">Snow Season</option><option value="14">Rainy Season</option>
-    <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option>
+    <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option><option value="20">💎 宝石イベント（Gemstone Jewelry）</option>
   </select>
 </div>
 <p class="note">一括設定中は、選択したイベントの候補だけを各カテゴリへ自動適用します。ランダム設定でも他の季節・通常候補には切り替わりません。個別カテゴリは引き続き変更できます。</p>
+<div id="gemstoneSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
+<label for="gemstoneTypeBulk" style="display:block;font-weight:700;margin-bottom:6px">💎 宝石の種類（イベント専用）</label>
+<select id="gemstoneTypeBulk" aria-label="宝石の種類"><option value="random">🎲 宝石を自動選択</option><option value="diamond">ダイヤモンド</option><option value="ruby">ルビー</option><option value="sapphire">サファイア</option><option value="emerald">エメラルド</option><option value="amethyst">アメジスト</option><option value="opal">オパール</option><option value="pearl">パール</option><option value="aquamarine">アクアマリン</option><option value="topaz">トパーズ</option><option value="garnet">ガーネット</option><option value="peridot">ペリドット</option><option value="tanzanite">タンザナイト</option><option value="tourmaline">トルマリン</option><option value="moonstone">ムーンストーン</option><option value="alexandrite">アレキサンドライト</option><option value="lapis">ラピスラズリ</option></select>
+<p class="note">選択した宝石の色彩・カット・装飾を衣装に融合します。ベーステーマや表現技法は保持します。</p>
+</div>
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
@@ -9800,7 +9815,7 @@ SEASONAL_EVENT_OPTIONS["OUTFIT PATTERN"] = [
 // 既存300種類（20イベント×15）を変更せず、追加分は必要時に遅延生成する。
 // これによりDOMを巨大化させず、iPhone/Safariでも扱いやすくする。
 // ============================================================
-const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week"];
+const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week","Gemstone Jewelry"];
 const EVENT_SILHOUETTES = [
   "structured corset mini dress", "cropped jacket + pleated mini skirt", "fitted blouse + high-waisted tailored shorts", "fitted vest + wide-leg trousers", "cape + fitted mini dress", "peplum top + flared mini skirt", "off-shoulder top + layered mini skirt", "asymmetric tunic + slim trousers", "cropped bolero + tiered mini skirt", "fitted fashion jumpsuit", "bustier top + tailored trousers", "structured collar top + A-line mini skirt", "babydoll mini dress", "longline coat + fitted mini dress", "cropped jacket + high-waisted mini skirt", "halter top + wrap mini skirt", "tailored blazer mini dress", "fitted knit top + pleated mini skirt", "draped fitted top + flared mini skirt", "ornamental bodice + tailored shorts"
 ];
@@ -9827,6 +9842,7 @@ const EVENT_THEME_LIBRARY = {
   "Easter": {palette:"lavender, mint, butter yellow, blush pink, ivory",materials:"tulle, satin, cotton, lace, soft knit",motifs:"rabbit, egg, tulip, ribbon, carrot, spring flower",hair:"rabbit-ear-inspired ribbon styling, pastel braids, soft curls, playful half-up hair",accessory:"rabbit clip, pastel bow, egg ornament, flower crown accent",shoes:"pastel Mary Janes, ribbon pumps, ankle boots, spring sandals",pattern:"rabbit, decorated egg, tulip, ribbon, spring floral motif",background:"Easter garden, pastel tea party room, flower meadow, decorated spring salon",lighting:"soft pastel daylight, cheerful spring glow, warm garden light",language:"Easter couture, playful pastel fashion, refined spring celebration styling"},
   "Birthday Celebration": {palette:"lilac, champagne, pastel blue, hot pink, ivory",materials:"satin, tulle, sequins, silk, chiffon",motifs:"cake, candle, balloon, ribbon, confetti, gift",hair:"party curls, ribboned ponytail, elegant half-up hair, playful bun",accessory:"birthday bow, crystal clip, mini crown, ribbon ornament",shoes:"party pumps, glitter heels, ribbon Mary Janes, crystal sandals",pattern:"confetti, candle, balloon, gift ribbon, cake motif",background:"luxury birthday salon, decorated party room, elegant cake table, rooftop celebration",lighting:"soft party lights, champagne glow, sparkling bokeh",language:"luxury birthday couture, celebratory fashion, glamorous party styling"},
   "Anniversary Celebration": {palette:"ruby, ivory, champagne gold, rose pink, black",materials:"velvet, silk, satin, lace, sequins",motifs:"rose, ribbon, crystal, champagne motif, anniversary seal",hair:"elegant anniversary waves, polished bun, rose-adorned half-up hair, refined ponytail",accessory:"rose hair ornament, crystal clip, gold ribbon, pearl comb",shoes:"luxury pumps, satin heels, crystal sandals, elegant ankle boots",pattern:"rose, ribbon, crystal, champagne motif, ornamental seal",background:"luxury anniversary salon, candlelit dining room, grand ballroom, rose-filled terrace",lighting:"champagne golden light, candlelight, romantic evening glow",language:"anniversary luxury couture, elegant celebration fashion, refined romantic styling"},
+  "Gemstone Jewelry": {palette:"diamond white, ruby red, sapphire blue, emerald green, amethyst violet, precious metal accents",materials:"silk, satin, velvet, jacquard, crystal beading",motifs:"faceted gemstones, gem cuts, jewel settings, prismatic facets, crystal embroidery",hair:"polished updo, jewel-accented braid, soft glamorous waves",accessory:"delicate gemstone hairpin, faceted jewel clip, refined jeweled ribbon",shoes:"gem-buckle pumps, jewel-trimmed heels, refined metallic shoes",pattern:"faceted gemstone, prismatic geometry, jewel embroidery",background:"jewel gallery, crystalline palace, elegant gemstone exhibition, luxury jewelry atelier",lighting:"prismatic highlights, soft jewel reflections, refined studio glow",language:"gemstone-inspired luxury couture, elegant jeweled fashion"},
   "Golden Week": {palette:"sunny yellow, red, white, blue, gold",materials:"linen, cotton, satin, lightweight twill, woven textile",motifs:"sun, travel badge, ribbon, bunting, landmark-inspired emblem",hair:"travel-ready ponytail, casual waves, braided half-up hair, cheerful bun",accessory:"travel ribbon, sun clip, small badge ornament, floral clip",shoes:"comfortable fashion sneakers, loafers, sandals, ankle boots",pattern:"sun, bunting, travel emblem, stripe, celebratory graphic",background:"Japanese travel destination, sunny landmark plaza, scenic garden, lively holiday street",lighting:"bright holiday daylight, clear blue-sky light, warm sunset",language:"Golden Week travel couture, polished holiday fashion, modern Japanese leisure styling"}
 };
 
@@ -12500,6 +12516,43 @@ updatePrompt();</script>
   window.isBalloonSkirtThemeActive=isBalloonSkirtThemeActive;
   window.enforceBalloonSkirtCategory=enforceBalloonSkirtCategory;
 
+  // v22.3: Gemstone selection is an additive EVENT overlay, independent of pose/framing.
+  const GEMSTONE_DETAILS={
+    diamond:['diamond','icy white and platinum silver','brilliant-cut facets, precise clear crystal embroidery'],
+    ruby:['ruby','deep ruby crimson and warm antique gold','oval-cut ruby cabochons, ruby-colored bead embroidery'],
+    sapphire:['sapphire','royal sapphire blue and polished silver','cushion-cut blue sapphire accents, blue jewel embroidery'],
+    emerald:['emerald','rich emerald green and antique gold','emerald-cut geometric jewel details, green gemstone inlays'],
+    amethyst:['amethyst','violet purple and cool silver','amethyst crystal facets, purple gemstone beadwork'],
+    opal:['opal','iridescent ivory with pastel rainbow reflections','opalescent inlays, subtle shifting-color embroidery'],
+    pearl:['pearl','luminous ivory and champagne','natural pearl beading, pearl-button ornamentation'],
+    aquamarine:['aquamarine','clear aqua blue and silver','transparent aqua jewel facets, delicate sea-blue beadwork'],
+    topaz:['topaz','golden amber and warm champagne','golden topaz-cut accents, honey-colored jewel embroidery'],
+    garnet:['garnet','wine red and dark antique gold','deep garnet stone settings, burgundy bead embroidery'],
+    peridot:['peridot','fresh olive green and pale gold','peridot-green gem settings, leaf-like faceted motifs'],
+    tanzanite:['tanzanite','blue-violet and cool platinum','blue-violet gemstone facets, refined jewel-thread details'],
+    tourmaline:['tourmaline','pink and green gemstone gradients','bicolor tourmaline-like inlays, multitone faceted motifs'],
+    moonstone:['moonstone','milky white with soft blue iridescence','moonstone-like cabochons, soft pearlescent embroidery'],
+    alexandrite:['alexandrite','shifting teal green and violet','dual-tone faceted jewel settings, color-shift motifs'],
+    lapis:['lapis lazuli','deep ultramarine and fine gold','lapis-like blue inlays, tiny golden mineral flecks']
+  };
+  function selectedGemstone(){
+    const select=byId('gemstoneTypeBulk');
+    const value=select ? select.value : 'random';
+    if(value!=='random' && GEMSTONE_DETAILS[value]) return GEMSTONE_DETAILS[value];
+    const keys=Object.keys(GEMSTONE_DETAILS);
+    const design=window.__activeEventDesign || {family:0,variant:0};
+    return GEMSTONE_DETAILS[keys[((Number(design.family)||0)*10+(Number(design.variant)||0))%keys.length]];
+  }
+  function updateGemstoneVisibility(){
+    const panel=byId('gemstoneSelectorPanel');
+    if(panel) panel.style.display=getSeasonBulkIndex()===20?'block':'none';
+  }
+  const gemstoneSelect=byId('gemstoneTypeBulk');
+  if(gemstoneSelect) gemstoneSelect.addEventListener('change',function(){updatePrompt();});
+  const gemstoneSeason=byId('seasonEventBulk');
+  if(gemstoneSeason) gemstoneSeason.addEventListener('change',function(){updateGemstoneVisibility();});
+  updateGemstoneVisibility();
+
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
     if(eventIndex<0) return '';
@@ -12515,6 +12568,12 @@ updatePrompt();</script>
       if(opts.length) parts.push(opts[0].value);
     });
     const eventName=SEASON_EVENT_NAMES[eventIndex];
+    if(eventIndex===20){
+      const gem=selectedGemstone();
+      const theme=getThemeMode();
+      const identity=theme==='normal'?'selected fashion design':(THEME_MODES[theme] && THEME_MODES[theme].label || 'selected fashion design');
+      return '[EVENT FUSION] Gemstone Jewelry; primary gemstone: '+gem[0]+'; coordinated gemstone palette: '+gem[1]+'; garment-integrated details: '+gem[2]+'; preserve the original '+identity+' silhouette and construction; gemstone color placement in visible bodice, collar, sleeves, waistband and fabric trim; jewel-inspired embroidery and ornamental fasteners, not merely separate jewelry; tasteful gemstone accents with accurate local clothing colors; premium couture craftsmanship';
+    }
     const theme=getThemeMode();
     const t=EVENT_THEME_LIBRARY[eventName] || {};
     const base=BASE_THEME_EMPHASIS[theme] || '';
@@ -12823,11 +12882,22 @@ updatePrompt();</script>
   window.__applyTechniqueModes=function(changeGroup){applyAll(!!changeGroup);finish();};
   window.__randomizeTechniqueConcrete=function(){applyAll(false);};
   const oldRandomVariables=window.randomVariables,oldRandomAll=window.randomAll;
-  if(typeof oldRandomVariables==='function')window.randomVariables=function(){oldRandomVariables();applyAll(true);finish();};
+  if(typeof oldRandomVariables==='function')window.randomVariables=function(){oldRandomVariables();finish();};
   if(typeof oldRandomAll==='function')window.randomAll=function(){oldRandomAll();applyAll(true);finish();};
   ['themeModeBulk','seasonEventBulk','sceneModeBulk'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{
     setTimeout(()=>{applyAll(false);finish();},0);
   }));
+  // v22.2: independent bulk mode, no changes to the established prompt compiler.
+  const bulkMode=document.getElementById('bulkModeV222');
+  const bulkNote=document.getElementById('bulkModeNoteV222');
+  const descriptions={variables:'表現技法6項目を固定し、可変カテゴリだけ変更します。',technique:'可変カテゴリをすべて固定し、表現技法6項目の大分類＋明細だけ変更します。',all:'可変カテゴリと表現技法6項目を両方変更します。'};
+  bulkMode.addEventListener('change',()=>{bulkNote.textContent=descriptions[bulkMode.value]+' モード切替だけでは選択値は変わりません。';});
+  document.getElementById('bulkExecuteV222').addEventListener('click',()=>{
+    if(bulkMode.value==='variables'){window.randomVariables();}
+    else if(bulkMode.value==='technique'){applyAll(true);finish();}
+    else {window.randomVariables();applyAll(true);finish();}
+    bulkNote.textContent=descriptions[bulkMode.value]+' 一括変更を実行しました。';
+  });
   const oldClearVariables=window.clearVariables;
   if(typeof oldClearVariables==='function')window.clearVariables=function(){
     Object.values(TECH).forEach(d=>{delete state[d.key];document.getElementById(d.select).value='AUTO_RANDOM';renderDetails(d,'AUTO_RANDOM','');});
