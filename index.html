@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜画角優先・競合整理版 v22｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜画角優先・競合整理版 v22｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12855,7 +12855,49 @@ updatePrompt();</script>
  lines=lines.map(x=>x.startsWith('[COMPOSITION]')?x.replace(/full.body|head.to.toe|full.length|entire figure|wide environmental/gi,'fashion portrait'):x);
  // Avoid any partial line or category on overflow.
  let output=lines.join('\n\n');if(output.length>4096){const essentials=['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','OUTFIT CONCEPT','BACKGROUND'];let ordered=lines.map((v,i)=>({v,i,key:(v.match(/^\[([^\]]+)\]/)||[])[1]}));let keep=ordered.filter(x=>essentials.includes(x.key));let optional=ordered.filter(x=>!essentials.includes(x.key));let size=keep.reduce((n,x)=>n+x.v.length+2,0);for(const x of optional){if(size+x.v.length+2<=4096){keep.push(x);size+=x.v.length+2}}output=keep.sort((a,b)=>a.i-b.i).map(x=>x.v).join('\n\n')}
- el.value=output;const status=get('status');if(status)status.textContent='v22：'+({waist:'腰上',chest:'胸上',knee:'ひざ上',thigh:'太もも上',portrait:'顔・肩',face:'顔アップ',detail:'部分アップ'}[f])+'画角を最終出力に反映（選択値は保持）';
+ el.value=output;const status=get('status');if(status)status.textContent='v22.1：'+({waist:'腰上',chest:'胸上',knee:'ひざ上',thigh:'太もも上',portrait:'顔・肩',face:'顔アップ',detail:'部分アップ'}[f])+'画角を最終出力に反映（選択値は保持）';
+ };
+ window.updatePrompt();
+})();
+</script>
+<script>
+/* v22.1: reconcile the selected direction with framing without changing selections. */
+(function(){
+ const previous=window.updatePrompt;
+ function chosen(k){return (window.__expressionTechniqueState||{})[k]?.value||'';}
+ function orientation(v){
+  const t=v.toLowerCase();
+  if(/back three.quarter|rear three.quarter|three.quarter back|back 3\/4/.test(t))return '((rear three-quarter view:1.5)); ((back and shoulders facing the viewer:1.45)); torso rotated away from the viewer; face seen only as the head turns over one shoulder';
+  if(/rear view|back view|back.facing|from behind/.test(t))return '((rear view:1.5)); back and shoulders facing the viewer; front of torso turned away from viewer';
+  if(/side view|profile/.test(t))return '((side profile view:1.45)); torso and face oriented sideways';
+  if(/front view|front.facing/.test(t))return '((front view:1.45)); torso facing the viewer';
+  return '';
+ }
+ function gaze(v,ori){const t=v.toLowerCase();if(/looking back|over.shoulder|look back/.test(t)&&ori)return '((looking back over one shoulder:1.4)); face partly visible in three-quarter profile';return v;}
+ window.updatePrompt=function(){
+  previous();const el=document.getElementById('prompt');if(!el)return;
+  let lines=el.value.split(/\n+/).filter(Boolean), idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+  if(idx<0)return;
+  const dir=orientation(chosen('SUBJECT ORIENTATION'));
+  const pose=chosen('POSE'),look=gaze(chosen('GAZE'),dir),angle=chosen('CAMERA ANGLE'),framing=chosen('FRAMING');
+  const shot=chosen('SHOT TYPE');
+  const body=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  const crop=(body.match(/^\(\([^;]+;[^;]+;[^;]+(?:;[^;]+)?/)||[])[0]||'';
+  const cropText=crop||body.split(';').slice(0,4).join('; ');
+  const unique=[cropText,dir,pose,look,angle,framing].filter(Boolean);
+  // Do not append the original shot/angle/direction string a second time.
+  lines[idx]='[EXPRESSION TECHNIQUE] '+unique.join('; ');
+  if(dir){lines=lines.map(x=>x.startsWith('[COMPOSITION]')?x.replace(/front.facing|front view|full.body|head.to.toe|full.length|entire figure/gi,'editorial composition'):x)}
+  const LIMIT=4096;
+  let out=lines.join('\n\n');
+  if(out.length>LIMIT){
+   const required=new Set(['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','EVENT FUSION','OUTFIT CONCEPT']);
+   const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
+   const keep=lines.filter(x=>required.has(key(x))),extra=lines.filter(x=>!required.has(key(x)));
+   for(const x of extra){const test=lines.filter(y=>keep.includes(y)||y===x).join('\n\n');if(test.length<=LIMIT)keep.push(x)}
+   out=lines.filter(x=>keep.includes(x)).join('\n\n');
+  }
+  el.value=out;
  };
  window.updatePrompt();
 })();
