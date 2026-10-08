@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder v20｜構図・視点優先出力｜2026-10-08</title>
+<title>PIXAI Prompt Builder v21｜画角連動・衣装復元版｜2026-10-08</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder v20｜構図・視点優先出力｜2026-10-08</h1>
+<h1>PIXAI Prompt Builder v21｜画角連動・衣装復元版｜2026-10-08</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12941,6 +12941,96 @@ function resolveOutput(){
 const previous=window.updatePrompt;
 if(typeof previous==='function')window.updatePrompt=function(){previous.apply(this,arguments);resolveOutput();};
 resolveOutput();
+})();
+</script>
+<script>
+/* v21: visual-range-aware output, without modifying any category selections. */
+(function(){
+'use strict';
+const prior=window.updatePrompt;
+if(typeof prior!=='function')return;
+const state=()=>window.__expressionTechniqueState||{};
+function tier(){
+ const s=state()['SHOT TYPE']||{},g=s.group||'',v=s.value||'';
+ if(g==='Detail / Macro')return 0;
+ if(g==='Close-Up')return 1;
+ if(g==='Portrait')return 2;
+ if(g==='Upper Body')return /head.and.shoulders|chest.up|bust shot/i.test(v)?3:4;
+ if(g==='Cowboy Shot')return 6;
+ if(g==='Three-Quarter / Knee')return /knee/i.test(v)?7:6;
+ if(g==='Full Body'||g==='Wide / Environment')return 9;
+ return 9;
+}
+function shotDirective(t){
+ const v=(state()['SHOT TYPE']||{}).value||'';
+ const directives={
+ 0:'((extreme facial detail crop:1.5)); only the selected facial feature fills the canvas; no full figure',
+ 1:'((tight face close-up:1.5)); face fills nearly the entire canvas; shoulders at lower edge; no full figure',
+ 2:'((head-and-shoulders portrait:1.5)); face and shoulders large in the frame; bottom edge at shoulders',
+ 3:'((chest-up portrait:1.5)); head to upper chest only; bottom border cuts below chest',
+ 4:'((waist-up portrait:1.5)); head to waist only; bottom border at waist',
+ 6:'((mid-thigh crop:1.5)); portrait from top of head to middle of thighs; bottom image edge intersects both thighs; knees and feet outside canvas',
+ 7:'((knee-up crop:1.5)); portrait from top of head to knees; bottom image edge intersects both knees; shins and shoes outside canvas',
+ 9:'full-length fashion portrait; complete person including shoes visible'
+ };
+ if(t===4 && /chest.up|bust shot/i.test(v))return directives[3];
+ return directives[t];
+}
+function relevant(key,t){
+ const limits={'SHOES':9,'LEGS & HOSIERY':7,'SKIRT':6,'WAIST DESIGN':4,'GLOVES':4,'OUTFIT PATTERN':3,'OUTFIT MATERIAL':3,'OUTFIT STRUCTURE':3,'OUTFIT COLOR':3,'OUTFIT CONCEPT':3,'OUTFIT CONCEPT LINK':3,'SHOULDERS & SLEEVES':3,'COLLAR':3,'DESIGN LANGUAGE':3,'HAIR ACCESSORIES':1};
+ return !(key in limits)||t>=limits[key];
+}
+function sanitizeComposition(v,t){
+ if(t===9)return v;
+ v=v.replace(/(?:clean |outfit-focused |centered |balanced )?full[- ]body (?:fashion )?(?:composition|framing|shot|portrait)/gi,'portrait composition');
+ v=v.replace(/full[- ]length (?:fashion )?(?:composition|framing|shot|portrait)/gi,'portrait composition');
+ v=v.replace(/head[- ]to[- ]toe|entire figure|whole body visible/gi,'portrait crop');
+ return v;
+}
+function render(){
+ const el=document.getElementById('prompt');if(!el)return;
+ const t=tier();
+ // Reconstruct from the current DOM-selected categories, never edit the selection state.
+ let original=el.value.replace(/\n?\[POSE & CAMERA\][^\n]*/g,'');
+ let blocks=original.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+ const filtered=[];
+ for(let b of blocks){
+  const m=b.match(/^\[([^\]]+)\]/);if(!m){filtered.push(b);continue;}
+  const key=m[1];
+  if(key==='EXPRESSION TECHNIQUE'||key==='POSE & CAMERA')continue;
+  if(!relevant(key,t))continue;
+  if(key==='COMPOSITION')b='[COMPOSITION] '+sanitizeComposition(b.slice(m[0].length).trim(),t);
+  filtered.push(b);
+ }
+ const cam=(original.match(/\[POSE & CAMERA\][^\n]*/)||[])[0]||'';
+ const existing=el.value.match(/\[POSE & CAMERA\][^\n]*/);
+ let camera=(existing?existing[0]:cam).replace(/^\[POSE & CAMERA\]\s*/,'');
+ camera=camera.replace(/\(\(.*?(?:framing|crop|shot|close-up).*?\)\);?\s*/i,'');
+ camera=camera.replace(/(?:head to knees visible|head through upper legs fills the frame|crop exactly at the knees|shoes outside the image|entire figure including feet visible in frame)[^;]*;?/gi,'');
+ camera=camera.replace(/^\s*;\s*|;\s*$/g,'');
+ const directive=shotDirective(t);
+ const camBlock='[POSE & CAMERA] '+directive+(camera?'; '+camera:'');
+ let insert=filtered.findIndex(x=>/^\[CHARACTER\]/.test(x));if(insert<0)insert=1;
+ filtered.splice(insert,0,camBlock);
+ // Keep relevant garment descriptions intact; omit whole optional blocks if over PixAI's limit.
+ const essential=['STYLE','POSE & CAMERA','CHARACTER','FACE','BASE THEME'];
+ const rank=k=>essential.includes(k)?0:({'OUTFIT CONCEPT':1,'OUTFIT COLOR':2,'OUTFIT MATERIAL':3,'OUTFIT STRUCTURE':4,'SHOULDERS & SLEEVES':5,'COLLAR':6,'WAIST DESIGN':7,'SKIRT':8,'LEGS & HOSIERY':9,'GLOVES':10,'SHOES':11,'HAIRSTYLE':2,'HAIR COLOR':2,'EYE COLOR':2,'EXPRESSION':2,'BACKGROUND':12,'LIGHTING':13,'COMPOSITION':14}[k]||15);
+ let result=filtered.join('\n\n');
+ if(result.length>4096){
+  const candidates=filtered.map((b,i)=>({b,i,k:(b.match(/^\[([^\]]+)\]/)||[])[1]||''}));
+  let keep=new Set(candidates.map(x=>x.i));
+  for(const x of [...candidates].sort((a,b)=>rank(b.k)-rank(a.k)||b.i-a.i)){
+   if([...keep].sort((a,b)=>a-b).map(i=>filtered[i]).join('\n\n').length<=4096)break;
+   if(rank(x.k)>0)keep.delete(x.i);
+  }
+  result=[...keep].sort((a,b)=>a-b).map(i=>filtered[i]).join('\n\n');
+  if(result.length>4096)result=result.slice(0,4096).replace(/\s+\S*$/,'');
+ }
+ el.value=result;
+ const count=document.getElementById('count');if(count)count.textContent=count.textContent.replace(/ ｜ v20構図統合| ｜ v21画角連動/g,'')+' ｜ v21画角連動';
+}
+window.updatePrompt=function(){prior.apply(this,arguments);render();};
+render();
 })();
 </script>
 </body>
