@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜人物画角・構図競合修正版 v19｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder v20｜構図・視点優先出力｜2026-10-08</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜人物画角・構図競合修正版 v19｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder v20｜構図・視点優先出力｜2026-10-08</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -144,7 +144,6 @@ button.secondary,button.dice{background:#eee;color:#333}
   <div class="technique-row"><label for="techniqueShotMode">⑤ 人物画角</label><select id="techniqueShotMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Wide / Environment">遠景・背景を広く写す</option><option value="Full Body">全身</option><option value="Cowboy Shot">太もも〜ひざ付近から上</option><option value="Three-Quarter / Knee">ひざ・太ももから上</option><option value="Upper Body">上半身</option><option value="Portrait">顔中心のポートレート</option><option value="Close-Up">顔のアップ・超アップ</option><option value="Detail / Macro">瞳・唇などの部分アップ</option></select><label class="technique-detail-label" for="techniqueShotModeDetail">明細（具体的な表現）</label><select id="techniqueShotModeDetail"><option value="">選択なし（この技法は出力しない）</option><optgroup label="遠景・背景を広く写す"><option value="wide shot" data-group="Wide / Environment">背景を広く入れる</option><option value="extreme wide shot" data-group="Wide / Environment">背景を非常に広く入れる</option><option value="long shot" data-group="Wide / Environment">人物を遠くから写す</option><option value="extreme long shot" data-group="Wide / Environment">人物をかなり遠くから写す</option><option value="environmental full-body shot" data-group="Wide / Environment">全身と周囲の背景</option><option value="panoramic view" data-group="Wide / Environment">横に広がる風景</option><option value="vista" data-group="Wide / Environment">広大な眺め</option><option value="distant view" data-group="Wide / Environment">遠景</option><option value="far shot" data-group="Wide / Environment">遠くからの画角</option></optgroup><optgroup label="全身"><option value="full body shot" data-group="Full Body">全身を写す</option><option value="full-body fashion shot" data-group="Full Body">全身のファッション撮影</option><option value="head-to-toe shot" data-group="Full Body">頭からつま先まで</option><option value="full figure shot" data-group="Full Body">人物全体を写す</option><option value="full-length portrait" data-group="Full Body">全身ポートレート</option><option value="complete silhouette shot" data-group="Full Body">全体のシルエットを写す</option></optgroup><optgroup label="太もも〜ひざ付近から上"><option value="cowboy shot" data-group="Cowboy Shot">太もも付近から上</option><option value="cowboy shot framing" data-group="Cowboy Shot">太もも付近から上の構図</option><option value="cowboy-style knee-up shot" data-group="Cowboy Shot">ひざ付近から上</option></optgroup><optgroup label="ひざ・太ももから上"><option value="medium-long shot" data-group="Three-Quarter / Knee">やや引いた半身</option><option value="three-quarter body shot" data-group="Three-Quarter / Knee">身体の約４分の３</option><option value="knee-up shot" data-group="Three-Quarter / Knee">ひざから上</option><option value="thigh-up shot" data-group="Three-Quarter / Knee">太ももから上</option><option value="three-quarter portrait" data-group="Three-Quarter / Knee">身体の約４分の３のポートレート</option></optgroup><optgroup label="上半身"><option value="waist-up shot" data-group="Upper Body">腰から上</option><option value="upper-body shot" data-group="Upper Body">上半身</option><option value="chest-up shot" data-group="Upper Body">胸から上</option><option value="bust shot" data-group="Upper Body">バストアップ</option><option value="head-and-shoulders shot" data-group="Upper Body">頭と肩</option><option value="medium shot" data-group="Upper Body">中距離の上半身</option></optgroup><optgroup label="顔中心のポートレート"><option value="portrait shot" data-group="Portrait">顔中心の人物画</option><option value="headshot" data-group="Portrait">顔と頭を中心に写す</option><option value="medium close-up" data-group="Portrait">少し寄った顔と肩</option><option value="close-up portrait" data-group="Portrait">顔のアップの人物画</option><option value="tight portrait shot" data-group="Portrait">余白を絞った顔中心</option></optgroup><optgroup label="顔のアップ・超アップ"><option value="close-up shot" data-group="Close-Up">アップ</option><option value="face close-up" data-group="Close-Up">顔のアップ</option><option value="intense closeup shot" data-group="Close-Up">強く寄ったアップ</option><option value="extreme close-up" data-group="Close-Up">超アップ</option><option value="extreme closeup shot" data-group="Close-Up">極端に寄ったアップ</option></optgroup><optgroup label="瞳・唇などの部分アップ"><option value="eye close-up" data-group="Detail / Macro">片目のアップ</option><option value="eye closeup shot" data-group="Detail / Macro">目元に寄る</option><option value="close-up of eyes" data-group="Detail / Macro">両目のアップ</option><option value="lips close-up" data-group="Detail / Macro">唇のアップ</option><option value="macro photo" data-group="Detail / Macro">細部の接写</option><option value="macro shot" data-group="Detail / Macro">マクロ撮影</option><option value="zoomed in" data-group="Detail / Macro">拡大して寄る</option><option value="enlarged" data-group="Detail / Macro">大きく拡大</option></optgroup></select><button type="button" id="techniqueShotModeRandom">この項目の明細を変更</button></div>
   <div class="technique-row"><label for="techniqueFramingMode">⑥ 構図・フレーミング</label><select id="techniqueFramingMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Centered">人物を中央に配置</option><option value="Left / Right Offset">人物を左右にずらす</option><option value="Symmetrical">左右対称</option><option value="Rule of Thirds">三分割の位置に配置</option><option value="Negative Space">余白を活かす</option><option value="Environmental">人物と背景のバランス</option><option value="Depth / Layered">奥行き・重なりを活かす</option><option value="Architectural">窓・扉・建物で囲む</option><option value="Dynamic / Diagonal">斜め配置・躍動感</option><option value="Editorial / Magazine">ファッション誌・表紙風</option></select><label class="technique-detail-label" for="techniqueFramingModeDetail">明細（具体的な表現）</label><select id="techniqueFramingModeDetail"><option value="">選択なし（この技法は出力しない）</option><optgroup label="人物を中央に配置"><option value="centered character framing" data-group="Centered">人物を中央に置く</option><option value="centered full-body framing" data-group="Centered">全身を中央に置く</option><option value="centered portrait framing" data-group="Centered">顔を中央に置く</option><option value="subject centered in frame" data-group="Centered">画面の中心に人物</option><option value="balanced centered composition" data-group="Centered">中央でバランスよく配置</option></optgroup><optgroup label="人物を左右にずらす"><option value="character slightly left of center" data-group="Left / Right Offset">人物を少し左に置く</option><option value="character slightly right of center" data-group="Left / Right Offset">人物を少し右に置く</option><option value="off-center left framing" data-group="Left / Right Offset">中央から左へずらす</option><option value="off-center right framing" data-group="Left / Right Offset">中央から右へずらす</option><option value="asymmetrical subject placement" data-group="Left / Right Offset">左右非対称に配置</option></optgroup><optgroup label="左右対称"><option value="symmetrical framing" data-group="Symmetrical">左右対称</option><option value="balanced symmetrical composition" data-group="Symmetrical">左右のバランスを対称に</option><option value="formal centered framing" data-group="Symmetrical">かしこまった中央配置</option><option value="architectural symmetry framing" data-group="Symmetrical">建築の対称性を活かす</option><option value="clean symmetrical layout" data-group="Symmetrical">整った左右対称</option></optgroup><optgroup label="三分割の位置に配置"><option value="rule-of-thirds framing" data-group="Rule of Thirds">三分割構図</option><option value="subject placed on the left third" data-group="Rule of Thirds">左３分の１に配置</option><option value="subject placed on the right third" data-group="Rule of Thirds">右３分の１に配置</option><option value="upper-third subject placement" data-group="Rule of Thirds">上３分の１に配置</option><option value="lower-third subject placement" data-group="Rule of Thirds">下３分の１に配置</option></optgroup><optgroup label="余白を活かす"><option value="negative-space framing" data-group="Negative Space">余白を活かす</option><option value="generous negative space" data-group="Negative Space">余白を広く取る</option><option value="clean negative-space composition" data-group="Negative Space">すっきりした余白</option><option value="subject surrounded by open space" data-group="Negative Space">人物の周りを広く空ける</option><option value="minimal negative-space layout" data-group="Negative Space">控えめな余白を取る</option></optgroup><optgroup label="人物と背景のバランス"><option value="balanced character-and-environment framing" data-group="Environmental">人物と背景を均衡させる</option><option value="wide environmental framing" data-group="Environmental">背景を広く見せる配置</option><option value="cinematic environmental framing" data-group="Environmental">映画風に背景も見せる</option><option value="character-and-background composition" data-group="Environmental">人物と背景を組み合わせる</option><option value="environmental fashion framing" data-group="Environmental">背景を活かすファッション撮影</option></optgroup><optgroup label="奥行き・重なりを活かす"><option value="foreground-to-background depth framing" data-group="Depth / Layered">手前から奥へ奥行き</option><option value="foreground-framed composition" data-group="Depth / Layered">手前の物で人物を囲む</option><option value="layered depth composition" data-group="Depth / Layered">重なりで奥行きを出す</option><option value="strong foreground and background separation" data-group="Depth / Layered">人物と背景をはっきり分ける</option><option value="deep environmental composition" data-group="Depth / Layered">背景に深い奥行き</option></optgroup><optgroup label="窓・扉・建物で囲む"><option value="doorway framing" data-group="Architectural">扉の枠で囲む</option><option value="window framing" data-group="Architectural">窓の枠で囲む</option><option value="architectural framing" data-group="Architectural">建物の形で囲む</option><option value="leading-line framing" data-group="Architectural">線で視線を誘導する</option><option value="corridor framing" data-group="Architectural">廊下を使った配置</option><option value="staircase framing" data-group="Architectural">階段を使った配置</option></optgroup><optgroup label="斜め配置・躍動感"><option value="diagonal composition" data-group="Dynamic / Diagonal">斜め構図</option><option value="dynamic diagonal framing" data-group="Dynamic / Diagonal">躍動感のある斜め構図</option><option value="tilted editorial composition" data-group="Dynamic / Diagonal">傾けた雑誌風構図</option><option value="dynamic fashion framing" data-group="Dynamic / Diagonal">動きのあるファッション構図</option><option value="energetic asymmetrical composition" data-group="Dynamic / Diagonal">勢いのある非対称配置</option></optgroup><optgroup label="ファッション誌・表紙風"><option value="clean fashion-editorial layout" data-group="Editorial / Magazine">すっきりした雑誌風</option><option value="magazine-cover layout" data-group="Editorial / Magazine">雑誌の表紙風</option><option value="polished campaign layout" data-group="Editorial / Magazine">洗練された広告風</option><option value="luxury fashion editorial framing" data-group="Editorial / Magazine">高級ファッション誌風</option><option value="high-fashion campaign composition" data-group="Editorial / Magazine">ハイファッション広告風</option></optgroup></select><button type="button" id="techniqueFramingModeRandom">この項目の明細を変更</button></div>
 </div>
-<div class="link-mode-row" style="margin-top:12px"><label for="techniqueOutputMode"><strong>🎯 表現技法の出力モード</strong></label><select id="techniqueOutputMode"><option value="standard">標準（従来のv17出力・比較用）</option><option value="composition">構図優先（顔アップ・後ろ向き・肩越しを明確化）</option></select><span class="link-mode-note">固定プロンプトと可変カテゴリの選択値は変更しません。構図優先は表現技法の英語だけを組み直します。</span></div>
 <div class="technique-actions"><button type="button" id="techniqueOnlyRandom">🎲 表現技法だけ一括変更（大分類＋明細）</button><button type="button" id="techniqueDetailsRandom">大分類を維持して明細だけ一括変更</button></div><div class="status" id="techniqueStatus">初期化待ち：表示が変わらない場合は、公開ページをSafariで開いてください。</div>
 </section>
 <section class="panel">
@@ -12576,28 +12575,6 @@ updatePrompt();</script>
     return cleaned;
   }
 
-  function normalizeTechniqueOutput(key, value, state){
-    const group=(state[key]||{}).group||'';
-    if(key==='SHOT TYPE'){
-      const v=(value||'').toLowerCase();
-      if(group==='Close-Up') return 'tight face close-up, face occupying most of the image, only a small part of the shoulders visible';
-      if(group==='Portrait') return 'head-and-shoulders portrait, face prominent in frame, body below shoulders outside the image';
-      if(group==='Upper Body') return /chest|bust/.test(v) ? 'bust-up portrait, framed from the top of the head to the upper chest, lower torso outside the image' : 'upper-body portrait, framed from head to waist, legs outside the image';
-      if(group==='Cowboy Shot') return 'mid-thigh-up framing, subject visible from head to mid-thigh, knees and lower legs outside the image';
-      if(group==='Three-Quarter / Knee') return /thigh/i.test(v) ? 'mid-thigh-up framing, subject visible from head to mid-thigh, knees outside the image' : 'knee-up framing, subject visible from head to knees, lower legs outside the image';
-      if(group==='Detail / Macro') return /eye/.test(v)?'extreme close-up of the eyes, eyes filling the frame':/lip/.test(v)?'extreme close-up of the lips, lips filling the frame':'extreme detail close-up, selected detail filling the frame';
-      if(group==='Full Body') return 'full-body framing, complete head and feet visible within the image';
-      if(group==='Wide / Environment') return 'wide environmental view, subject smaller within a clearly visible environment';
-    }
-    if(key==='FRAMING'){
-      const shot=(state['SHOT TYPE']||{}).group||'';
-      if(['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(shot)){
-        if(/full.body|full figure|head.to.toe|environmental|wide /i.test(value))return 'balanced close portrait composition';
-      }
-      if(['Close-Up','Portrait','Detail / Macro'].includes(shot) && /architectural|staircase|corridor|doorway/i.test(value))return 'subtle foreground framing around the face';
-    }
-    return value;
-  }
   function getExpressionTechniquePromptBlock(){
     // The six UI selectors are independent, but their concrete selections are
     // stored explicitly by the expression-technique controller. Do not read
@@ -12615,25 +12592,8 @@ updatePrompt();</script>
     const parts=[];
     defs.forEach(function(def){
       const saved=state[def[0]];
-      if(saved && saved.value) parts.push(normalizeTechniqueOutput(def[0],saved.value,state));
+      if(saved && saved.value) parts.push(saved.value);
     });
-    if(document.getElementById('techniqueOutputMode')?.value==='composition' && parts.length){
-      const shot=state['SHOT TYPE']||{}, orient=state['SUBJECT ORIENTATION']||{}, gaze=state['GAZE']||{}, angle=state['CAMERA ANGLE']||{}, frame=state['FRAMING']||{}, pose=state['POSE']||{};
-      const o=orient.group||'', g=gaze.group||'', sh=shot.group||'', pv=(pose.value||'').toLowerCase();
-      const overShoulder=g==='Over Shoulder'||/over.the.shoulder|looking back/.test((gaze.value||'')+' '+pv);
-      const rear=o==='Back'||o==='Back Three-Quarter';
-      const shotText=sh==='Close-Up'?'tight facial close-up, face fills approximately 80 percent of the frame, crop at the shoulders, legs and full figure outside the image':sh==='Detail / Macro'?'extreme detail crop, selected facial detail fills the image':sh==='Portrait'?'tight head-and-shoulders portrait, face prominent, body below shoulders outside the image':sh==='Upper Body'?(/bust|chest/i.test(shot.value||'')?'bust-up framing from top of head to upper chest, waist and legs outside the image':'waist-up portrait, lower body outside the image'):sh==='Cowboy Shot'?'mid-thigh-up framing, visible from head to mid-thigh, knees and lower legs outside the image':sh==='Three-Quarter / Knee'?(/thigh/i.test(shot.value||'')?'mid-thigh-up framing, visible from head to mid-thigh, knees outside the image':'knee-up framing, visible from head to knees, lower legs outside the image'):sh==='Full Body'?'head-to-toe full-body framing, entire figure visible':sh==='Wide / Environment'?'wide environmental framing, subject smaller in the scene':'';
-      const direction=overShoulder?(rear?'back-facing torso, shoulders and back toward viewer, head turning back over one shoulder, partial face visible':'torso turned away at three-quarter rear angle, head turning back over one shoulder, partial face visible'):rear?(o==='Back'?'rear view, back and shoulders facing viewer, face turned away':'three-quarter rear view, back and side of torso visible'):orient.value||'';
-      const result=[];
-      if(shotText)result.push(shotText);
-      if(direction)result.push(direction);
-      if(pose.value&&!/over.the.shoulder|looking back/.test(pv))result.push(pose.value);
-      if(gaze.value && !overShoulder && !(rear&&g==='Direct / Viewer'))result.push(gaze.value);
-      if(angle.value && !(rear&&/front view|from front|straight.on/i.test(angle.value)))result.push(angle.value);
-      if(frame.value && !(['Close-Up','Detail / Macro','Portrait','Upper Body','Cowboy Shot','Three-Quarter / Knee'].includes(sh) && /full.body|full.figure|head.to.toe|wide |environmental|panoramic|distant|negative.space|open space/i.test(frame.value)))result.push(frame.value);
-      if(['Close-Up','Detail / Macro','Portrait'].includes(sh))result.push('tight crop with minimal surrounding scenery');
-      return '[EXPRESSION TECHNIQUE] '+result.filter(Boolean).join('; ');
-    }
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
 
@@ -12868,46 +12828,6 @@ updatePrompt();</script>
     o.value=value;o.textContent=DETAIL_JA[value];s.value=value;
     state[d.key]={group,value,baseValue:''};
   }
-  const TECH_HISTORY=[];
-  function incompatible(candidate,key,chosen){
-    const shot=chosen['SHOT TYPE']||state['SHOT TYPE'];
-    const frame=chosen['FRAMING']||state['FRAMING'];
-    const orient=chosen['SUBJECT ORIENTATION']||state['SUBJECT ORIENTATION'];
-    const gaze=chosen['GAZE']||state['GAZE'];
-    const angle=chosen['CAMERA ANGLE']||state['CAMERA ANGLE'];
-    const sg=shot?.group||'', fg=frame?.group||'', og=orient?.group||'', gg=gaze?.group||'', ag=angle?.group||'';
-    const v=candidate.value.toLowerCase(), g=candidate.group;
-    if(key==='FRAMING' && ['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(sg) && /full.body|full figure|head.to.toe|wide environmental/i.test(v))return true;
-    if(key==='SHOT TYPE' && ['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(g) && /full.body|full figure|head.to.toe/i.test(frame?.value||''))return true;
-    if(key==='GAZE' && ['Back'].includes(og) && ['Direct / Viewer'].includes(g))return true;
-    if(key==='SUBJECT ORIENTATION' && g==='Back' && gg==='Direct / Viewer')return true;
-    if(key==='CAMERA ANGLE' && ag==='Back' && g==='Front')return true;
-    if(key==='CAMERA ANGLE' && g==='Front' && og==='Back')return true;
-    if(key==='SUBJECT ORIENTATION' && g==='Back' && ag==='Front')return true;
-    return false;
-  }
-  function chooseCompatible(d,changeGroup,chosen){
-    const sel=document.getElementById(d.select);
-    const fixed=sel.value!=='AUTO_RANDOM' && !changeGroup;
-    const groups=fixed?[sel.value]:Object.keys(d.groups).filter(g=>g!=='AUTO_RANDOM');
-    const candidates=[];
-    groups.forEach(g=>d.groups[g].forEach(value=>{
-      const c={group:g,value};if(!incompatible(c,d.key,chosen))candidates.push(c);
-    }));
-    const pool=candidates.length?candidates:groups.flatMap(g=>d.groups[g].map(value=>({group:g,value})));
-    const recent=TECH_HISTORY.slice(-24);
-    const weights=pool.map(c=>{
-      const used=recent.filter(x=>x.key===d.key&&x.value===c.value).length;
-      const same=state[d.key]?.value===c.value;
-      return 1/(1+used*4+(same?8:0));
-    });
-    let r=Math.random()*weights.reduce((a,b)=>a+b,0),idx=pool.length-1;
-    for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0){idx=i;break;}}
-    const c=pool[idx];if(changeGroup)sel.value=c.group;
-    renderDetails(d,sel.value,c.value);commit(d,c.group,c.value);
-    chosen[d.key]={group:c.group,value:c.value};
-    TECH_HISTORY.push({key:d.key,value:c.value});if(TECH_HISTORY.length>120)TECH_HISTORY.shift();
-  }
   function choose(d,changeGroup){
     const sel=document.getElementById(d.select);
     let group=sel.value;
@@ -12922,24 +12842,18 @@ updatePrompt();</script>
       return label.textContent+'：'+(v?DETAIL_JA[v.value]:'未選択');
     }).join(' ／ ');
   }
-  function applyAll(changeGroup){
-    const chosen={};
-    // Determine shot type first so all later framing decisions respect it.
-    ['SHOT','ORIENTATION','GAZE','CAMERA','FRAMING','POSE'].forEach(k=>chooseCompatible(TECH[k],changeGroup,chosen));
-    status();
-  }
+  function applyAll(changeGroup){Object.values(TECH).forEach(d=>choose(d,changeGroup));status();}
   function finish(){window.updatePrompt();status();}
   Object.values(TECH).forEach(d=>{
-    document.getElementById(d.select).addEventListener('change',()=>{chooseCompatible(d,false,{});finish();});
+    document.getElementById(d.select).addEventListener('change',()=>{choose(d,false);finish();});
     document.getElementById(detailId(d)).addEventListener('change',e=>{
       const o=e.target.selectedOptions[0];
       if(!o.value){delete state[d.key];document.getElementById('cat-'+d.key).selectedIndex=0;}
       else commit(d,o.dataset.group,o.value);finish();
     });
-    document.getElementById(d.select+'Random').addEventListener('click',()=>{chooseCompatible(d,false,{});finish();});
+    document.getElementById(d.select+'Random').addEventListener('click',()=>{choose(d,false);finish();});
     document.getElementById('cat-'+d.key)?.closest('section.cat')?.classList.add('technique-managed-hidden');
   });
-  document.getElementById('techniqueOutputMode').addEventListener('change',()=>window.updatePrompt());
   document.getElementById('techniqueOnlyRandom').addEventListener('click',()=>{applyAll(true);finish();});
   document.getElementById('techniqueDetailsRandom').addEventListener('click',()=>{
     // Freeze each currently resolved group, including selectors in auto mode.
@@ -12960,6 +12874,73 @@ updatePrompt();</script>
     oldClearVariables();status();
   };
   applyAll(false);finish();
+})();
+</script>
+<script>
+/* v20: non-destructive final-output camera/framing resolver. Selection state stays untouched. */
+(function(){
+'use strict';
+const shotRules={
+ 'Cowboy Shot':['((mid-thigh-up framing:1.5))','portrait cropped at mid-thigh; head and upper thighs fill the frame; knees, lower legs and shoes outside the image'],
+ 'Three-Quarter / Knee':['((thigh-up portrait framing:1.5))','head through upper legs fills the frame; crop at the selected thigh or knee boundary; shoes outside the image'],
+ 'Upper Body':['((upper-body close framing:1.5))','head and upper torso occupy most of the image; lower body outside the image'],
+ 'Portrait':['((head-and-shoulders portrait:1.5))','face and shoulders occupy most of the image; lower torso and legs outside the image'],
+ 'Close-Up':['((face close-up:1.55))','face occupies most of the image; tight crop around face; legs and outfit below shoulders outside the image'],
+ 'Detail / Macro':['((extreme detail close-up:1.55))','selected facial detail fills the frame; body and footwear outside the image'],
+ 'Full Body':['full-body framing','entire figure including feet visible in frame'],
+ 'Wide / Environment':['wide environmental framing','subject visible within a spacious surrounding environment']
+};
+function current(key){return (window.__expressionTechniqueState||{})[key]||{};}
+function shotText(group,value){
+ const base=shotRules[group];if(!base)return '';
+ let crop=base[1];
+ if(/knee-up|knee/i.test(value||'') && group==='Three-Quarter / Knee')crop='head to knees visible; crop exactly at the knees; shoes outside the image';
+ if(/thigh|cowboy/i.test(value||'') && group==='Three-Quarter / Knee')crop='head to mid-thigh visible; crop exactly at mid-thigh; knees and shoes outside the image';
+ if(/waist-up/i.test(value||''))crop='head to waist visible; crop at waist; legs outside the image';
+ if(/chest-up|bust shot/i.test(value||''))crop='head to chest visible; crop below chest; legs outside the image';
+ return base[0]+'; '+crop;
+}
+function cameraBlock(){
+ const shot=current('SHOT TYPE'),orientation=current('SUBJECT ORIENTATION'),gaze=current('GAZE'),pose=current('POSE'),angle=current('CAMERA ANGLE'),framing=current('FRAMING');
+ if(![shot,orientation,gaze,pose,angle,framing].some(x=>x.value))return '';
+ const rear=/^(Back|Back Three-Quarter)$/.test(orientation.group)||/back-facing|rear-facing|back view|facing away|rear three-quarter|back three-quarter/i.test(orientation.value||'');
+ const shoulder=/over.shoulder|looking back/i.test((gaze.value||'')+' '+(pose.value||''));
+ const items=[];
+ if(shot.value)items.push(shotText(shot.group,shot.value)||shot.value);
+ if(rear)items.push('((rear view of the torso:1.5)); back and shoulders facing viewer; front of torso turned away from viewer'+(shoulder?'; head turning back over one shoulder; partial face visible':'') );
+ else if(orientation.value)items.push(orientation.value);
+ if(pose.value)items.push(pose.value);
+ if(gaze.value && !(rear&&shoulder))items.push(gaze.value);
+ if(angle.value)items.push(angle.value);
+ if(framing.value)items.push(framing.value);
+ return items.length?'[POSE & CAMERA] '+items.join('; '):'';
+}
+function resolveOutput(){
+ const el=document.getElementById('prompt');if(!el)return;
+ let t=el.value;
+ t=t.replace(/\n?\[EXPRESSION TECHNIQUE\][^\n]*/g,'');
+ t=t.replace(/\n?\[POSE & CAMERA\][^\n]*/g,'');
+ const block=cameraBlock();
+ if(block){
+   // Put spatial directions before the detailed garment catalog without changing any selections.
+   const anchor=t.indexOf('[CHARACTER]');
+   t=anchor>=0?t.slice(0,anchor)+block+'\n\n'+t.slice(anchor):block+'\n\n'+t;
+ }
+ // Avoid truncating the camera instruction when the 4096-character PixAI limit is reached.
+ if(t.length>4096){
+   const sections=t.split(/(?=\[[A-Z][A-Z &]+\])/);
+   const required=[],optional=[];
+   sections.forEach(b=>/^\[(STYLE|POSE & CAMERA|CHARACTER|FACE|BASE THEME|EVENT FUSION)\]/.test(b.trim())?required.push(b):optional.push(b));
+   let output=required.join('').trim();
+   for(const b of optional){const room=4096-output.length;if(room<=30)break;if(b.length<=room)output+=b;else{output+=b.slice(0,room).replace(/\s+\S*$/,'');break;}}
+   t=output.slice(0,4096);
+ }
+ el.value=t;
+ const count=document.getElementById('count');if(count)count.textContent=count.textContent.replace(/ ｜ v20構図統合/g,'')+' ｜ v20構図統合';
+}
+const previous=window.updatePrompt;
+if(typeof previous==='function')window.updatePrompt=function(){previous.apply(this,arguments);resolveOutput();};
+resolveOutput();
 })();
 </script>
 </body>
