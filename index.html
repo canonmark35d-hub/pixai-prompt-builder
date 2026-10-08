@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜表現技法の整合性・画角改善版 v17｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜人物画角・構図競合修正版 v19｜2026-10-08 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜表現技法の整合性・画角改善版 v17｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜人物画角・構図競合修正版 v19｜2026-10-08 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12583,7 +12583,8 @@ updatePrompt();</script>
       if(group==='Close-Up') return 'tight face close-up, face occupying most of the image, only a small part of the shoulders visible';
       if(group==='Portrait') return 'head-and-shoulders portrait, face prominent in frame, body below shoulders outside the image';
       if(group==='Upper Body') return /chest|bust/.test(v) ? 'bust-up portrait, framed from the top of the head to the upper chest, lower torso outside the image' : 'upper-body portrait, framed from head to waist, legs outside the image';
-      if(group==='Cowboy Shot'||group==='Three-Quarter / Knee') return 'knee-up framing, subject visible from the top of the head to the knees, lower legs outside the image';
+      if(group==='Cowboy Shot') return 'mid-thigh-up framing, subject visible from head to mid-thigh, knees and lower legs outside the image';
+      if(group==='Three-Quarter / Knee') return /thigh/i.test(v) ? 'mid-thigh-up framing, subject visible from head to mid-thigh, knees outside the image' : 'knee-up framing, subject visible from head to knees, lower legs outside the image';
       if(group==='Detail / Macro') return /eye/.test(v)?'extreme close-up of the eyes, eyes filling the frame':/lip/.test(v)?'extreme close-up of the lips, lips filling the frame':'extreme detail close-up, selected detail filling the frame';
       if(group==='Full Body') return 'full-body framing, complete head and feet visible within the image';
       if(group==='Wide / Environment') return 'wide environmental view, subject smaller within a clearly visible environment';
@@ -12621,7 +12622,7 @@ updatePrompt();</script>
       const o=orient.group||'', g=gaze.group||'', sh=shot.group||'', pv=(pose.value||'').toLowerCase();
       const overShoulder=g==='Over Shoulder'||/over.the.shoulder|looking back/.test((gaze.value||'')+' '+pv);
       const rear=o==='Back'||o==='Back Three-Quarter';
-      const shotText=sh==='Close-Up'?'tight facial close-up, face fills approximately 80 percent of the frame, crop at the shoulders, legs and full figure outside the image':sh==='Detail / Macro'?'extreme detail crop, selected facial detail fills the image':sh==='Portrait'?'tight head-and-shoulders portrait, face prominent, body below shoulders outside the image':sh==='Upper Body'?(/bust|chest/i.test(shot.value||'')?'bust-up framing from top of head to upper chest, waist and legs outside the image':'waist-up portrait, lower body outside the image'):sh==='Cowboy Shot'||sh==='Three-Quarter / Knee'?'knee-up framing, visible from top of head to knees, lower legs outside the image':sh==='Full Body'?'head-to-toe full-body framing, entire figure visible':sh==='Wide / Environment'?'wide environmental framing, subject smaller in the scene':'';
+      const shotText=sh==='Close-Up'?'tight facial close-up, face fills approximately 80 percent of the frame, crop at the shoulders, legs and full figure outside the image':sh==='Detail / Macro'?'extreme detail crop, selected facial detail fills the image':sh==='Portrait'?'tight head-and-shoulders portrait, face prominent, body below shoulders outside the image':sh==='Upper Body'?(/bust|chest/i.test(shot.value||'')?'bust-up framing from top of head to upper chest, waist and legs outside the image':'waist-up portrait, lower body outside the image'):sh==='Cowboy Shot'?'mid-thigh-up framing, visible from head to mid-thigh, knees and lower legs outside the image':sh==='Three-Quarter / Knee'?(/thigh/i.test(shot.value||'')?'mid-thigh-up framing, visible from head to mid-thigh, knees outside the image':'knee-up framing, visible from head to knees, lower legs outside the image'):sh==='Full Body'?'head-to-toe full-body framing, entire figure visible':sh==='Wide / Environment'?'wide environmental framing, subject smaller in the scene':'';
       const direction=overShoulder?(rear?'back-facing torso, shoulders and back toward viewer, head turning back over one shoulder, partial face visible':'torso turned away at three-quarter rear angle, head turning back over one shoulder, partial face visible'):rear?(o==='Back'?'rear view, back and shoulders facing viewer, face turned away':'three-quarter rear view, back and side of torso visible'):orient.value||'';
       const result=[];
       if(shotText)result.push(shotText);
@@ -12629,7 +12630,7 @@ updatePrompt();</script>
       if(pose.value&&!/over.the.shoulder|looking back/.test(pv))result.push(pose.value);
       if(gaze.value && !overShoulder && !(rear&&g==='Direct / Viewer'))result.push(gaze.value);
       if(angle.value && !(rear&&/front view|from front|straight.on/i.test(angle.value)))result.push(angle.value);
-      if(frame.value && !(sh==='Close-Up'||sh==='Detail / Macro'||sh==='Portrait') )result.push(frame.value);
+      if(frame.value && !(['Close-Up','Detail / Macro','Portrait','Upper Body','Cowboy Shot','Three-Quarter / Knee'].includes(sh) && /full.body|full.figure|head.to.toe|wide |environmental|panoramic|distant|negative.space|open space/i.test(frame.value)))result.push(frame.value);
       if(['Close-Up','Detail / Macro','Portrait'].includes(sh))result.push('tight crop with minimal surrounding scenery');
       return '[EXPRESSION TECHNIQUE] '+result.filter(Boolean).join('; ');
     }
