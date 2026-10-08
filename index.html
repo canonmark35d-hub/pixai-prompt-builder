@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜宝石イベント品質優先版 v22.4｜2026-10-09 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜宝石イベント融合強化版 v22.5｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜宝石イベント品質優先版 v22.4｜2026-10-09 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜宝石イベント融合強化版 v22.5｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12558,6 +12558,24 @@ updatePrompt();</script>
   if(gemstoneSeason) gemstoneSeason.addEventListener('change',function(){updateGemstoneVisibility();});
   updateGemstoneVisibility();
 
+  // v22.5: gemstone-only localized overlays. Keep the original category selections intact.
+  function applyGemstoneCategoryFusion(text){
+    if(getSeasonBulkIndex()!==20) return text;
+    const gem=selectedGemstone();
+    const level=gemstoneIntensity ? gemstoneIntensity.value : 'strong';
+    const stone=gem[0], cut=gem[2], backdrop=gem[3];
+    const garment='visible '+stone+' gemstone settings in garment fasteners and embroidered trim; '+cut;
+    const background='visible '+stone+' gemstone display on an ornate pedestal; '+backdrop;
+    const add=(name,detail)=>{
+      const re=new RegExp('(^\\['+name+'\\]\\s*)([^\\n]*)','m');
+      text=text.replace(re,(all,head,body)=>head+body+'; '+detail);
+    };
+    // Avoid appending lengthy motifs to many sections; two short targeted edits suffice.
+    add('OUTFIT STRUCTURE',level==='standard'?'gemstone-set decorative garment fasteners':garment);
+    add('BACKGROUND',level==='standard'?'small '+stone+' gemstone display in the setting':background+(level==='fantasy'?'; gem-inlaid architectural ornament behind the subject':''));
+    return text;
+  }
+
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
     if(eventIndex<0) return '';
@@ -12578,7 +12596,7 @@ updatePrompt();</script>
       const theme=getThemeMode();
       const identity=theme==='normal'?'selected fashion design':(THEME_MODES[theme] && THEME_MODES[theme].label || 'selected fashion design');
       const level=gemstoneIntensity ? gemstoneIntensity.value : 'strong';
-      const base='[EVENT FUSION] Gemstone Jewelry; featured gemstone: '+gem[0]+'; authentic gemstone colors: '+gem[1]+'; recognizable gemstone design: '+gem[2]+'; preserve the original '+identity+' silhouette, garment construction, and selected outfit colors; integrate real-looking gemstone settings into visible garment embroidery, buttons and trim rather than recoloring all fabric; refined couture textile texture and natural skin tones; maintain the selected camera framing, pose, and face quality';
+      const base='[EVENT FUSION] Gemstone Jewelry; featured gemstone: '+gem[0]+'; authentic gemstone colors: '+gem[1]+'; preserve '+identity+' garment silhouette and selected colors; realistic gemstone details, natural skin tones, fine textile rendering; retain selected pose and camera framing';
       if(level==='standard') return base+'; selective gemstone details; clean background with small matching jewel accents';
       if(level==='fantasy') return base+'; prominent but balanced gemstone ornaments on the visible costume; gemstone-themed environment: '+gem[3]+'; additional elegant gem-encrusted architecture or crystal displays behind the character; subtle controlled gem-colored light; background secondary to the subject, no oversized foreground crystals';
       return base+'; clearly visible gemstone ornaments repeated on two or three visible costume details; gemstone-themed background elements: '+gem[3]+'; modest jewel sparkle and restrained reflected light; preserve fine linework and avoid excessive glow or clutter';
@@ -12702,7 +12720,7 @@ updatePrompt();</script>
       // Keep the six UI controls, but never emit their legacy six standalone
       // blocks. The final PIXAI prompt uses one integrated EXPRESSION TECHNIQUE block.
       promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*/g,'');
-      promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+      promptEl.value=fitPromptToPixAI4096(applyGemstoneCategoryFusion(applyBaseThemeEmphasis(promptEl.value)));
     }
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
