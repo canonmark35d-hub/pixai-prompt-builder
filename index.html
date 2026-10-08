@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder v21｜画角連動・衣装復元版｜2026-10-08</title>
+<title>PIXAI Prompt Builder｜画角優先・競合整理版 v22｜2026-10-08 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder v21｜画角連動・衣装復元版｜2026-10-08</h1>
+<h1>PIXAI Prompt Builder｜画角優先・競合整理版 v22｜2026-10-08 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12599,71 +12599,31 @@ updatePrompt();</script>
 
   function fitPromptToPixAI4096(text){
     const LIMIT=4096;
-    if(!text || text.length<=LIMIT) return text;
-
-    // まず冗長な連動説明を削除。実際の27カテゴリ選択値は残す。
-    // Leave room for the selected background and six-axis technique block.
-    text=text.replace(/(\[EVENT FUSION\] )([^\n]*)/,function(_,label,body){
-      if(body.length<=1100) return label+body;
-      let kept='';
-      body.split(';').some(function(part){const next=kept?kept+';'+part:part;if(next.length>1100)return true;kept=next;return false;});
-      return label+kept;
-    });
-    let out=text
-      .replace(/\n\[OUTFIT CONCEPT LINK\][^\n]*/g,'')
-      .replace(/\n{3,}/g,'\n\n');
-    if(out.length<=LIMIT) return out;
-
-    // 長いカテゴリ値だけを意味のまとまりを保ちながら圧縮する。
-    // EVENT/BASEの重要ブロックはこの段階では削らない。
-    const protectedKeys=new Set(['BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','CHARACTER','FACE','STYLE','BACKGROUND']);
-    const blocks=out.split(/(?=\n\[(?!STYLE\]|CHARACTER\]|FACE\]))/);
-    for(let pass=0; pass<3 && out.length>LIMIT; pass++){
-      const maxLen=pass===0?150:(pass===1?115:90);
-      const compacted=blocks.map(block=>{
-        const m=block.match(/^(\n\[([^\]]+)\]\s*)([\s\S]*)$/);
-        if(!m || protectedKeys.has(m[2])) return block;
-        let body=m[3].replace(/\s+/g,' ').trim();
-        if(body.length>maxLen){
-          const parts=body.split(';').map(x=>x.trim()).filter(Boolean);
-          let acc='';
-          for(const part of parts){
-            const next=acc ? acc+'; '+part : part;
-            if(next.length>maxLen) break;
-            acc=next;
-          }
-          body=acc || body.slice(0,maxLen).replace(/\s+\S*$/,'')+'…';
-        }
-        return m[1]+body;
-      }).join('');
-      out=compacted;
-    }
-    if(out.length<=LIMIT) return out;
-
-    // 最終安全弁：重要ブロックを残したまま、低優先度カテゴリの本文をさらに圧縮する。
-    // それでも超える場合は、重要ブロック以外を後方から削って4096文字以内を保証する。
-    const priority=['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','BACKGROUND'];
-    const parsed=out.split(/(?=\n\[[^\]]+\])/);
-    const important=[], optional=[];
-    parsed.forEach(function(block){
-      const m=block.match(/^\n?\[([^\]]+)\]/);
-      if(m && priority.indexOf(m[1])>=0) important.push(block); else optional.push(block);
-    });
-    let keep=important.join('');
-    if(keep.length>LIMIT) return keep.slice(0,LIMIT-1).replace(/\s+\S*$/,'')+'…';
-    for(let i=0;i<optional.length;i++){
-      const candidate=keep+optional[i];
-      if(candidate.length<=LIMIT) keep=candidate;
-      else {
-        const room=LIMIT-keep.length-1;
-        if(room>30){
-          const body=optional[i].replace(/\s+/g,' ').trim();
-          keep += '\n'+body.slice(0,room).replace(/\s+\S*$/,'')+'…';
-        }
-        break;
+    if(text.length<=LIMIT)return text;
+    // Preserve complete category boundaries; never slice in the middle of a category.
+    let blocks=text.split(/\n(?=\[[A-Z][A-Z &]+\])/).filter(Boolean);
+    const priority=['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','EXPRESSION','HAIRSTYLE','HAIR COLOR','EYE COLOR','OUTFIT CONCEPT','OUTFIT COLOR','OUTFIT MATERIAL','OUTFIT STRUCTURE','BACKGROUND','EVENT FUSION'];
+    const name=b=>(b.match(/^\[([^\]]+)\]/)||[])[1]||'';
+    const compact=b=>{
+      let m=b.match(/^(\[[^\]]+\]\s*)([\s\S]*)$/);if(!m)return b;
+      let body=m[2].trim();
+      if(name(b)==='EVENT FUSION'){
+        let parts=body.split(';').map(x=>x.trim()).filter(Boolean);
+        body=parts.slice(0,8).join('; ');
+      }else if(body.length>200){
+        let parts=body.split(';').map(x=>x.trim()).filter(Boolean);
+        let kept=[];for(let part of parts){if(kept.join('; ').length+part.length>200)break;kept.push(part)}
+        if(kept.length)body=kept.join('; ');
       }
-    }
-    return keep.slice(0,LIMIT);
+      return m[1]+body;
+    };
+    let output=blocks.join('\n');if(output.length<=LIMIT)return output;
+    blocks=blocks.filter(b=>name(b)!=='OUTFIT CONCEPT LINK').map(compact);
+    output=blocks.join('\n');if(output.length<=LIMIT)return output;
+    const order=blocks.map((b,i)=>({b,i,p:priority.indexOf(name(b))})).sort((a,b)=>(a.p<0?999:a.p)-(b.p<0?999:b.p));
+    let chosen=[],total=0;
+    for(const item of order){const len=item.b.length+1;if(total+len<=LIMIT){chosen.push(item);total+=len}}
+    return chosen.sort((a,b)=>a.i-b.i).map(x=>x.b).join('\n');
   }
 
   const originalUpdatePrompt=window.updatePrompt;
@@ -12876,161 +12836,28 @@ updatePrompt();</script>
   applyAll(false);finish();
 })();
 </script>
+
 <script>
-/* v20: non-destructive final-output camera/framing resolver. Selection state stays untouched. */
+/* v22: output-only shot-aware reconciliation; all UI selections remain unchanged. */
 (function(){
-'use strict';
-const shotRules={
- 'Cowboy Shot':['((mid-thigh-up framing:1.5))','portrait cropped at mid-thigh; head and upper thighs fill the frame; knees, lower legs and shoes outside the image'],
- 'Three-Quarter / Knee':['((thigh-up portrait framing:1.5))','head through upper legs fills the frame; crop at the selected thigh or knee boundary; shoes outside the image'],
- 'Upper Body':['((upper-body close framing:1.5))','head and upper torso occupy most of the image; lower body outside the image'],
- 'Portrait':['((head-and-shoulders portrait:1.5))','face and shoulders occupy most of the image; lower torso and legs outside the image'],
- 'Close-Up':['((face close-up:1.55))','face occupies most of the image; tight crop around face; legs and outfit below shoulders outside the image'],
- 'Detail / Macro':['((extreme detail close-up:1.55))','selected facial detail fills the frame; body and footwear outside the image'],
- 'Full Body':['full-body framing','entire figure including feet visible in frame'],
- 'Wide / Environment':['wide environmental framing','subject visible within a spacious surrounding environment']
-};
-function current(key){return (window.__expressionTechniqueState||{})[key]||{};}
-function shotText(group,value){
- const base=shotRules[group];if(!base)return '';
- let crop=base[1];
- if(/knee-up|knee/i.test(value||'') && group==='Three-Quarter / Knee')crop='head to knees visible; crop exactly at the knees; shoes outside the image';
- if(/thigh|cowboy/i.test(value||'') && group==='Three-Quarter / Knee')crop='head to mid-thigh visible; crop exactly at mid-thigh; knees and shoes outside the image';
- if(/waist-up/i.test(value||''))crop='head to waist visible; crop at waist; legs outside the image';
- if(/chest-up|bust shot/i.test(value||''))crop='head to chest visible; crop below chest; legs outside the image';
- return base[0]+'; '+crop;
-}
-function cameraBlock(){
- const shot=current('SHOT TYPE'),orientation=current('SUBJECT ORIENTATION'),gaze=current('GAZE'),pose=current('POSE'),angle=current('CAMERA ANGLE'),framing=current('FRAMING');
- if(![shot,orientation,gaze,pose,angle,framing].some(x=>x.value))return '';
- const rear=/^(Back|Back Three-Quarter)$/.test(orientation.group)||/back-facing|rear-facing|back view|facing away|rear three-quarter|back three-quarter/i.test(orientation.value||'');
- const shoulder=/over.shoulder|looking back/i.test((gaze.value||'')+' '+(pose.value||''));
- const items=[];
- if(shot.value)items.push(shotText(shot.group,shot.value)||shot.value);
- if(rear)items.push('((rear view of the torso:1.5)); back and shoulders facing viewer; front of torso turned away from viewer'+(shoulder?'; head turning back over one shoulder; partial face visible':'') );
- else if(orientation.value)items.push(orientation.value);
- if(pose.value)items.push(pose.value);
- if(gaze.value && !(rear&&shoulder))items.push(gaze.value);
- if(angle.value)items.push(angle.value);
- if(framing.value)items.push(framing.value);
- return items.length?'[POSE & CAMERA] '+items.join('; '):'';
-}
-function resolveOutput(){
- const el=document.getElementById('prompt');if(!el)return;
- let t=el.value;
- t=t.replace(/\n?\[EXPRESSION TECHNIQUE\][^\n]*/g,'');
- t=t.replace(/\n?\[POSE & CAMERA\][^\n]*/g,'');
- const block=cameraBlock();
- if(block){
-   // Put spatial directions before the detailed garment catalog without changing any selections.
-   const anchor=t.indexOf('[CHARACTER]');
-   t=anchor>=0?t.slice(0,anchor)+block+'\n\n'+t.slice(anchor):block+'\n\n'+t;
- }
- // Avoid truncating the camera instruction when the 4096-character PixAI limit is reached.
- if(t.length>4096){
-   const sections=t.split(/(?=\[[A-Z][A-Z &]+\])/);
-   const required=[],optional=[];
-   sections.forEach(b=>/^\[(STYLE|POSE & CAMERA|CHARACTER|FACE|BASE THEME|EVENT FUSION)\]/.test(b.trim())?required.push(b):optional.push(b));
-   let output=required.join('').trim();
-   for(const b of optional){const room=4096-output.length;if(room<=30)break;if(b.length<=room)output+=b;else{output+=b.slice(0,room).replace(/\s+\S*$/,'');break;}}
-   t=output.slice(0,4096);
- }
- el.value=t;
- const count=document.getElementById('count');if(count)count.textContent=count.textContent.replace(/ ｜ v20構図統合/g,'')+' ｜ v20構図統合';
-}
-const previous=window.updatePrompt;
-if(typeof previous==='function')window.updatePrompt=function(){previous.apply(this,arguments);resolveOutput();};
-resolveOutput();
-})();
-</script>
-<script>
-/* v21: visual-range-aware output, without modifying any category selections. */
-(function(){
-'use strict';
-const prior=window.updatePrompt;
-if(typeof prior!=='function')return;
-const state=()=>window.__expressionTechniqueState||{};
-function tier(){
- const s=state()['SHOT TYPE']||{},g=s.group||'',v=s.value||'';
- if(g==='Detail / Macro')return 0;
- if(g==='Close-Up')return 1;
- if(g==='Portrait')return 2;
- if(g==='Upper Body')return /head.and.shoulders|chest.up|bust shot/i.test(v)?3:4;
- if(g==='Cowboy Shot')return 6;
- if(g==='Three-Quarter / Knee')return /knee/i.test(v)?7:6;
- if(g==='Full Body'||g==='Wide / Environment')return 9;
- return 9;
-}
-function shotDirective(t){
- const v=(state()['SHOT TYPE']||{}).value||'';
- const directives={
- 0:'((extreme facial detail crop:1.5)); only the selected facial feature fills the canvas; no full figure',
- 1:'((tight face close-up:1.5)); face fills nearly the entire canvas; shoulders at lower edge; no full figure',
- 2:'((head-and-shoulders portrait:1.5)); face and shoulders large in the frame; bottom edge at shoulders',
- 3:'((chest-up portrait:1.5)); head to upper chest only; bottom border cuts below chest',
- 4:'((waist-up portrait:1.5)); head to waist only; bottom border at waist',
- 6:'((mid-thigh crop:1.5)); portrait from top of head to middle of thighs; bottom image edge intersects both thighs; knees and feet outside canvas',
- 7:'((knee-up crop:1.5)); portrait from top of head to knees; bottom image edge intersects both knees; shins and shoes outside canvas',
- 9:'full-length fashion portrait; complete person including shoes visible'
+ const old=window.updatePrompt;
+ const get=id=>document.getElementById(id);
+ function shot(){const st=window.__expressionTechniqueState||{};return (st['SHOT TYPE']||{}).value||get('techniqueShotModeDetail')?.value||''}
+ function family(v){v=v.toLowerCase();if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';if(/portrait|headshot|medium close|head-and-shoulders/.test(v))return 'portrait';if(/chest.up|bust shot/.test(v))return 'chest';if(/waist.up|upper.body|medium shot/.test(v))return 'waist';if(/knee.up|cowboy.style|medium.long/.test(v))return 'knee';if(/thigh.up|cowboy|three.quarter body/.test(v))return 'thigh';return 'full'}
+ const frames={waist:'((waist-up framing:1.5)); upper body fills the image; lower image edge at the waist; legs and footwear outside the frame',chest:'((chest-up framing:1.5)); head, shoulders and chest fill the image; lower image edge at the chest; waist and legs outside the frame',knee:'((knee-up framing:1.5)); head through knees visible; lower image edge at the knees; footwear outside the frame',thigh:'((thigh-up framing:1.5)); head through mid-thigh visible; lower image edge at mid-thigh; knees and footwear outside the frame',portrait:'((tight head-and-shoulders portrait:1.5)); face and shoulders dominate the frame; lower body outside the frame',face:'((face close-up:1.5)); face fills nearly the entire image; torso and legs outside the frame',detail:'((extreme facial detail close-up:1.5)); selected facial detail fills the image; rest of body outside the frame'};
+ const exclude={waist:['LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],knee:['SHOES'],thigh:['LEGS & HOSIERY','SHOES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES','OUTFIT STRUCTURE'],detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES','OUTFIT STRUCTURE','SHOULDERS & SLEEVES']};
+ window.updatePrompt=function(){old();const el=get('prompt');if(!el)return;const value=shot(),f=family(value);if(!frames[f])return;
+ let lines=el.value.split(/\n+/).filter(Boolean);const ignored=new Set(exclude[f]||[]);
+ lines=lines.filter(line=>{const m=line.match(/^\[([^\]]+)\]/);return !m||!ignored.has(m[1])});
+ let idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+ if(idx>=0){lines[idx]=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'[EXPRESSION TECHNIQUE] '+frames[f]+'; ')}
+ else {idx=lines.findIndex(x=>x.startsWith('[STYLE]'));lines.splice(idx+1,0,'[EXPRESSION TECHNIQUE] '+frames[f])}
+ lines=lines.map(x=>x.startsWith('[COMPOSITION]')?x.replace(/full.body|head.to.toe|full.length|entire figure|wide environmental/gi,'fashion portrait'):x);
+ // Avoid any partial line or category on overflow.
+ let output=lines.join('\n\n');if(output.length>4096){const essentials=['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','OUTFIT CONCEPT','BACKGROUND'];let ordered=lines.map((v,i)=>({v,i,key:(v.match(/^\[([^\]]+)\]/)||[])[1]}));let keep=ordered.filter(x=>essentials.includes(x.key));let optional=ordered.filter(x=>!essentials.includes(x.key));let size=keep.reduce((n,x)=>n+x.v.length+2,0);for(const x of optional){if(size+x.v.length+2<=4096){keep.push(x);size+=x.v.length+2}}output=keep.sort((a,b)=>a.i-b.i).map(x=>x.v).join('\n\n')}
+ el.value=output;const status=get('status');if(status)status.textContent='v22：'+({waist:'腰上',chest:'胸上',knee:'ひざ上',thigh:'太もも上',portrait:'顔・肩',face:'顔アップ',detail:'部分アップ'}[f])+'画角を最終出力に反映（選択値は保持）';
  };
- if(t===4 && /chest.up|bust shot/i.test(v))return directives[3];
- return directives[t];
-}
-function relevant(key,t){
- const limits={'SHOES':9,'LEGS & HOSIERY':7,'SKIRT':6,'WAIST DESIGN':4,'GLOVES':4,'OUTFIT PATTERN':3,'OUTFIT MATERIAL':3,'OUTFIT STRUCTURE':3,'OUTFIT COLOR':3,'OUTFIT CONCEPT':3,'OUTFIT CONCEPT LINK':3,'SHOULDERS & SLEEVES':3,'COLLAR':3,'DESIGN LANGUAGE':3,'HAIR ACCESSORIES':1};
- return !(key in limits)||t>=limits[key];
-}
-function sanitizeComposition(v,t){
- if(t===9)return v;
- v=v.replace(/(?:clean |outfit-focused |centered |balanced )?full[- ]body (?:fashion )?(?:composition|framing|shot|portrait)/gi,'portrait composition');
- v=v.replace(/full[- ]length (?:fashion )?(?:composition|framing|shot|portrait)/gi,'portrait composition');
- v=v.replace(/head[- ]to[- ]toe|entire figure|whole body visible/gi,'portrait crop');
- return v;
-}
-function render(){
- const el=document.getElementById('prompt');if(!el)return;
- const t=tier();
- // Reconstruct from the current DOM-selected categories, never edit the selection state.
- let original=el.value.replace(/\n?\[POSE & CAMERA\][^\n]*/g,'');
- let blocks=original.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
- const filtered=[];
- for(let b of blocks){
-  const m=b.match(/^\[([^\]]+)\]/);if(!m){filtered.push(b);continue;}
-  const key=m[1];
-  if(key==='EXPRESSION TECHNIQUE'||key==='POSE & CAMERA')continue;
-  if(!relevant(key,t))continue;
-  if(key==='COMPOSITION')b='[COMPOSITION] '+sanitizeComposition(b.slice(m[0].length).trim(),t);
-  filtered.push(b);
- }
- const cam=(original.match(/\[POSE & CAMERA\][^\n]*/)||[])[0]||'';
- const existing=el.value.match(/\[POSE & CAMERA\][^\n]*/);
- let camera=(existing?existing[0]:cam).replace(/^\[POSE & CAMERA\]\s*/,'');
- camera=camera.replace(/\(\(.*?(?:framing|crop|shot|close-up).*?\)\);?\s*/i,'');
- camera=camera.replace(/(?:head to knees visible|head through upper legs fills the frame|crop exactly at the knees|shoes outside the image|entire figure including feet visible in frame)[^;]*;?/gi,'');
- camera=camera.replace(/^\s*;\s*|;\s*$/g,'');
- const directive=shotDirective(t);
- const camBlock='[POSE & CAMERA] '+directive+(camera?'; '+camera:'');
- let insert=filtered.findIndex(x=>/^\[CHARACTER\]/.test(x));if(insert<0)insert=1;
- filtered.splice(insert,0,camBlock);
- // Keep relevant garment descriptions intact; omit whole optional blocks if over PixAI's limit.
- const essential=['STYLE','POSE & CAMERA','CHARACTER','FACE','BASE THEME'];
- const rank=k=>essential.includes(k)?0:({'OUTFIT CONCEPT':1,'OUTFIT COLOR':2,'OUTFIT MATERIAL':3,'OUTFIT STRUCTURE':4,'SHOULDERS & SLEEVES':5,'COLLAR':6,'WAIST DESIGN':7,'SKIRT':8,'LEGS & HOSIERY':9,'GLOVES':10,'SHOES':11,'HAIRSTYLE':2,'HAIR COLOR':2,'EYE COLOR':2,'EXPRESSION':2,'BACKGROUND':12,'LIGHTING':13,'COMPOSITION':14}[k]||15);
- let result=filtered.join('\n\n');
- if(result.length>4096){
-  const candidates=filtered.map((b,i)=>({b,i,k:(b.match(/^\[([^\]]+)\]/)||[])[1]||''}));
-  let keep=new Set(candidates.map(x=>x.i));
-  for(const x of [...candidates].sort((a,b)=>rank(b.k)-rank(a.k)||b.i-a.i)){
-   if([...keep].sort((a,b)=>a-b).map(i=>filtered[i]).join('\n\n').length<=4096)break;
-   if(rank(x.k)>0)keep.delete(x.i);
-  }
-  result=[...keep].sort((a,b)=>a-b).map(i=>filtered[i]).join('\n\n');
-  if(result.length>4096)result=result.slice(0,4096).replace(/\s+\S*$/,'');
- }
- el.value=result;
- const count=document.getElementById('count');if(count)count.textContent=count.textContent.replace(/ ｜ v20構図統合| ｜ v21画角連動/g,'')+' ｜ v21画角連動';
-}
-window.updatePrompt=function(){prior.apply(this,arguments);render();};
-render();
+ window.updatePrompt();
 })();
 </script>
 </body>
