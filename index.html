@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜宝石イベント融合強化版 v22.5｜2026-10-09 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合版 v22.6｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜宝石イベント融合強化版 v22.5｜2026-10-09 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合版 v22.6｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -91,7 +91,17 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="5">Hinamatsuri</option><option value="6">Tanabata</option><option value="7">Cherry Blossom Season</option><option value="8">Summer Festival</option><option value="9">Fireworks Night</option>
     <option value="10">Moon Viewing</option><option value="11">Autumn Leaves Season</option><option value="12">Harvest Season</option><option value="13">Snow Season</option><option value="14">Rainy Season</option>
     <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option><option value="20">💎 宝石イベント（Gemstone Jewelry）</option>
-  </select>
+  
+    <option value="21">✨ ラグジュアリー・ディテール</option>
+    <option value="22">👑 ロイヤル・オーナメント</option>
+    <option value="23">🪽 エーテリアル・ファブリック</option>
+    <option value="24">🌿 ボタニカル・アールヌーヴォー</option>
+    <option value="25">⚙️ アンティーク・メカニカル</option>
+    <option value="26">🌈 プリズマティック・ルミナンス</option>
+    <option value="27">🖋️ アーティスティック・タトゥー</option>
+    <option value="28">🌸 フローラル・ファンタジー</option>
+    <option value="29">🧸 プラッシュ・ドールファンタジー</option>
+</select>
 </div>
 <p class="note">一括設定中は、選択したイベントの候補だけを各カテゴリへ自動適用します。ランダム設定でも他の季節・通常候補には切り替わりません。個別カテゴリは引き続き変更できます。</p>
 <div id="gemstoneSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
@@ -9817,7 +9827,20 @@ SEASONAL_EVENT_OPTIONS["OUTFIT PATTERN"] = [
 // 既存300種類（20イベント×15）を変更せず、追加分は必要時に遅延生成する。
 // これによりDOMを巨大化させず、iPhone/Safariでも扱いやすくする。
 // ============================================================
-const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week","Gemstone Jewelry"];
+const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week","Gemstone Jewelry","Luxury Detail","Royal Ornament","Ethereal Fabric","Botanical Art Nouveau","Antique Mechanical","Prismatic Luminance","Artistic Tattoo","Floral Fantasy","Plush Doll Fantasy"];
+// v22.6: Non-destructive detail themes. These are not outfit/pose presets.
+const DETAIL_EVENT_START = 21;
+const DETAIL_EVENT_THEMES = [
+  {name:'Luxury Detail',focus:'fine fabric weave, precise embroidery threads, elegant lace edges, carefully finished hardware',accent:'refined stitching on existing hair ornaments and accessories',setting:'material-rich architectural surfaces and crafted furnishings',light:'controlled natural material highlights'},
+  {name:'Royal Ornament',focus:'delicate gold and silver filigree embroidery, ornamental trims and engraved fasteners',accent:'fine filigree on existing jewelry and hair accessories, no added crown',setting:'tasteful carved decorative details matching the chosen architecture',light:'subtle metallic glints'},
+  {name:'Ethereal Fabric',focus:'delicate fabric drape, fine lace edges and softly translucent layers only where suitable to the chosen fabric',accent:'soft textile detail on existing ribbons and accessories',setting:'gentle atmospheric depth without changing the selected scene',light:'soft transmitted light through existing translucent materials'},
+  {name:'Botanical Art Nouveau',focus:'elegant flowing botanical embroidery and subtle vine-shaped trim',accent:'fine leaf and vine ornament on existing accessories',setting:'restrained botanical curves in the chosen setting',light:'balanced light on curved ornament'},
+  {name:'Antique Mechanical',focus:'precisely engraved antique-metal clasps, subtle clockwork-inspired ornament on garment hardware',accent:'small mechanical detailing on existing accessory fittings, no extra props',setting:'tasteful engraved mechanical ornament integrated into existing architecture',light:'controlled warm metallic reflections'},
+  {name:'Prismatic Luminance',focus:'subtle pearlescent fabric sheen and fine iridescent stitching without recoloring the outfit',accent:'small prismatic reflections on existing accessory surfaces',setting:'restrained spectral reflections on suitable existing surfaces',light:'gentle prismatic glints, natural skin tones'},
+  {name:'Artistic Tattoo',focus:'coordinated fine-line ornamental motifs echoed in garment embroidery',accent:'small matching motifs on existing accessories',setting:'subtle decorative motifs matching the selected background',light:'clean skin detail without visual noise',special:'delicate decorative tattoo only on already exposed skin, never on clothing, no added skin exposure'},
+  {name:'Floral Fantasy',focus:'distinct sculpted flower embroidery and delicate floral appliques following the selected garment design',accent:'small coordinated blossoms on existing hair ornaments and accessories',setting:'recognizable flowers naturally integrated into the selected background',light:'soft natural highlights on petals'},
+  {name:'Plush Doll Fantasy',focus:'fine plush-toy motifs and soft stitched applique on selected garments',accent:'small teddy bear or rabbit plush charm on an existing bag or accessory if compatible',setting:'one or two tasteful plush toys placed in the background, not extra characters',light:'soft textile texture and balanced illumination'}
+];
 const EVENT_SILHOUETTES = [
   "structured corset mini dress", "cropped jacket + pleated mini skirt", "fitted blouse + high-waisted tailored shorts", "fitted vest + wide-leg trousers", "cape + fitted mini dress", "peplum top + flared mini skirt", "off-shoulder top + layered mini skirt", "asymmetric tunic + slim trousers", "cropped bolero + tiered mini skirt", "fitted fashion jumpsuit", "bustier top + tailored trousers", "structured collar top + A-line mini skirt", "babydoll mini dress", "longline coat + fitted mini dress", "cropped jacket + high-waisted mini skirt", "halter top + wrap mini skirt", "tailored blazer mini dress", "fitted knit top + pleated mini skirt", "draped fitted top + flared mini skirt", "ornamental bodice + tailored shorts"
 ];
@@ -9988,6 +10011,11 @@ function applySeasonEventBulk(eventIndex){
     CAT_KEYS.forEach(function(key){
       const s=catSelect(key); if(s) Array.from(s.options).forEach(function(o){if(o.dataset.seasonExtra==='1') o.remove();});
     });
+    updatePrompt(); return;
+  }
+  if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
+    // Preserve all current category values, pose and framing.
+    if(status) status.textContent='季節・イベント一括設定：ON｜'+DETAIL_EVENT_THEMES[eventIndex-DETAIL_EVENT_START].name+'｜選択済みカテゴリは固定';
     updatePrompt(); return;
   }
   chooseCoordinatedEventFamily(eventIndex);
@@ -12579,6 +12607,10 @@ updatePrompt();</script>
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
     if(eventIndex<0) return '';
+    if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
+      const t=DETAIL_EVENT_THEMES[eventIndex-DETAIL_EVENT_START];
+      return '[EVENT FUSION] '+t.name+'; preserve selected garment silhouette, colors, materials, accessories, hairstyle, background, pose and framing; visible garment detail: '+t.focus+'; accessory detailing: '+t.accent+'; background integration: '+t.setting+'; lighting: '+t.light+(t.special?'; '+t.special:'')+'; balanced detail density; crisp face and natural skin; no extra characters';
+    }
     const design=window.__activeEventDesign || {eventIndex:eventIndex,family:0,variant:0};
     const f=Math.max(0,Math.min(19,Number(design.family)||0));
     const v=Math.max(0,Math.min(9,Number(design.variant)||0));
