@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜宝石イベント・宝石別選択版 v22.3｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜宝石イベント品質優先版 v22.4｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜宝石イベント・宝石別選択版 v22.3｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜宝石イベント品質優先版 v22.4｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -97,7 +97,9 @@ button.secondary,button.dice{background:#eee;color:#333}
 <div id="gemstoneSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
 <label for="gemstoneTypeBulk" style="display:block;font-weight:700;margin-bottom:6px">💎 宝石の種類（イベント専用）</label>
 <select id="gemstoneTypeBulk" aria-label="宝石の種類"><option value="random">🎲 宝石を自動選択</option><option value="diamond">ダイヤモンド</option><option value="ruby">ルビー</option><option value="sapphire">サファイア</option><option value="emerald">エメラルド</option><option value="amethyst">アメジスト</option><option value="opal">オパール</option><option value="pearl">パール</option><option value="aquamarine">アクアマリン</option><option value="topaz">トパーズ</option><option value="garnet">ガーネット</option><option value="peridot">ペリドット</option><option value="tanzanite">タンザナイト</option><option value="tourmaline">トルマリン</option><option value="moonstone">ムーンストーン</option><option value="alexandrite">アレキサンドライト</option><option value="lapis">ラピスラズリ</option></select>
-<p class="note">選択した宝石の色彩・カット・装飾を衣装に融合します。ベーステーマや表現技法は保持します。</p>
+<label for="gemstoneIntensityBulk" style="display:block;font-weight:700;margin:9px 0 6px">✨ 宝石の反映度</label>
+<select id="gemstoneIntensityBulk" aria-label="宝石の反映度"><option value="standard">標準｜衣装中心・自然な装飾</option><option value="strong" selected>強調｜衣装＋背景・画質優先（おすすめ）</option><option value="fantasy">幻想的｜宝石建築と結晶演出</option></select>
+<p class="note">強調でも人物・顔・衣装の質感を優先し、結晶や光の過剰演出を避けます。ポーズ・構図の選択は維持します。</p>
 </div>
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
@@ -12517,23 +12519,24 @@ updatePrompt();</script>
   window.enforceBalloonSkirtCategory=enforceBalloonSkirtCategory;
 
   // v22.3: Gemstone selection is an additive EVENT overlay, independent of pose/framing.
+  // Each gem uses restrained, identifiable design motifs. Avoid forcing all gems into crystals.
   const GEMSTONE_DETAILS={
-    diamond:['diamond','icy white and platinum silver','brilliant-cut facets, precise clear crystal embroidery'],
-    ruby:['ruby','deep ruby crimson and warm antique gold','oval-cut ruby cabochons, ruby-colored bead embroidery'],
-    sapphire:['sapphire','royal sapphire blue and polished silver','cushion-cut blue sapphire accents, blue jewel embroidery'],
-    emerald:['emerald','rich emerald green and antique gold','emerald-cut geometric jewel details, green gemstone inlays'],
-    amethyst:['amethyst','violet purple and cool silver','amethyst crystal facets, purple gemstone beadwork'],
-    opal:['opal','iridescent ivory with pastel rainbow reflections','opalescent inlays, subtle shifting-color embroidery'],
-    pearl:['pearl','luminous ivory and champagne','natural pearl beading, pearl-button ornamentation'],
-    aquamarine:['aquamarine','clear aqua blue and silver','transparent aqua jewel facets, delicate sea-blue beadwork'],
-    topaz:['topaz','golden amber and warm champagne','golden topaz-cut accents, honey-colored jewel embroidery'],
-    garnet:['garnet','wine red and dark antique gold','deep garnet stone settings, burgundy bead embroidery'],
-    peridot:['peridot','fresh olive green and pale gold','peridot-green gem settings, leaf-like faceted motifs'],
-    tanzanite:['tanzanite','blue-violet and cool platinum','blue-violet gemstone facets, refined jewel-thread details'],
-    tourmaline:['tourmaline','pink and green gemstone gradients','bicolor tourmaline-like inlays, multitone faceted motifs'],
-    moonstone:['moonstone','milky white with soft blue iridescence','moonstone-like cabochons, soft pearlescent embroidery'],
-    alexandrite:['alexandrite','shifting teal green and violet','dual-tone faceted jewel settings, color-shift motifs'],
-    lapis:['lapis lazuli','deep ultramarine and fine gold','lapis-like blue inlays, tiny golden mineral flecks']
+    diamond:['diamond','clear white and platinum','precise brilliant-cut clear stones in silver filigree','faceted diamond showcases and discreet prismatic reflections'],
+    ruby:['ruby','deep crimson and antique gold','oval ruby cabochons set in ornate golden clasps','ruby-set decorative panels and warm crimson jewel glints'],
+    sapphire:['sapphire','royal blue and silver','deep blue cushion-cut sapphire ornaments and fine silver settings','sapphire-inlaid architectural details and small blue jewel displays'],
+    emerald:['emerald','rich emerald green and antique gold','rectangular emerald-cut green stones set in ornate gold fittings','emerald-inlaid Chinese architectural panels and elegant gemstone displays'],
+    amethyst:['amethyst','violet and cool silver','amethyst geode-inspired faceted violet ornaments','amethyst geode displays and soft violet reflections'],
+    opal:['opal','milky ivory and subtle spectral colors','opal cabochons with delicate shifting iridescence','opalescent inlays and subtle rainbow reflections'],
+    pearl:['pearl','ivory and champagne','lustrous rounded pearls in elegant clustered embroidery','pearl strands and shell-inspired ornamental displays'],
+    aquamarine:['aquamarine','clear aqua blue and silver','transparent pale-blue step-cut stones in refined silver settings','aquamarine gem displays and gentle watery reflections'],
+    topaz:['topaz','warm amber and champagne gold','faceted golden topaz ornaments in delicate metalwork','warm golden gem showcases and restrained amber reflections'],
+    garnet:['garnet','wine red and antique bronze','dark garnet cabochons and intricate bronze jewel settings','garnet-inlaid furniture and deep wine-red jewel highlights'],
+    peridot:['peridot','fresh olive green and pale gold','small bright peridot stones in leaf-shaped settings','peridot-studded botanical ornaments and green gem displays'],
+    tanzanite:['tanzanite','blue violet and platinum','faceted blue-violet tanzanite ornaments','tanzanite jewel displays with subtle blue-violet highlights'],
+    tourmaline:['tourmaline','pink and green bicolor','bicolor tourmaline stones with visible pink-green zoning','bicolor gem displays and gentle dual-color reflections'],
+    moonstone:['moonstone','milky white and cool blue','smooth moonstone cabochons with soft blue adularescence','moonstone-inlaid moon motifs and pearly blue glows'],
+    alexandrite:['alexandrite','teal green and muted violet','faceted alexandrite stones showing restrained teal-violet color shift','alexandrite jewel exhibits with selective color-shift glints'],
+    lapis:['lapis lazuli','ultramarine and antique gold','opaque lapis lazuli inlays with tiny natural gold pyrite flecks','lapis-inlaid decorative walls and gold-flecked stone displays']
   };
   function selectedGemstone(){
     const select=byId('gemstoneTypeBulk');
@@ -12549,6 +12552,8 @@ updatePrompt();</script>
   }
   const gemstoneSelect=byId('gemstoneTypeBulk');
   if(gemstoneSelect) gemstoneSelect.addEventListener('change',function(){updatePrompt();});
+  const gemstoneIntensity=byId('gemstoneIntensityBulk');
+  if(gemstoneIntensity) gemstoneIntensity.addEventListener('change',function(){updatePrompt();});
   const gemstoneSeason=byId('seasonEventBulk');
   if(gemstoneSeason) gemstoneSeason.addEventListener('change',function(){updateGemstoneVisibility();});
   updateGemstoneVisibility();
@@ -12572,7 +12577,11 @@ updatePrompt();</script>
       const gem=selectedGemstone();
       const theme=getThemeMode();
       const identity=theme==='normal'?'selected fashion design':(THEME_MODES[theme] && THEME_MODES[theme].label || 'selected fashion design');
-      return '[EVENT FUSION] Gemstone Jewelry; primary gemstone: '+gem[0]+'; coordinated gemstone palette: '+gem[1]+'; garment-integrated details: '+gem[2]+'; preserve the original '+identity+' silhouette and construction; gemstone color placement in visible bodice, collar, sleeves, waistband and fabric trim; jewel-inspired embroidery and ornamental fasteners, not merely separate jewelry; tasteful gemstone accents with accurate local clothing colors; premium couture craftsmanship';
+      const level=gemstoneIntensity ? gemstoneIntensity.value : 'strong';
+      const base='[EVENT FUSION] Gemstone Jewelry; featured gemstone: '+gem[0]+'; authentic gemstone colors: '+gem[1]+'; recognizable gemstone design: '+gem[2]+'; preserve the original '+identity+' silhouette, garment construction, and selected outfit colors; integrate real-looking gemstone settings into visible garment embroidery, buttons and trim rather than recoloring all fabric; refined couture textile texture and natural skin tones; maintain the selected camera framing, pose, and face quality';
+      if(level==='standard') return base+'; selective gemstone details; clean background with small matching jewel accents';
+      if(level==='fantasy') return base+'; prominent but balanced gemstone ornaments on the visible costume; gemstone-themed environment: '+gem[3]+'; additional elegant gem-encrusted architecture or crystal displays behind the character; subtle controlled gem-colored light; background secondary to the subject, no oversized foreground crystals';
+      return base+'; clearly visible gemstone ornaments repeated on two or three visible costume details; gemstone-themed background elements: '+gem[3]+'; modest jewel sparkle and restrained reflected light; preserve fine linework and avoid excessive glow or clutter';
     }
     const theme=getThemeMode();
     const t=EVENT_THEME_LIBRARY[eventName] || {};
