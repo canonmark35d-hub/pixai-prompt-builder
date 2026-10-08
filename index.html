@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜表現技法の明細・独立一括変更版 v16｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜表現技法の整合性・画角改善版 v17｜2026-10-08 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜表現技法の明細・独立一括変更版 v16｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜表現技法の整合性・画角改善版 v17｜2026-10-08 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12575,6 +12575,27 @@ updatePrompt();</script>
     return cleaned;
   }
 
+  function normalizeTechniqueOutput(key, value, state){
+    const group=(state[key]||{}).group||'';
+    if(key==='SHOT TYPE'){
+      const v=(value||'').toLowerCase();
+      if(group==='Close-Up') return 'tight face close-up, face occupying most of the image, only a small part of the shoulders visible';
+      if(group==='Portrait') return 'head-and-shoulders portrait, face prominent in frame, body below shoulders outside the image';
+      if(group==='Upper Body') return /chest|bust/.test(v) ? 'bust-up portrait, framed from the top of the head to the upper chest, lower torso outside the image' : 'upper-body portrait, framed from head to waist, legs outside the image';
+      if(group==='Cowboy Shot'||group==='Three-Quarter / Knee') return 'knee-up framing, subject visible from the top of the head to the knees, lower legs outside the image';
+      if(group==='Detail / Macro') return /eye/.test(v)?'extreme close-up of the eyes, eyes filling the frame':/lip/.test(v)?'extreme close-up of the lips, lips filling the frame':'extreme detail close-up, selected detail filling the frame';
+      if(group==='Full Body') return 'full-body framing, complete head and feet visible within the image';
+      if(group==='Wide / Environment') return 'wide environmental view, subject smaller within a clearly visible environment';
+    }
+    if(key==='FRAMING'){
+      const shot=(state['SHOT TYPE']||{}).group||'';
+      if(['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(shot)){
+        if(/full.body|full figure|head.to.toe|environmental|wide /i.test(value))return 'balanced close portrait composition';
+      }
+      if(['Close-Up','Portrait','Detail / Macro'].includes(shot) && /architectural|staircase|corridor|doorway/i.test(value))return 'subtle foreground framing around the face';
+    }
+    return value;
+  }
   function getExpressionTechniquePromptBlock(){
     // The six UI selectors are independent, but their concrete selections are
     // stored explicitly by the expression-technique controller. Do not read
@@ -12592,7 +12613,7 @@ updatePrompt();</script>
     const parts=[];
     defs.forEach(function(def){
       const saved=state[def[0]];
-      if(saved && saved.value) parts.push(saved.value);
+      if(saved && saved.value) parts.push(normalizeTechniqueOutput(def[0],saved.value,state));
     });
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
@@ -12828,6 +12849,46 @@ updatePrompt();</script>
     o.value=value;o.textContent=DETAIL_JA[value];s.value=value;
     state[d.key]={group,value,baseValue:''};
   }
+  const TECH_HISTORY=[];
+  function incompatible(candidate,key,chosen){
+    const shot=chosen['SHOT TYPE']||state['SHOT TYPE'];
+    const frame=chosen['FRAMING']||state['FRAMING'];
+    const orient=chosen['SUBJECT ORIENTATION']||state['SUBJECT ORIENTATION'];
+    const gaze=chosen['GAZE']||state['GAZE'];
+    const angle=chosen['CAMERA ANGLE']||state['CAMERA ANGLE'];
+    const sg=shot?.group||'', fg=frame?.group||'', og=orient?.group||'', gg=gaze?.group||'', ag=angle?.group||'';
+    const v=candidate.value.toLowerCase(), g=candidate.group;
+    if(key==='FRAMING' && ['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(sg) && /full.body|full figure|head.to.toe|wide environmental/i.test(v))return true;
+    if(key==='SHOT TYPE' && ['Close-Up','Portrait','Detail / Macro','Upper Body'].includes(g) && /full.body|full figure|head.to.toe/i.test(frame?.value||''))return true;
+    if(key==='GAZE' && ['Back'].includes(og) && ['Direct / Viewer'].includes(g))return true;
+    if(key==='SUBJECT ORIENTATION' && g==='Back' && gg==='Direct / Viewer')return true;
+    if(key==='CAMERA ANGLE' && ag==='Back' && g==='Front')return true;
+    if(key==='CAMERA ANGLE' && g==='Front' && og==='Back')return true;
+    if(key==='SUBJECT ORIENTATION' && g==='Back' && ag==='Front')return true;
+    return false;
+  }
+  function chooseCompatible(d,changeGroup,chosen){
+    const sel=document.getElementById(d.select);
+    const fixed=sel.value!=='AUTO_RANDOM' && !changeGroup;
+    const groups=fixed?[sel.value]:Object.keys(d.groups).filter(g=>g!=='AUTO_RANDOM');
+    const candidates=[];
+    groups.forEach(g=>d.groups[g].forEach(value=>{
+      const c={group:g,value};if(!incompatible(c,d.key,chosen))candidates.push(c);
+    }));
+    const pool=candidates.length?candidates:groups.flatMap(g=>d.groups[g].map(value=>({group:g,value})));
+    const recent=TECH_HISTORY.slice(-24);
+    const weights=pool.map(c=>{
+      const used=recent.filter(x=>x.key===d.key&&x.value===c.value).length;
+      const same=state[d.key]?.value===c.value;
+      return 1/(1+used*4+(same?8:0));
+    });
+    let r=Math.random()*weights.reduce((a,b)=>a+b,0),idx=pool.length-1;
+    for(let i=0;i<pool.length;i++){r-=weights[i];if(r<=0){idx=i;break;}}
+    const c=pool[idx];if(changeGroup)sel.value=c.group;
+    renderDetails(d,sel.value,c.value);commit(d,c.group,c.value);
+    chosen[d.key]={group:c.group,value:c.value};
+    TECH_HISTORY.push({key:d.key,value:c.value});if(TECH_HISTORY.length>120)TECH_HISTORY.shift();
+  }
   function choose(d,changeGroup){
     const sel=document.getElementById(d.select);
     let group=sel.value;
@@ -12842,16 +12903,21 @@ updatePrompt();</script>
       return label.textContent+'：'+(v?DETAIL_JA[v.value]:'未選択');
     }).join(' ／ ');
   }
-  function applyAll(changeGroup){Object.values(TECH).forEach(d=>choose(d,changeGroup));status();}
+  function applyAll(changeGroup){
+    const chosen={};
+    // Determine shot type first so all later framing decisions respect it.
+    ['SHOT','ORIENTATION','GAZE','CAMERA','FRAMING','POSE'].forEach(k=>chooseCompatible(TECH[k],changeGroup,chosen));
+    status();
+  }
   function finish(){window.updatePrompt();status();}
   Object.values(TECH).forEach(d=>{
-    document.getElementById(d.select).addEventListener('change',()=>{choose(d,false);finish();});
+    document.getElementById(d.select).addEventListener('change',()=>{chooseCompatible(d,false,{});finish();});
     document.getElementById(detailId(d)).addEventListener('change',e=>{
       const o=e.target.selectedOptions[0];
       if(!o.value){delete state[d.key];document.getElementById('cat-'+d.key).selectedIndex=0;}
       else commit(d,o.dataset.group,o.value);finish();
     });
-    document.getElementById(d.select+'Random').addEventListener('click',()=>{choose(d,false);finish();});
+    document.getElementById(d.select+'Random').addEventListener('click',()=>{chooseCompatible(d,false,{});finish();});
     document.getElementById('cat-'+d.key)?.closest('section.cat')?.classList.add('technique-managed-hidden');
   });
   document.getElementById('techniqueOnlyRandom').addEventListener('click',()=>{applyAll(true);finish();});
