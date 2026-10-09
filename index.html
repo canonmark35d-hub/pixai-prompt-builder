@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合版 v22.6｜2026-10-09 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角調整版 v22.7｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合版 v22.6｜2026-10-09 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角調整版 v22.7｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13027,6 +13027,62 @@ updatePrompt();</script>
    out=lines.filter(x=>keep.includes(x)).join('\n\n');
   }
   el.value=out;
+ };
+ window.updatePrompt();
+})();
+</script>
+<script>
+/* v22.7: close-framing output reconciliation only; never mutates selection state. */
+(function(){
+ const previous=window.updatePrompt;
+ const near=new Set(['portrait','chest','waist','face','detail']);
+ function selected(k){return (window.__expressionTechniqueState||{})[k]?.value||'';}
+ function family(v){
+  v=(v||'').toLowerCase();
+  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+  if(/portrait|headshot|medium close|head-and-shoulders/.test(v))return 'portrait';
+  if(/chest.up|bust shot/.test(v))return 'chest';
+  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+  return 'other';
+ }
+ function visiblePose(v,f){
+  if(!v)return '';
+  if(/sitt|seiza|wariza|kneel|cross.leg/i.test(v))return 'seated upper-body posture';
+  if(/lying|reclin/i.test(v))return 'reclining upper-body posture';
+  if(/run|jump|walk|long.leg|foot|feet|squat|crouch/i.test(v))return f==='waist'?'natural upper-body posture':'natural shoulder posture';
+  return v;
+ }
+ function visibleFraming(v){
+  if(!v)return '';
+  if(/environment|wide|full.body|head.to.toe|full.length|entire figure|negative.space|open space/i.test(v))return 'subtle background context, tightly cropped portrait';
+  return v;
+ }
+ window.updatePrompt=function(){
+  previous();
+  const el=document.getElementById('prompt');if(!el)return;
+  const f=family(selected('SHOT TYPE')||document.getElementById('techniqueShotModeDetail')?.value);
+  if(!near.has(f))return;
+  const lines=el.value.split(/\n+/).filter(Boolean);
+  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+  if(idx<0)return;
+  const raw=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  const parts=raw.split(';').map(x=>x.trim()).filter(Boolean);
+  const pose=selected('POSE'), framing=selected('FRAMING');
+  const seen=new Set(),result=[];
+  for(const part of parts){
+   let val=part;
+   if(pose&&part===pose)val=visiblePose(pose,f);
+   if(framing&&part===framing)val=visibleFraming(framing);
+   if(/^(?:sitting with legs crossed|sitting cross-legged|long-leg fashion pose)$/i.test(val))val=visiblePose(val,f);
+   if(/balanced character-and-environment framing|wide environmental framing/i.test(val))val=visibleFraming(val);
+   const key=val.toLowerCase().replace(/\s+/g,' ');
+   if(!seen.has(key)){seen.add(key);result.push(val);}
+  }
+  lines[idx]='[EXPRESSION TECHNIQUE] '+result.join('; ');
+  const out=lines.join('\n\n');
+  // Keep the established output limit and do not truncate any category.
+  if(out.length<=4096)el.value=out;
  };
  window.updatePrompt();
 })();
