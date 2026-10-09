@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角調整版 v22.7｜2026-10-09 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角安定化版 v22.8｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角調整版 v22.7｜2026-10-09 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角安定化版 v22.8｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13087,5 +13087,71 @@ updatePrompt();</script>
  window.updatePrompt();
 })();
 </script>
+
+<script>
+/* v22.8: final-output-only close-shot stabilization.
+   Keep selected UI values, theme, outfits and rear-view behavior unchanged. */
+(function(){
+  const previous = window.updatePrompt;
+  const get = id => document.getElementById(id);
+  const selected = key => (window.__expressionTechniqueState || {})[key]?.value || '';
+  function shotFamily(value){
+    const v = (value || '').toLowerCase();
+    if (/eye close|lips close|macro|zoomed|enlarged/.test(v)) return 'detail';
+    if (/extreme close|face close|close-up shot|intense close/.test(v)) return 'face';
+    if (/portrait|headshot|medium close|head.and.shoulders/.test(v)) return 'portrait';
+    if (/chest.up|bust shot/.test(v)) return 'chest';
+    if (/waist.up|upper.body|medium shot/.test(v)) return 'waist';
+    return '';
+  }
+  const anchors = {
+    portrait:'((tight head-and-shoulders portrait:1.6)); close camera distance; head and shoulders occupy almost the entire image; bottom frame edge just below shoulders; no waist or hips in view',
+    chest:'((chest-up portrait:1.6)); close camera distance; head and upper chest fill the image; bottom frame edge at chest level; no waist or hips in view',
+    waist:'((waist-up portrait:1.6)); medium-close camera distance; head through waist fill the image; bottom frame edge at waist level; no thighs or footwear in view',
+    face:'((face close-up:1.6)); very close camera distance; face fills almost the entire image; shoulders only at the edges; no waist or legs in view',
+    detail:'((extreme facial detail close-up:1.6)); selected facial detail fills the image; no body or environment visible'
+  };
+  window.updatePrompt = function(){
+    previous();
+    const el = get('prompt');
+    if (!el) return;
+    const family = shotFamily(selected('SHOT TYPE') || get('techniqueShotModeDetail')?.value);
+    if (!anchors[family]) return;
+    let lines = el.value.split(/\n+/).filter(Boolean);
+    const index = lines.findIndex(line => line.startsWith('[EXPRESSION TECHNIQUE]'));
+    if (index < 0) return;
+    let text = lines[index].replace(/^\[EXPRESSION TECHNIQUE\]\s*/, '');
+    // Replace only the existing crop prefix, preserving pose, direction, gaze and angle.
+    text = text.replace(/^\(\([^;]*?(?:framing|portrait|close-up)[^;]*\)\);?\s*(?:[^;]*;\s*){0,3}/i, '');
+    // Remove repeated crop instructions from previous compiler layers.
+    text = text.split(';').map(x => x.trim()).filter(x =>
+      x && !/^(?:face and shoulders dominate|lower body outside|upper body fills|lower image edge|head, shoulders and chest fill|waist and legs outside|legs and footwear outside|torso and legs outside|face fills nearly|selected facial detail fills|rest of body outside)/i.test(x)
+    ).join('; ');
+    lines[index] = '[EXPRESSION TECHNIQUE] ' + anchors[family] + (text ? '; ' + text : '');
+    // At portrait distance, long-leg anatomy keywords compete with the requested crop.
+    if (family === 'portrait' || family === 'chest' || family === 'face' || family === 'detail') {
+      lines = lines.map(line => line.startsWith('[CHARACTER]')
+        ? line.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs|compact pelvis|slim hips|balanced model-like body proportions)\b/gi, '')
+        : line);
+    }
+    // Preserve all outfit choices; only omit lines for completely out-of-frame items.
+    const output = lines.join('\n\n');
+    if (output.length <= 4096) {
+      el.value = output;
+    } else {
+      const essential = new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
+      const key = line => (line.match(/^\[([^\]]+)\]/) || [])[1] || '';
+      const kept = lines.filter(line => essential.has(key(line)));
+      for (const line of lines) {
+        if (essential.has(key(line))) continue;
+        if ((kept.join('\n\n') + '\n\n' + line).length <= 4096) kept.push(line);
+      }
+      el.value = lines.filter(line => kept.includes(line)).join('\n\n');
+    }
+  };
+  window.updatePrompt();
+})();
+</script>
+
 </body>
 </html>
