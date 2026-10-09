@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角安定化版 v22.8｜2026-10-09 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v22.9｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・近距離画角安定化版 v22.8｜2026-10-09 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v22.9｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13089,7 +13089,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v22.8: final-output-only close-shot stabilization.
+/* v22.9: final-output-only close-shot stabilization.
    Keep selected UI values, theme, outfits and rear-view behavior unchanged. */
 (function(){
   const previous = window.updatePrompt;
@@ -13153,5 +13153,63 @@ updatePrompt();</script>
 })();
 </script>
 
+<script>
+/* v22.9 cross-theme crop policy; final output only, original UI selections untouched. */
+(function(){
+ const previous=window.updatePrompt;
+ const get=id=>document.getElementById(id);
+ const chosen=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
+ function family(v){
+  v=(v||'').toLowerCase();
+  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+  if(/head.and.shoulders|headshot|tight portrait|portrait shot|medium close/.test(v))return 'portrait';
+  if(/chest.up|bust shot/.test(v))return 'chest';
+  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+  if(/thigh.up|mid.thigh/.test(v))return 'thigh';
+  if(/knee.up|knees/.test(v))return 'knee';
+  if(/full.body|full.length|head.to.toe/.test(v))return 'full';
+  return '';
+ }
+ const anchor={
+  detail:'((extreme facial detail close-up:1.6)); only the selected facial detail visible; no body visible',
+  face:'((face close-up:1.6)); face occupies almost the entire frame; no waist or legs visible',
+  portrait:'((tight head-and-shoulders portrait:1.6)); head and shoulders fill the frame; bottom edge immediately below shoulders; waist and hips outside frame',
+  chest:'((chest-up portrait:1.6)); head and upper chest fill the frame; bottom edge at chest level; waist and hips outside frame',
+  waist:'((waist-up portrait:1.6)); head through waist fill the frame; bottom edge at waist level; thighs, knees and shoes outside frame',
+  thigh:'((thigh-up framing:1.6)); head through mid-thigh fill the frame; bottom edge at mid-thigh; knees and shoes outside frame',
+  knee:'((knee-up framing:1.6)); head through knees fill the frame; bottom edge at knees; shoes outside frame',
+  full:'((full-body framing:1.5)); head and footwear entirely visible within frame'
+ };
+ const removeCrop=t=>t.split(';').map(x=>x.trim()).filter(x=>x&&!/^(?:\(\(?(?:tight head|chest-up|waist-up|thigh-up|knee-up|full-body|face close|extreme facial|head-and-shoulders)|close camera distance|medium-close camera distance|very close camera distance|head and shoulders|head and upper chest|head through|bottom (?:frame )?edge|lower image edge|no (?:waist|thighs|hips|legs|body)|waist and hips outside|thighs, knees and shoes outside|knees and shoes outside|shoes outside|footwear outside|legs and footwear outside|lower body outside|face fills|selected facial detail fills|rest of body outside|upper body fills|character fully visible)/i.test(x)).join('; ');
+ window.updatePrompt=function(){
+  previous();
+  const el=get('prompt');if(!el)return;
+  const f=family(chosen('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
+  if(!anchor[f])return;
+  let lines=el.value.split(/\n+/).filter(Boolean);
+  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+  if(idx<0)return;
+  const old=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  lines[idx]='[EXPRESSION TECHNIQUE] '+anchor[f]+'; '+removeCrop(old);
+  // For short shots suppress only out-of-frame standalone blocks, not stored UI choices.
+  const hidden={detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:['SHOES'],full:[]};
+  const blocked=new Set(hidden[f]);
+  lines=lines.filter(x=>!blocked.has((x.match(/^\[([^\]]+)\]/)||[])[1]));
+  if(['detail','face','portrait','chest','waist'].includes(f)){
+   lines=lines.map(x=>x.startsWith('[CHARACTER]')?x.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs)\b/gi,''):x);
+  }
+  // Avoid discarding outfit information when approaching PixAI limit: keep source order.
+  const required=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
+  const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
+  const selectedLines=[];let total=0;
+  for(const x of lines.filter(x=>required.has(key(x))).concat(lines.filter(x=>!required.has(key(x))))){
+   if(total+x.length+2<=4096){selectedLines.push(x);total+=x.length+2;}
+  }
+  el.value=lines.filter(x=>selectedLines.includes(x)).join('\n\n');
+ };
+ window.updatePrompt();
+})();
+</script>
 </body>
 </html>
