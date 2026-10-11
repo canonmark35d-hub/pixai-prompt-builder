@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.4｜2026-10-11 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.5｜2026-10-11 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.4｜2026-10-11 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.5｜2026-10-11 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13129,7 +13129,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.4: single final-output crop policy; selection values are never modified. */
+/* v23.5: single final-output crop policy; selection values are never modified. */
 (function(){
   const previous=window.updatePrompt;
   const get=id=>document.getElementById(id);
@@ -13150,10 +13150,10 @@ updatePrompt();</script>
     detail:'((extreme close-up of selected facial detail:1.6)); selected detail occupies the image',
     face:'((face close-up:1.6)); face occupies most of the image',
     portrait:'((head and shoulders only:1.6)); ((head fully visible:1.4)); shoulders at lower image edge',
-    chest:'((head and upper chest only:1.6)); ((head and shoulders filling the image:1.6)); ((upper chest at lower image edge:1.5)); entire hairstyle visible',
-    waist:'((waist-up shot:1.6)); head through waist visible; waistline at lower image edge',
+    chest:'((close-up of face and shoulders:1.5)); ((head and upper chest only:1.5)); face large in the image; upper chest at bottom edge; complete head visible',
+    waist:'((waist-up view:1.5)); ((face and upper torso prominent:1.5)); head fully visible; lower image edge at waistline',
     thigh:'((thigh-up shot:1.6)); head through mid-thigh visible; knees outside image',
-    knee:'((knee-up shot:1.6)); head through knees visible; footwear outside image',
+    knee:'((standing knee-up view:1.5)); head and upper legs visible to the knees; lower image edge at knee level',
     full:'((full body shot:1.5)); head and footwear visible within image'
   };
   const key=line=>(line.match(/^\[([^\]]+)\]/)||[])[1]||'';
@@ -13171,6 +13171,9 @@ updatePrompt();</script>
     if(idx<0)return;
     const prior=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
     const kept=prior.split(';').map(x=>x.trim()).filter(x=>x&&!cropFragment.test(x));
+    const pose=selected('POSE');
+    if(f==='knee' && pose && /sitt|kneel|reclin|lying|crouch|squat/i.test(pose)) crops.knee='((knee-up view:1.5)); head and upper legs visible to the knees; lower image edge at knee level';
+    else crops.knee='((standing knee-up view:1.5)); head and upper legs visible to the knees; lower image edge at knee level';
     // Preserve user-selected pose, direction, gaze and angle; avoid duplicate crop tokens.
     const rest=kept.filter(x=>!/(?:^|\s)(?:portrait framing|full.body framing|wide environmental framing)(?:$|\s)/i.test(x));
     lines[idx]='[EXPRESSION TECHNIQUE] '+crops[f]+(rest.length?'; '+[...new Set(rest)].join('; '):'');
@@ -13178,6 +13181,22 @@ updatePrompt();</script>
     lines=lines.filter(x=>!blocked.has(key(x)));
     if(['detail','face','portrait','chest'].includes(f)){
       lines=lines.map(x=>key(x)==='CHARACTER'?x.replace(/;\s*(?:long legs|elongated lower.body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line)(?=;|\.|$)/gi,''):x);
+    }
+    // For close crops, retain the theme and clothing detail but suppress off-screen
+    // full-skirt silhouette emphasis in the *compiled output* only.
+    if(['chest','waist'].includes(f)){
+      lines=lines.map(x=>{
+        if(key(x)==='BASE THEME')return x.replace(/;?\s*\(?(?:bell-shaped Lolita silhouette|full Lolita skirt)\s*:?\s*[0-9.]*\)?/gi,'').replace(/;\s*;/g,';');
+        if(key(x)==='OUTFIT STRUCTURE')return x.replace(/defined bodice and skirt/gi,'defined upper bodice construction');
+        return x;
+      });
+    }
+    // Keep the crop instruction at the end as well: in long prompts it can otherwise
+    // be diluted by garment, background and composition descriptions.
+    if(['chest','waist','knee'].includes(f)){
+      const cropReminder={chest:'face and shoulders large in image; upper chest at bottom edge; complete head visible',waist:'upper torso large in image; waistline at bottom edge; complete head visible',knee:'standing upright; knees at bottom edge; complete head visible'};
+      if(f==='knee'&&pose&&/sitt|kneel|reclin|lying|crouch|squat/i.test(pose))cropReminder.knee='knees at bottom edge; complete head visible';
+      lines[idx]+='; '+cropReminder[f];
     }
     // Remove only explicit wide/full-body framing conflicts, not garment details.
     if(f!=='full')lines=lines.map(x=>key(x)==='COMPOSITION'?x.replace(/\b(?:full.body shot|full.length shot|head.to.toe shot|wide shot|distant view)\b/gi,'subject-focused composition'):x);
