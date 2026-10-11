@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.3｜2026-10-10 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.4｜2026-10-11 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.3｜2026-10-10 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.4｜2026-10-11 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13129,184 +13129,67 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.0: final-output-only close-shot stabilization.
-   Keep selected UI values, theme, outfits and rear-view behavior unchanged. */
+/* v23.4: single final-output crop policy; selection values are never modified. */
 (function(){
-  const previous = window.updatePrompt;
-  const get = id => document.getElementById(id);
-  const selected = key => (window.__expressionTechniqueState || {})[key]?.value || '';
-  function shotFamily(value){
-    const v = (value || '').toLowerCase();
-    if (/eye close|lips close|macro|zoomed|enlarged/.test(v)) return 'detail';
-    if (/extreme close|face close|close-up shot|intense close/.test(v)) return 'face';
-    if (/portrait|headshot|medium close|head.and.shoulders/.test(v)) return 'portrait';
-    if (/chest.up|bust shot/.test(v)) return 'chest';
-    if (/waist.up|upper.body|medium shot/.test(v)) return 'waist';
+  const previous=window.updatePrompt;
+  const get=id=>document.getElementById(id);
+  const selected=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
+  function shot(v){
+    v=(v||'').toLowerCase();
+    if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+    if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+    if(/head.and.shoulders|headshot|portrait shot|medium close|tight portrait/.test(v))return 'portrait';
+    if(/chest.up|bust shot/.test(v))return 'chest';
+    if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+    if(/thigh.up|mid.thigh|cowboy shot|three.quarter body|medium.long/.test(v))return 'thigh';
+    if(/knee.up|knees/.test(v))return 'knee';
+    if(/full.body|full.length|head.to.toe|full figure/.test(v))return 'full';
     return '';
   }
-  const anchors = {
-    portrait:'((tight head-and-shoulders portrait:1.6)); close camera distance; head and shoulders occupy almost the entire image; bottom frame edge just below shoulders; no waist or hips in view',
-    chest:'((chest-up portrait:1.6)); close camera distance; head and upper chest fill the image; bottom frame edge at chest level; no waist or hips in view',
-    waist:'((waist-up portrait:1.6)); medium-close camera distance; head through waist fill the image; bottom frame edge at waist level; no thighs or footwear in view',
-    face:'((face close-up:1.6)); very close camera distance; face fills almost the entire image; shoulders only at the edges; no waist or legs in view',
-    detail:'((extreme facial detail close-up:1.6)); selected facial detail fills the image; no body or environment visible'
+  const crops={
+    detail:'((extreme close-up of selected facial detail:1.6)); selected detail occupies the image',
+    face:'((face close-up:1.6)); face occupies most of the image',
+    portrait:'((head and shoulders only:1.6)); ((head fully visible:1.4)); shoulders at lower image edge',
+    chest:'((head and upper chest only:1.6)); ((head and shoulders filling the image:1.6)); ((upper chest at lower image edge:1.5)); entire hairstyle visible',
+    waist:'((waist-up shot:1.6)); head through waist visible; waistline at lower image edge',
+    thigh:'((thigh-up shot:1.6)); head through mid-thigh visible; knees outside image',
+    knee:'((knee-up shot:1.6)); head through knees visible; footwear outside image',
+    full:'((full body shot:1.5)); head and footwear visible within image'
   };
-  window.updatePrompt = function(){
+  const key=line=>(line.match(/^\[([^\]]+)\]/)||[])[1]||'';
+  // Only independent off-screen garment sections are excluded; torso, collar, sleeves,
+  // materials, patterns and outfit structure remain intact.
+  const hidden={detail:['SKIRT','LEGS & HOSIERY','SHOES'],face:['SKIRT','LEGS & HOSIERY','SHOES'],portrait:['SKIRT','LEGS & HOSIERY','SHOES'],chest:['SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:[],full:[]};
+  const cropFragment=/^(?:\(\(?(?:tight head|chest.up|waist.up|thigh.up|knee.up|full.body|face close|extreme facial|head.and.shoulders|upper.bust|waist.level|mid.thigh|knee.level)|(?:close|medium.close|very close) camera distance|head and shoulders occupy|head and upper chest|head through|bottom (?:frame )?edge|lower image edge|lower frame|image shows|image boundary|no (?:waist|thighs|hips|legs|body)|waist and hips outside|thighs, knees and shoes outside|legs and footwear outside|lower body outside|face fills|selected facial detail fills|rest of body outside|upper body fills|character fully visible|tight framing consistent)/i;
+  window.updatePrompt=function(){
     previous();
-    const el = get('prompt');
-    if (!el) return;
-    const family = shotFamily(selected('SHOT TYPE') || get('techniqueShotModeDetail')?.value);
-    if (!anchors[family]) return;
-    let lines = el.value.split(/\n+/).filter(Boolean);
-    const index = lines.findIndex(line => line.startsWith('[EXPRESSION TECHNIQUE]'));
-    if (index < 0) return;
-    let text = lines[index].replace(/^\[EXPRESSION TECHNIQUE\]\s*/, '');
-    // Replace only the existing crop prefix, preserving pose, direction, gaze and angle.
-    text = text.replace(/^\(\([^;]*?(?:framing|portrait|close-up)[^;]*\)\);?\s*(?:[^;]*;\s*){0,3}/i, '');
-    // Remove repeated crop instructions from previous compiler layers.
-    text = text.split(';').map(x => x.trim()).filter(x =>
-      x && !/^(?:face and shoulders dominate|lower body outside|upper body fills|lower image edge|head, shoulders and chest fill|waist and legs outside|legs and footwear outside|torso and legs outside|face fills nearly|selected facial detail fills|rest of body outside)/i.test(x)
-    ).join('; ');
-    lines[index] = '[EXPRESSION TECHNIQUE] ' + anchors[family] + (text ? '; ' + text : '');
-    // At portrait distance, long-leg anatomy keywords compete with the requested crop.
-    if (family === 'portrait' || family === 'chest' || family === 'face' || family === 'detail') {
-      lines = lines.map(line => line.startsWith('[CHARACTER]')
-        ? line.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs|compact pelvis|slim hips|balanced model-like body proportions)\b/gi, '')
-        : line);
+    const el=get('prompt');if(!el)return;
+    const f=shot(selected('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
+    if(!crops[f])return;
+    let lines=el.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+    const idx=lines.findIndex(x=>key(x)==='EXPRESSION TECHNIQUE');
+    if(idx<0)return;
+    const prior=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+    const kept=prior.split(';').map(x=>x.trim()).filter(x=>x&&!cropFragment.test(x));
+    // Preserve user-selected pose, direction, gaze and angle; avoid duplicate crop tokens.
+    const rest=kept.filter(x=>!/(?:^|\s)(?:portrait framing|full.body framing|wide environmental framing)(?:$|\s)/i.test(x));
+    lines[idx]='[EXPRESSION TECHNIQUE] '+crops[f]+(rest.length?'; '+[...new Set(rest)].join('; '):'');
+    const blocked=new Set(hidden[f]);
+    lines=lines.filter(x=>!blocked.has(key(x)));
+    if(['detail','face','portrait','chest'].includes(f)){
+      lines=lines.map(x=>key(x)==='CHARACTER'?x.replace(/;\s*(?:long legs|elongated lower.body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line)(?=;|\.|$)/gi,''):x);
     }
-    // Preserve all outfit choices; only omit lines for completely out-of-frame items.
-    const output = lines.join('\n\n');
-    if (output.length <= 4096) {
-      el.value = output;
-    } else {
-      const essential = new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
-      const key = line => (line.match(/^\[([^\]]+)\]/) || [])[1] || '';
-      const kept = lines.filter(line => essential.has(key(line)));
-      for (const line of lines) {
-        if (essential.has(key(line))) continue;
-        if ((kept.join('\n\n') + '\n\n' + line).length <= 4096) kept.push(line);
-      }
-      el.value = lines.filter(line => kept.includes(line)).join('\n\n');
-    }
+    // Remove only explicit wide/full-body framing conflicts, not garment details.
+    if(f!=='full')lines=lines.map(x=>key(x)==='COMPOSITION'?x.replace(/\b(?:full.body shot|full.length shot|head.to.toe shot|wide shot|distant view)\b/gi,'subject-focused composition'):x);
+    // Favor visible clothing and selected camera instructions within PixAI's limit.
+    const priority=['STYLE','CHARACTER','FACE','EXPRESSION TECHNIQUE','BASE THEME','EVENT FUSION','EXPRESSION','HAIRSTYLE','HAIR COLOR','EYE COLOR','OUTFIT CONCEPT','OUTFIT COLOR','OUTFIT MATERIAL','OUTFIT STRUCTURE','SHOULDERS & SLEEVES','COLLAR','DESIGN LANGUAGE','OUTFIT PATTERN'];
+    const ranked=lines.map((line,i)=>({line,i,rank:priority.indexOf(key(line))<0?priority.length:priority.indexOf(key(line))})).sort((a,b)=>a.rank-b.rank||a.i-b.i);
+    const included=new Set();let length=0;
+    for(const item of ranked){if(length+item.line.length+2<=4096){included.add(item.i);length+=item.line.length+2;}}
+    el.value=lines.filter((_,i)=>included.has(i)).join('\n\n');
+    const count=get('count');if(count)count.textContent=el.value.length+' / 4096 文字';
   };
   window.updatePrompt();
-})();
-</script>
-
-<script>
-/* v23.0 cross-theme crop policy; final output only, original UI selections untouched. */
-(function(){
- const previous=window.updatePrompt;
- const get=id=>document.getElementById(id);
- const chosen=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
- function family(v){
-  v=(v||'').toLowerCase();
-  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
-  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
-  if(/head.and.shoulders|headshot|tight portrait|portrait shot|medium close/.test(v))return 'portrait';
-  if(/chest.up|bust shot/.test(v))return 'chest';
-  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
-  if(/thigh.up|mid.thigh/.test(v))return 'thigh';
-  if(/knee.up|knees/.test(v))return 'knee';
-  if(/full.body|full.length|head.to.toe/.test(v))return 'full';
-  return '';
- }
- const anchor={
-  detail:'((extreme facial detail close-up:1.6)); only the selected facial detail visible; no body visible',
-  face:'((face close-up:1.6)); face occupies almost the entire frame; no waist or legs visible',
-  portrait:'((tight head-and-shoulders portrait:1.6)); head and shoulders fill the frame; bottom edge immediately below shoulders; waist and hips outside frame',
-  chest:'((chest-up portrait:1.6)); head and upper chest fill the frame; bottom edge at chest level; waist and hips outside frame',
-  waist:'((waist-up portrait:1.6)); head through waist fill the frame; bottom edge at waist level; thighs, knees and shoes outside frame',
-  thigh:'((thigh-up framing:1.6)); head through mid-thigh fill the frame; bottom edge at mid-thigh; knees and shoes outside frame',
-  knee:'((knee-up framing:1.6)); head through knees fill the frame; bottom edge at knees; shoes outside frame',
-  full:'((full-body framing:1.5)); head and footwear entirely visible within frame'
- };
- const removeCrop=t=>t.split(';').map(x=>x.trim()).filter(x=>x&&!/^(?:\(\(?(?:tight head|chest-up|waist-up|thigh-up|knee-up|full-body|face close|extreme facial|head-and-shoulders)|close camera distance|medium-close camera distance|very close camera distance|head and shoulders|head and upper chest|head through|bottom (?:frame )?edge|lower image edge|no (?:waist|thighs|hips|legs|body)|waist and hips outside|thighs, knees and shoes outside|knees and shoes outside|shoes outside|footwear outside|legs and footwear outside|lower body outside|face fills|selected facial detail fills|rest of body outside|upper body fills|character fully visible)/i.test(x)).join('; ');
- window.updatePrompt=function(){
-  previous();
-  const el=get('prompt');if(!el)return;
-  const f=family(chosen('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
-  if(!anchor[f])return;
-  let lines=el.value.split(/\n+/).filter(Boolean);
-  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
-  if(idx<0)return;
-  const old=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
-  lines[idx]='[EXPRESSION TECHNIQUE] '+anchor[f]+'; '+removeCrop(old);
-  // For short shots suppress only out-of-frame standalone blocks, not stored UI choices.
-  const hidden={detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:['SHOES'],full:[]};
-  const blocked=new Set(hidden[f]);
-  lines=lines.filter(x=>!blocked.has((x.match(/^\[([^\]]+)\]/)||[])[1]));
-  if(['detail','face','portrait','chest','waist'].includes(f)){
-   lines=lines.map(x=>x.startsWith('[CHARACTER]')?x.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs)\b/gi,''):x);
-  }
-  // Avoid discarding outfit information when approaching PixAI limit: keep source order.
-  const required=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
-  const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
-  const selectedLines=[];let total=0;
-  for(const x of lines.filter(x=>required.has(key(x))).concat(lines.filter(x=>!required.has(key(x))))){
-   if(total+x.length+2<=4096){selectedLines.push(x);total+=x.length+2;}
-  }
-  el.value=lines.filter(x=>selectedLines.includes(x)).join('\n\n');
- };
- window.updatePrompt();
-})();
-</script>
-<script>
-/* v23.0: shot-size authority layer. Do not mutate selection state. */
-(function(){
- const previous=window.updatePrompt;
- const get=id=>document.getElementById(id);
- const chosen=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
- function family(v){
-  v=(v||'').toLowerCase();
-  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
-  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
-  if(/head.and.shoulders|headshot|tight portrait|portrait shot|medium close/.test(v))return 'portrait';
-  if(/chest.up|bust shot/.test(v))return 'chest';
-  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
-  if(/thigh.up|mid.thigh/.test(v))return 'thigh';
-  if(/knee.up|knees/.test(v))return 'knee';
-  if(/full.body|full.length|head.to.toe/.test(v))return 'full';
-  return '';
- }
- const shots={
-  detail:'((extreme close-up of the selected facial detail:1.7)); detail occupies the entire image; extreme magnification; all other body parts outside the image',
-  face:'((extreme close-up portrait:1.7)); face dominates the image from edge to edge; top of hair and chin near image boundaries; torso entirely outside image',
-  portrait:'((head-and-shoulders close crop:1.7)); ((large face and shoulders in foreground:1.5)); image shows head, neck and shoulders only; lower image boundary directly below shoulders; chest, waist, skirt and legs entirely beyond image boundary',
-  chest:'((upper-bust close crop:1.7)); ((large head and upper torso in foreground:1.5)); image shows head, shoulders and upper chest only; lower image boundary crosses upper chest; waist, skirt and legs entirely beyond image boundary',
-  waist:'((waist-level close crop:1.7)); ((large upper body in foreground:1.5)); image shows head through waist only; lower image boundary crosses waistline; skirt hem, thighs, knees and footwear beyond image boundary',
-  thigh:'((mid-thigh crop:1.7)); ((large subject in foreground:1.4)); image shows head through mid-thigh only; lower image boundary crosses mid-thigh; knees and footwear beyond image boundary',
-  knee:'((knee-level crop:1.7)); ((large subject in foreground:1.4)); image shows head through knees only; lower image boundary crosses the knees; calves, ankles and footwear beyond image boundary',
-  full:'((full-length head-to-toe framing:1.5)); complete figure including shoes visible'
- };
- const cropPart=/^(?:\(\(?(?:tight head|chest-up|waist-up|thigh-up|knee-up|full-body|face close|extreme facial|head-and-shoulders|upper-bust|waist-level|mid-thigh|knee-level)|(?:close|medium-close|very close) camera distance|(?:head|face|upper body|lower body|selected facial detail|bottom edge|lower image edge|lower frame|footwear|waist and hips|waist and legs|torso and legs|thighs|knees and shoes|legs and footwear|shoes outside|no waist|no thighs|no body|character fills|subject fills|frame tightly|cropped at|camera framing|visible from head|image shows|image boundary))/i;
- window.updatePrompt=function(){
-  previous();
-  const el=get('prompt');if(!el)return;
-  const f=family(chosen('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
-  if(!shots[f])return;
-  let lines=el.value.split(/\n+/).filter(Boolean);
-  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));if(idx<0)return;
-  let old=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
-  // Preserve direction, gaze, posture and camera angle; discard only stale crop fragments.
-  old=old.split(';').map(x=>x.trim()).filter(x=>x&&!cropPart.test(x)).join('; ');
-  lines[idx]='[EXPRESSION TECHNIQUE] '+shots[f]+(old?'; '+old:'');
-  // A separate composition instruction should not contradict the chosen shot size.
-  lines=lines.map(x=>x.startsWith('[COMPOSITION]')&&f!=='full'?'[COMPOSITION] '+x.replace(/^\[COMPOSITION\]\s*/,'').replace(/\b(?:full.body|full.length|head.to.toe|wide shot|long shot|distant view|balanced full.body|entire figure)\b/gi,'editorial').replace(/\s*;\s*/g,'; ')+'; tight framing consistent with selected crop':x);
-  // Hide blocks entirely beyond the crop in the final prompt, not in saved UI selections.
-  const hidden={detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:['SHOES'],full:[]};
-  const blocked=new Set(hidden[f]);lines=lines.filter(x=>!blocked.has((x.match(/^\[([^\]]+)\]/)||[])[1]));
-  // Avoid lower-body anatomy keywords pulling a close shot outward.
-  if(['detail','face','portrait','chest','waist'].includes(f))lines=lines.map(x=>x.startsWith('[CHARACTER]')?x.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs|compact pelvis|slim hips|balanced model-like body proportions)(?=;|\.|$)/gi,''):x);
-  const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
-  const must=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
-  const included=new Set();let length=0;
-  for(const line of lines.filter(x=>must.has(key(x))).concat(lines.filter(x=>!must.has(key(x))))){
-   if(length+line.length+2<=4096){included.add(line);length+=line.length+2;}
-  }
-  el.value=lines.filter(x=>included.has(x)).join('\n\n');
- };
- window.updatePrompt();
 })();
 </script>
 </body>
