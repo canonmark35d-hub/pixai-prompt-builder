@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.5｜2026-10-11 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.6｜2026-10-12 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.5｜2026-10-11 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.6｜2026-10-12 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13088,9 +13088,9 @@ updatePrompt();</script>
  }
  function visiblePose(v,f){
   if(!v)return '';
-  if(/sitt|seiza|wariza|kneel|cross.leg/i.test(v))return 'seated upper-body posture';
-  if(/lying|reclin/i.test(v))return 'reclining upper-body posture';
-  if(/run|jump|walk|long.leg|foot|feet|squat|crouch/i.test(v))return f==='waist'?'natural upper-body posture':'natural shoulder posture';
+  if(/sitt|seiza|wariza|kneel|cross.leg/i.test(v))return v;
+  if(/lying|reclin/i.test(v))return v;
+  if(/run|jump|walk|long.leg|foot|feet|squat|crouch/i.test(v))return v;
   return v;
  }
  function visibleFraming(v){
@@ -13129,7 +13129,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.5: single final-output crop policy; selection values are never modified. */
+/* v23.6: pose-preserving final-output crop policy; selection values are never modified. */
 (function(){
   const previous=window.updatePrompt;
   const get=id=>document.getElementById(id);
@@ -13174,8 +13174,12 @@ updatePrompt();</script>
     const pose=selected('POSE');
     if(f==='knee' && pose && /sitt|kneel|reclin|lying|crouch|squat/i.test(pose)) crops.knee='((knee-up view:1.5)); head and upper legs visible to the knees; lower image edge at knee level';
     else crops.knee='((standing knee-up view:1.5)); head and upper legs visible to the knees; lower image edge at knee level';
+    // Restore the exact selected pose even when earlier wrappers paraphrased it.
+    const poseAliases=/^(?:seated upper-body posture|reclining upper-body posture|natural upper-body posture|natural shoulder posture)$/i;
+    const poseRest=pose ? kept.filter(x=>!poseAliases.test(x) && x!==pose) : kept;
+    if(pose)poseRest.unshift(pose);
     // Preserve user-selected pose, direction, gaze and angle; avoid duplicate crop tokens.
-    const rest=kept.filter(x=>!/(?:^|\s)(?:portrait framing|full.body framing|wide environmental framing)(?:$|\s)/i.test(x));
+    const rest=poseRest.filter(x=>!/(?:^|\s)(?:portrait framing|full.body framing|wide environmental framing)(?:$|\s)/i.test(x));
     lines[idx]='[EXPRESSION TECHNIQUE] '+crops[f]+(rest.length?'; '+[...new Set(rest)].join('; '):'');
     const blocked=new Set(hidden[f]);
     lines=lines.filter(x=>!blocked.has(key(x)));
@@ -13194,7 +13198,7 @@ updatePrompt();</script>
     // Keep the crop instruction at the end as well: in long prompts it can otherwise
     // be diluted by garment, background and composition descriptions.
     if(['chest','waist','knee'].includes(f)){
-      const cropReminder={chest:'face and shoulders large in image; upper chest at bottom edge; complete head visible',waist:'upper torso large in image; waistline at bottom edge; complete head visible',knee:'standing upright; knees at bottom edge; complete head visible'};
+      const cropReminder={chest:'face and shoulders large in image; upper chest at bottom edge; complete head visible',waist:'upper torso large in image; waistline at bottom edge; complete head visible',knee:'knees at bottom edge; complete head visible'};
       if(f==='knee'&&pose&&/sitt|kneel|reclin|lying|crouch|squat/i.test(pose))cropReminder.knee='knees at bottom edge; complete head visible';
       lines[idx]+='; '+cropReminder[f];
     }
