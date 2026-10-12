@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.14｜2026-10-12 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.15｜2026-10-12 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.14｜2026-10-12 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.15｜2026-10-12 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13296,7 +13296,7 @@ updatePrompt();</script>
 })();
 </script>
 <script>
-/* v23.14: single coherent foreground gesture and shot reconciler. */
+/* v23.15: single coherent foreground gesture and shot reconciler. */
 (function(){
  'use strict';
  const previous=window.updatePrompt;
@@ -13392,7 +13392,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.14: preserve the visible major category when randomizing only details. */
+/* v23.15: preserve the visible major category when randomizing only details. */
 (function(){
  'use strict';
  const button=document.getElementById('techniqueDetailsRandom');
@@ -13426,7 +13426,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.14: shot-aware, final-output-only lower-body anatomy adjustment.
+/* v23.15: shot-aware, final-output-only lower-body anatomy adjustment.
    Preserve the master character definition and every selector unchanged. */
 (function(){
  'use strict';
@@ -13481,6 +13481,109 @@ updatePrompt();</script>
    const count=get('count');if(count)count.textContent=out.value.length+' / 4096 文字';
  };
  window.updatePrompt();
+})();
+</script>
+
+<script>
+/* v23.15 — exclusive foreground final-output reconciler.
+   Never alters selectors or stored master settings. */
+(function(){
+'use strict';
+const prior=window.updatePrompt;
+if(typeof prior!=='function')return;
+const $=id=>document.getElementById(id);
+const v=id=>$(id)?.value||'';
+const keys=['Pose','Camera','Framing'];
+const group=k=>v('technique'+k+'Mode');
+const detail=k=>v('technique'+k+'ModeDetail');
+const hand=/^Hand (Foreground Pose|Perspective|Foreground Framing)$/;
+const foot=/^Footwear (Foreground Pose|Perspective|Foreground Framing)$/;
+const legTerms=new Set(['slender thighs','long legs','elongated lower-body proportions','long femur proportion','long shin proportion','slender calves','refined ankles','lean lower body','elegant straight leg line']);
+function choose(){
+ const groups=keys.map(group);
+ // The pose is the primary target, then framing, then camera. No mixed foregrounds.
+ for(const k of ['Pose','Framing','Camera']){if(hand.test(group(k)))return 'hand';if(foot.test(group(k)))return 'foot';}
+ return '';
+}
+function crop(){
+ const d=v('techniqueShotModeDetail').toLowerCase(),g=v('techniqueShotMode');
+ if(/full.body|full.length|head.to.toe|full.figure/.test(d)||g==='Full Body')return 'full';
+ if(/wide|environment/.test(d)||g==='Wide / Environment')return 'wide';
+ if(/knee.up|knee.level|cowboy|three.quarter|thigh.up|medium.long/.test(d)||g==='Cowboy Shot'||g==='Three-Quarter / Knee')return 'knee';
+ if(/waist.up|upper.body|medium shot/.test(d))return 'waist';
+ if(/chest.up|bust shot|portrait|head.and.shoulders|medium close/.test(d)||g==='Portrait')return 'chest';
+ if(/macro|extreme close|face close|headshot|eye close|lips close/.test(d)||g==='Detail / Macro')return 'face';
+ return '';
+}
+function shotPhrase(c){
+ return {face:'((face and foreground gesture dominate the image:1.5)); complete head visible',
+ chest:'((head and upper chest dominate the image:1.5)); complete head visible',
+ waist:'((waist-up close view:1.5)); head and upper torso prominent; complete head visible',
+ knee:'((head to knees visible:1.4)); complete head visible',
+ full:'full figure visible behind foreground gesture; complete head visible',
+ wide:'environment visible behind foreground gesture; complete head visible'}[c]||
+ '((upper-body close view:1.45)); face visible behind foreground gesture; complete head visible';
+}
+function posture(p){
+ if(/sit|seat|chair|sofa|bench|floor/.test(p))return 'sitting naturally';
+ if(/kneel/.test(p))return 'kneeling naturally';
+ if(/reclin|lying/.test(p))return 'reclining naturally';
+ if(/crouch|squat/.test(p))return 'crouching naturally';
+ if(/walk/.test(p))return 'walking naturally';
+ return 'standing naturally';
+}
+function gesture(kind,source){
+ if(kind==='foot'){
+  if(/sole/.test(source))return 'one shoe sole facing the viewpoint in the near foreground';
+  if(/toe/.test(source))return 'one shoe toe enlarged in the near foreground';
+  return 'one shoe extended toward the viewpoint in the near foreground';
+ }
+ if(/peace.sign|peace sign|two.finger/.test(source))return 'one hand making a two-finger peace sign toward the viewpoint';
+ if(/pointing|index finger|fingertip/.test(source))return 'one hand pointing its index finger directly toward the viewpoint';
+ return 'one open palm extended directly toward the viewpoint';
+}
+window.updatePrompt=function(){
+ prior();
+ const kind=choose();if(!kind)return;
+ const output=$('prompt');if(!output)return;
+ const c=crop();
+ const pose=detail('Pose').toLowerCase();
+ const source=keys.filter(k=>(kind==='hand'?hand:foot).test(group(k))).map(detail).join(' ').toLowerCase();
+ const actualSource=source||keys.map(detail).join(' ').toLowerCase();
+ const main=[
+  posture(pose),
+  gesture(kind,actualSource),
+  kind==='hand'
+   ?'((her own foreground hand enlarged by perspective:1.5)); one arm extending from its shoulder toward the viewpoint; one continuous arm connected to the foreground hand; other arm relaxed; five naturally arranged fingers'
+   :'((her own foreground shoe enlarged by perspective:1.5)); one leg extending from the seated or standing body toward the viewpoint; shoe connected to the same person',
+  shotPhrase(c),
+  v('techniqueGazeModeDetail'),
+  v('techniqueOrientationModeDetail'),
+  'solo; exactly one person'
+ ].filter(Boolean);
+ const lines=output.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+ const i=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+ if(i<0)return;
+ // Preserve the pose only when it does not demand the competing foreground target.
+ const chosenPose=detail('Pose');
+ if(chosenPose && !(kind==='hand'?foot:hand).test(group('Pose')) &&
+    !(kind==='hand'?/shoe|boot|footwear/i:/hand|finger|palm/i).test(chosenPose) &&
+    !main.some(x=>x.toLowerCase().includes(chosenPose.toLowerCase())))main.splice(1,0,chosenPose);
+ const seen=new Set();
+ lines[i]='[EXPRESSION TECHNIQUE] '+main.filter(x=>{const z=x.toLowerCase();if(seen.has(z))return false;seen.add(z);return true}).join('; ');
+ if(kind==='hand'&&c!=='full'&&c!=='wide'){
+  const ci=lines.findIndex(x=>x.startsWith('[CHARACTER]'));
+  if(ci>=0){
+   const chunks=lines[ci].replace(/^\[CHARACTER\]\s*/,'').split(';').map(x=>x.trim()).filter(Boolean);
+   lines[ci]='[CHARACTER] '+chunks.filter(x=>!legTerms.has(x.replace(/\.$/,'').toLowerCase())).join('; ').replace(/[.;\s]*$/,'.');
+  }
+ }
+ // If the shoe is the focus, do not retain "footwear outside the frame" crop instructions.
+ // All outfit, material and theme sections remain intact.
+ output.value=lines.join('\n\n');
+ const count=$('count');if(count)count.textContent=output.value.length+' / 4096 文字';
+};
+window.updatePrompt();
 })();
 </script>
 </body>
