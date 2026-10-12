@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.11｜2026-10-12 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.12｜2026-10-12 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.11｜2026-10-12 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.12｜2026-10-12 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13296,42 +13296,67 @@ updatePrompt();</script>
 })();
 </script>
 <script>
-/* v23.9 foreground testing mode: overrides only final expression output. */
+/* v23.12: foreground composition reconciler. Applies after the established crop policy. */
 (function(){
  'use strict';
- const previous=window.updatePrompt;
- if(typeof previous!=='function')return;
- const el=id=>document.getElementById(id);
- const val=id=>el(id)?.value||'';
- const hand=/Hand Foreground|hand.*(?:foreground|perspective)|(?:palm|hand|finger).*viewer|peace.sign hand/i;
- const foot=/Footwear Foreground|Footwear Perspective|(?:shoe|boot).*foreground/i;
+ const prior=window.updatePrompt;
+ if(typeof prior!=='function')return;
+ const get=id=>document.getElementById(id);
+ const value=id=>get(id)?.value||'';
+ const majorIds=['techniquePoseMode','techniqueCameraMode','techniqueFramingMode'];
+ const detailIds=majorIds.map(x=>x+'Detail');
+ function mode(){
+   const majors=majorIds.map(value),details=detailIds.map(value);
+   const joined=[...majors,...details].join(' ; ');
+   if(majors.some(x=>/^Hand Foreground Pose$|^Hand Perspective$|^Hand Foreground Framing$/.test(x)) || /(?:hand|palm|finger).*?(?:foreground|viewer|perspective)|(?:foreground|perspective).*?hand/i.test(joined))return 'hand';
+   if(majors.some(x=>/^Footwear Foreground Pose$|^Footwear Perspective$|^Footwear Foreground Framing$/.test(x)) || /(?:shoe|boot|footwear).*?(?:foreground|viewer|perspective)|(?:foreground|perspective).*?(?:shoe|boot|footwear)/i.test(joined))return 'foot';
+   return '';
+ }
+ function shot(){
+   const v=value('techniqueShotModeDetail').toLowerCase();
+   if(/macro|eye close|lips close|extreme close|face close|headshot/.test(v))return 'face';
+   if(/chest.up|bust shot|head.and.shoulders|medium close|portrait/.test(v))return 'chest';
+   if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+   if(/knee.up|cowboy|thigh.up|three.quarter|medium.long/.test(v))return 'knee';
+   if(/full.body|head.to.toe|full.figure|full.length/.test(v))return 'full';
+   return '';
+ }
+ const shotText={
+   face:'face and foreground gesture large in the image; complete head visible',
+   chest:'((upper-body close view:1.4)); head and upper chest fill the image; complete head visible',
+   waist:'((waist-up view:1.4)); upper torso fills the image; complete head visible',
+   knee:'upper body and knees visible behind the enlarged foreground gesture; complete head visible',
+   full:'full figure visible behind the enlarged foreground gesture; complete head visible'
+ };
  window.updatePrompt=function(){
-  previous();
-  const fields=['techniquePoseMode','techniqueCameraMode','techniqueFramingMode','techniquePoseModeDetail','techniqueCameraModeDetail','techniqueFramingModeDetail'];
-  const selected=fields.map(val).join('; ');
-  const kind=hand.test(selected)?'hand':foot.test(selected)?'foot':'';
-  if(!kind)return;
-  const out=el('prompt');if(!out)return;
-  let lines=out.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
-  const idx=lines.findIndex(x=>/^\[EXPRESSION TECHNIQUE\]/.test(x));if(idx<0)return;
-  const pose=val('techniquePoseModeDetail'),cam=val('techniqueCameraModeDetail'),frame=val('techniqueFramingModeDetail');
-  const gaze=val('techniqueGazeModeDetail'),orientation=val('techniqueOrientationModeDetail');
-  const base=kind==='hand'
-   ?'((one hand prominently enlarged in the near foreground:1.5)); ((strong perspective foreshortening of the extended hand:1.5)); natural five-finger hand anatomy; face visible beyond the foreground hand; complete head visible'
-   :'((one shoe prominently enlarged in the near foreground:1.5)); ((strong perspective foreshortening of the forward footwear:1.5)); shoe clearly visible; face visible beyond the foreground shoe; complete head visible';
-  const parts=[pose,cam,frame,gaze,orientation,base].filter(Boolean);
-  lines[idx]='[EXPRESSION TECHNIQUE] '+parts.join('; ');
-  // A foreground shot must retain visible shoes or gloves even when an upper-body crop is selected.
-  // Preserve all other selections, and do not alter the master character description.
-  out.value=lines.join('\n\n');
-  const count=el('count');if(count)count.textContent=out.value.length+' / 4096 文字';
+   prior();
+   const kind=mode();if(!kind)return;
+   const out=get('prompt');if(!out)return;
+   let lines=out.value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+   const idx=lines.findIndex(x=>/^\[EXPRESSION TECHNIQUE\]/.test(x));if(idx<0)return;
+   const pose=value('techniquePoseModeDetail');
+   const camera=value('techniqueCameraModeDetail');
+   const framing=value('techniqueFramingModeDetail');
+   const gaze=value('techniqueGazeModeDetail');
+   const orientation=value('techniqueOrientationModeDetail');
+   const selectedShot=value('techniqueShotModeDetail');
+   const family=shot();
+   const foreground=kind==='hand'
+    ?'((one hand closest to the viewing position, clearly enlarged by foreshortening:1.5)); one arm reaching forward from its own shoulder; hand positioned beside the visible face; five naturally arranged fingers; the other arm relaxed; exactly two arms belonging to one person'
+    :'((one shoe closest to the viewing position, clearly enlarged by foreshortening:1.5)); one leg extending forward naturally; footwear details visible; face visible farther behind the foreground shoe';
+   const parts=[pose,camera,framing,gaze,orientation,selectedShot,shotText[family],foreground].filter(Boolean);
+   const seen=new Set();
+   lines[idx]='[EXPRESSION TECHNIQUE] '+parts.filter(p=>{const k=p.toLowerCase().replace(/\s+/g,' ');if(seen.has(k))return false;seen.add(k);return true;}).join('; ');
+   // No modifications to character, costume, background, pose selections, or master data.
+   out.value=lines.join('\n\n');
+   const count=get('count');if(count)count.textContent=out.value.length+' / 4096 文字';
  };
  window.updatePrompt();
 })();
 </script>
 
 <script>
-/* v23.11: preserve the visible major category when randomizing only details. */
+/* v23.12: preserve the visible major category when randomizing only details. */
 (function(){
  'use strict';
  const button=document.getElementById('techniqueDetailsRandom');
