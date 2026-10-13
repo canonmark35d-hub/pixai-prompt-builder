@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.17｜2026-10-13 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.18｜2026-10-13 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.17｜2026-10-13 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.18｜2026-10-13 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13296,7 +13296,7 @@ updatePrompt();</script>
 })();
 </script>
 <script>
-/* v23.17: single coherent foreground gesture and shot reconciler. */
+/* v23.18: single coherent foreground gesture and shot reconciler. */
 (function(){
  'use strict';
  const previous=window.updatePrompt;
@@ -13392,7 +13392,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.17: preserve the visible major category when randomizing only details. */
+/* v23.18: preserve the visible major category when randomizing only details. */
 (function(){
  'use strict';
  const button=document.getElementById('techniqueDetailsRandom');
@@ -13426,7 +13426,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.17: shot-aware, final-output-only lower-body anatomy adjustment.
+/* v23.18: shot-aware, final-output-only lower-body anatomy adjustment.
    Preserve the master character definition and every selector unchanged. */
 (function(){
  'use strict';
@@ -13485,7 +13485,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.17 — foreground gestures based on successful test 12.
+/* v23.18 — validated foreground gestures: pointing, V sign and open palm.
    Selected pose / view / framing are not changed in the UI. */
 (function(){
 'use strict';
@@ -13541,13 +13541,14 @@ function gesture(source){
 }
 function handText(shape){
  if(shape==='point')return [
-  'near-hand perspective looking toward the face',
-  '((one pointing hand enlarged by perspective:1.5)); pointing index finger extended toward the viewing position',
-  'face visible in the background',
-  '((one hand closest to the viewing position, clearly enlarged by foreshortening:1.5))',
-  'one arm reaching forward from its own shoulder',
-  'hand positioned beside the visible face',
-  'the other arm relaxed',
+  'pointing one index finger toward the viewer in the foreground',
+  'one hand pointing its index finger directly toward the viewpoint',
+  '((her own foreground hand enlarged by perspective:1.5))',
+  'one arm extending from its shoulder toward the viewpoint',
+  'one continuous arm connected to the foreground hand',
+  'other arm relaxed',
+  'five naturally arranged fingers',
+  'face clearly visible behind the foreground hand',
   'exactly two arms belonging to one person'
  ];
  if(shape==='peace')return [
