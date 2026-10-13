@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.16｜2026-10-13 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.17｜2026-10-13 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.16｜2026-10-13 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.17｜2026-10-13 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13296,7 +13296,7 @@ updatePrompt();</script>
 })();
 </script>
 <script>
-/* v23.16: single coherent foreground gesture and shot reconciler. */
+/* v23.17: single coherent foreground gesture and shot reconciler. */
 (function(){
  'use strict';
  const previous=window.updatePrompt;
@@ -13392,7 +13392,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.16: preserve the visible major category when randomizing only details. */
+/* v23.17: preserve the visible major category when randomizing only details. */
 (function(){
  'use strict';
  const button=document.getElementById('techniqueDetailsRandom');
@@ -13426,7 +13426,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.16: shot-aware, final-output-only lower-body anatomy adjustment.
+/* v23.17: shot-aware, final-output-only lower-body anatomy adjustment.
    Preserve the master character definition and every selector unchanged. */
 (function(){
  'use strict';
@@ -13485,7 +13485,7 @@ updatePrompt();</script>
 </script>
 
 <script>
-/* v23.16 — foreground gestures based on successful test 12.
+/* v23.17 — foreground gestures based on successful test 12.
    Selected pose / view / framing are not changed in the UI. */
 (function(){
 'use strict';
@@ -13534,24 +13534,42 @@ function shot(c,kind){
  return kind==='hand'?'((upper-body close view:1.4)); complete head visible':'complete head visible';
 }
 function gesture(source){
- if(/peace.sign|peace sign|two.finger|v.sign|victory/.test(source))return 'peace';
+ if(/peace[. -]?sign|two[. -]?finger|v[. -]?sign|victory/.test(source))return 'peace';
+ if(/open palm|palm extended|palm facing|open hand|relaxed fingers|fingers spread|hand prominently enlarged/.test(source))return 'palm';
  if(/pointing|index finger|fingertip|point at|point toward/.test(source))return 'point';
  return 'palm';
 }
 function handText(shape){
- const shapeText={
- point:'((one pointing hand enlarged by perspective:1.5)); pointing index finger extended toward the viewing position',
- peace:'((one peace-sign hand enlarged by perspective:1.5)); index and middle fingers raised in a V sign toward the viewing position',
- palm:'((one open palm enlarged by perspective:1.5)); five fingers naturally spread; palm facing the viewing position'
- }[shape];
- return [
+ if(shape==='point')return [
   'near-hand perspective looking toward the face',
-  shapeText,
+  '((one pointing hand enlarged by perspective:1.5)); pointing index finger extended toward the viewing position',
   'face visible in the background',
   '((one hand closest to the viewing position, clearly enlarged by foreshortening:1.5))',
   'one arm reaching forward from its own shoulder',
   'hand positioned beside the visible face',
   'the other arm relaxed',
+  'exactly two arms belonging to one person'
+ ];
+ if(shape==='peace')return [
+  'near-hand perspective looking toward the face',
+  '((one foreground hand forming a clear V sign:1.5))',
+  'index and middle fingers extended and separated; remaining fingers naturally folded',
+  'the same V-sign hand extended toward the viewing position',
+  '((that same V-sign hand enlarged by strong perspective:1.5))',
+  'face clearly visible behind the foreground V-sign hand',
+  'one continuous arm reaching forward from its own shoulder and connected to the V-sign hand',
+  'the other hand resting at the side without a gesture',
+  'exactly two arms belonging to one person'
+ ];
+ return [
+  'near-hand perspective looking toward the face',
+  '((one open palm extended directly toward the viewing position:1.5))',
+  'the same palm facing forward; five naturally separated fingers',
+  '((that same open palm prominently enlarged by strong perspective:1.5))',
+  'the same hand closer to the viewing position than the face',
+  'face clearly visible behind the foreground palm',
+  'one continuous arm extending forward from its own shoulder and connected to the open palm',
+  'the other hand resting at the side without a gesture',
   'exactly two arms belonging to one person'
  ];
 }
@@ -13571,9 +13589,11 @@ window.updatePrompt=function(){
  const pose=detail('Pose').toLowerCase();
  const source=keys.filter(k=>(kind==='hand'?hand:foot).test(group(k))).map(detail).join(' ').toLowerCase();
  const textSource=source||keys.map(detail).join(' ').toLowerCase();
+ // Pose detail determines hand shape first; framing/camera only supply fallback.
+ const shape=gesture(detail('Pose').toLowerCase()||textSource);
  const main=[
   posture(pose),
-  ...(kind==='hand'?handText(gesture(textSource)):shoeText(textSource)),
+  ...(kind==='hand'?handText(shape):shoeText(textSource)),
   'soft direct gaze',
   'straight-on orientation',
   shot(c,kind),
