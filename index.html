@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜正規版 v23.25｜2026-10-14 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜正規版 v23.26｜2026-10-14 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜正規版 v23.25｜2026-10-14 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜正規版 v23.26｜2026-10-14 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -13828,5 +13828,67 @@ window.updatePrompt=function(){
 window.updatePrompt();
 })();
 </script>
+<script>
+/* v23.26: final budget guard, after every pose/crop/theme compiler. */
+(function(){
+'use strict';
+const LIMIT=4096;
+function clauses(text){
+  const result=[];let part='',round=0,square=0;
+  for(const c of text){
+    if(c==='(')round++;else if(c===')')round=Math.max(0,round-1);
+    if(c==='[')square++;else if(c===']')square=Math.max(0,square-1);
+    if((c===';'||c===','||c==='\n')&&!round&&!square){if(part.trim())result.push(part.trim());part='';}
+    else part+=c;
+  }
+  if(part.trim())result.push(part.trim());
+  return result;
+}
+function fit(text){
+  if(text.length<=LIMIT)return text;
+  const matches=[...text.matchAll(/^\[([A-Z][A-Z &]*)\]\s*/gm)];
+  if(!matches.length){
+    const kept=[],seen=new Set();
+    for(const part of clauses(text)){const key=part.toLowerCase();if(seen.has(key))continue;seen.add(key);if([...kept,part].join(', ').length<=LIMIT)kept.push(part);}
+    return kept.join(', ');
+  }
+  const blocks=matches.map((m,i)=>({name:m[1],body:text.slice(m.index+m[0].length,matches[i+1]?.index??text.length).trim(),kept:new Set()}));
+  for(const b of blocks){const seen=new Set();b.parts=clauses(b.body).filter(p=>{const key=p.toLowerCase();if(seen.has(key))return false;seen.add(key);return true;});}
+  const render=()=>blocks.filter(b=>b.kept.size).map(b=>'['+b.name+'] '+(b.preserveBody?b.body:b.parts.filter((_,i)=>b.kept.has(i)).join('; '))).join('\n\n');
+  function add(b,index){if(b.kept.has(index))return;b.kept.add(index);if(render().length>LIMIT)b.kept.delete(index);}
+  // Preserve the complete final technique first, including direction, crop and hand anatomy.
+  const core=['EXPRESSION TECHNIQUE','STYLE','CHARACTER','FACE','HAIR COLOR','EYE COLOR'];
+  for(const name of core)for(const b of blocks.filter(b=>b.name===name)){
+    const all=b.parts.map((_,i)=>i);b.kept=new Set(all);b.preserveBody=true;
+    if(render().length>LIMIT){b.preserveBody=false;b.kept.clear();all.forEach(i=>add(b,i));}
+  }
+  // Reserve the defining phrase of each category before filling secondary detail.
+  const order=['BASE THEME','OUTFIT CONCEPT','BACKGROUND','EVENT FUSION','SCENE MOOD','EXPRESSION','HAIRSTYLE','OUTFIT COLOR','OUTFIT MATERIAL','OUTFIT STRUCTURE','SKIRT','SHOULDERS & SLEEVES','COLLAR','WAIST DESIGN','LEGS & HOSIERY','GLOVES','SHOES','HAIR ACCESSORIES','OUTFIT PATTERN','DESIGN LANGUAGE','LIGHTING','COMPOSITION'];
+  const ranked=blocks.filter(b=>!core.includes(b.name)&&b.name!=='OUTFIT CONCEPT LINK').sort((a,b)=>{const rank=x=>order.includes(x.name)?order.indexOf(x.name):999;return rank(a)-rank(b);});
+  for(const b of ranked)if(b.parts.length)add(b,0);
+  // Event identity alone is insufficient: reserve the background/decoration description and safety clauses.
+  for(const b of ranked.filter(b=>['EVENT FUSION','SCENE MOOD'].includes(b.name))){
+    if(b.parts.length>1)add(b,1);
+    b.parts.forEach((p,i)=>{if(/props stay behind|not held or worn|no additional people|no extra characters|retain event decorations|original subject colors/i.test(p))add(b,i);});
+  }
+  // Round-robin remaining phrases keeps one long decoration block from taking the entire budget.
+  const max=Math.max(0,...ranked.map(b=>b.parts.length));
+  for(let i=1;i<max;i++)for(const b of ranked)if(i<b.parts.length)add(b,i);
+  return render();
+}
+function enforce(){
+  const main=document.getElementById('prompt'),negative=document.getElementById('negative');
+  if(!main)return;
+  const before=main.value.length,negBefore=negative?negative.value.length:0;
+  main.value=fit(main.value);if(negative)negative.value=fit(negative.value);
+  const count=document.getElementById('count');
+  if(count)count.textContent='メイン '+main.value.length+' / 4096 文字 ｜ ネガティブ '+(negative?negative.value.length:0)+' / 4096 文字'+(before>LIMIT||negBefore>LIMIT?' ｜ 超過分を句単位で整理（メイン元 '+before+'／ネガ元 '+negBefore+'文字）':'');
+}
+const previous=window.updatePrompt;
+window.updatePrompt=function(){previous.apply(this,arguments);enforce();};
+window.updatePrompt();
+})();
+</script>
+
 </body>
 </html>
