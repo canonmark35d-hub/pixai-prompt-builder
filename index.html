@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜正規版 v23.27｜2026-10-14 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜正規版 v23.29｜2026-10-14 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜正規版 v23.27｜2026-10-14 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜正規版 v23.29｜2026-10-14 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12736,6 +12736,7 @@ updatePrompt();</script>
       cleaned=faceEnd>=0 ? cleaned.slice(0,faceEnd)+'\n'+block+cleaned.slice(faceEnd) : block+'\n'+cleaned;
     }
     const eventBlock=getActiveEventPromptBlock();
+    window.__eventFusionBeforeBudget=eventBlock; // v23.28: retain complete event design before legacy budgets
     if(eventBlock){
       const anchor=cleaned.indexOf('\n[EXPRESSION]');
       cleaned=anchor>=0 ? cleaned.slice(0,anchor)+'\n'+eventBlock+cleaned.slice(anchor) : eventBlock+'\n'+cleaned;
@@ -12775,34 +12776,7 @@ updatePrompt();</script>
     return parts.length ? '[EXPRESSION TECHNIQUE] '+parts.join('; ') : '';
   }
 
-  function fitPromptToPixAI4096(text){
-    const LIMIT=4096;
-    if(text.length<=LIMIT)return text;
-    // Preserve complete category boundaries; never slice in the middle of a category.
-    let blocks=text.split(/\n(?=\[[A-Z][A-Z &]+\])/).filter(Boolean);
-    const priority=['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','SCENE MOOD','EXPRESSION','HAIRSTYLE','HAIR COLOR','EYE COLOR','OUTFIT CONCEPT','OUTFIT COLOR','OUTFIT MATERIAL','OUTFIT STRUCTURE','BACKGROUND','EVENT FUSION'];
-    const name=b=>(b.match(/^\[([^\]]+)\]/)||[])[1]||'';
-    const compact=b=>{
-      let m=b.match(/^(\[[^\]]+\]\s*)([\s\S]*)$/);if(!m)return b;
-      let body=m[2].trim();
-      if(name(b)==='EVENT FUSION'){
-        let parts=body.split(';').map(x=>x.trim()).filter(Boolean);
-        body=parts.slice(0,8).join('; ');
-      }else if(body.length>200){
-        let parts=body.split(';').map(x=>x.trim()).filter(Boolean);
-        let kept=[];for(let part of parts){if(kept.join('; ').length+part.length>200)break;kept.push(part)}
-        if(kept.length)body=kept.join('; ');
-      }
-      return m[1]+body;
-    };
-    let output=blocks.join('\n');if(output.length<=LIMIT)return output;
-    blocks=blocks.filter(b=>name(b)!=='OUTFIT CONCEPT LINK').map(compact);
-    output=blocks.join('\n');if(output.length<=LIMIT)return output;
-    const order=blocks.map((b,i)=>({b,i,p:priority.indexOf(name(b))})).sort((a,b)=>(a.p<0?999:a.p)-(b.p<0?999:b.p));
-    let chosen=[],total=0;
-    for(const item of order){const len=item.b.length+1;if(total+len<=LIMIT){chosen.push(item);total+=len}}
-    return chosen.sort((a,b)=>a.i-b.i).map(x=>x.b).join('\n');
-  }
+  function fitPromptToPixAI4096(text){ return text; } // v23.29: never discard selected descriptions
 
   const originalUpdatePrompt=window.updatePrompt;
   window.updatePrompt=function(){
@@ -13150,7 +13124,7 @@ updatePrompt();</script>
  else {idx=lines.findIndex(x=>x.startsWith('[STYLE]'));lines.splice(idx+1,0,'[EXPRESSION TECHNIQUE] '+frames[f])}
  lines=lines.map(x=>x.startsWith('[COMPOSITION]')?x.replace(/full.body|head.to.toe|full.length|entire figure|wide environmental/gi,'fashion portrait'):x);
  // Avoid any partial line or category on overflow.
- let output=lines.join('\n\n');if(output.length>4096){const essentials=['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','SCENE MOOD','OUTFIT CONCEPT','BACKGROUND'];let ordered=lines.map((v,i)=>({v,i,key:(v.match(/^\[([^\]]+)\]/)||[])[1]}));let keep=ordered.filter(x=>essentials.includes(x.key));let optional=ordered.filter(x=>!essentials.includes(x.key));let size=keep.reduce((n,x)=>n+x.v.length+2,0);for(const x of optional){if(size+x.v.length+2<=4096){keep.push(x);size+=x.v.length+2}}output=keep.sort((a,b)=>a.i-b.i).map(x=>x.v).join('\n\n')}
+ const output=lines.join('\n\n');
  el.value=output;const status=get('status');if(status)status.textContent='v22.1：'+({waist:'腰上',chest:'胸上',knee:'ひざ上',thigh:'太もも上',portrait:'顔・肩',face:'顔アップ',detail:'部分アップ'}[f])+'画角を最終出力に反映（選択値は保持）';
  };
  window.updatePrompt();
@@ -13184,15 +13158,7 @@ updatePrompt();</script>
   // Do not append the original shot/angle/direction string a second time.
   lines[idx]='[EXPRESSION TECHNIQUE] '+unique.join('; ');
   if(dir){lines=lines.map(x=>x.startsWith('[COMPOSITION]')?x.replace(/front.facing|front view|full.body|head.to.toe|full.length|entire figure/gi,'editorial composition'):x)}
-  const LIMIT=4096;
-  let out=lines.join('\n\n');
-  if(out.length>LIMIT){
-   const required=new Set(['STYLE','EXPRESSION TECHNIQUE','CHARACTER','FACE','BASE THEME','SCENE MOOD','EVENT FUSION','OUTFIT CONCEPT']);
-   const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
-   const keep=lines.filter(x=>required.has(key(x))),extra=lines.filter(x=>!required.has(key(x)));
-   for(const x of extra){const test=lines.filter(y=>keep.includes(y)||y===x).join('\n\n');if(test.length<=LIMIT)keep.push(x)}
-   out=lines.filter(x=>keep.includes(x)).join('\n\n');
-  }
+  const out=lines.join('\n\n');
   el.value=out;
  };
  window.updatePrompt();
@@ -13248,8 +13214,8 @@ updatePrompt();</script>
   }
   lines[idx]='[EXPRESSION TECHNIQUE] '+result.join('; ');
   const out=lines.join('\n\n');
-  // Keep the established output limit and do not truncate any category.
-  if(out.length<=4096)el.value=out;
+  // Apply the existing framing reconciliation without a length gate.
+  el.value=out; // preserve reconciliation regardless of length
  };
  window.updatePrompt();
 })();
@@ -13321,11 +13287,7 @@ updatePrompt();</script>
   const blocked=new Set(offscreen[f]||[]);
   lines=lines.filter(x=>!blocked.has(key(x)));
   if(f!=='knee')lines=lines.map(x=>key(x)==='COMPOSITION'&&shoeFocus.test(x)?x.replace(/[^;]*\b(?:shoe|shoes|footwear|feet|foot|boots|sneakers)\b[^;]*/gi,'subtle diagonal upper-body composition'):x);
-  const priority=['STYLE','CHARACTER','FACE','EXPRESSION TECHNIQUE','BASE THEME','EVENT FUSION','EXPRESSION','HAIRSTYLE','HAIR COLOR','EYE COLOR','OUTFIT CONCEPT','OUTFIT COLOR','OUTFIT MATERIAL','OUTFIT STRUCTURE','SHOULDERS & SLEEVES','COLLAR','DESIGN LANGUAGE','OUTFIT PATTERN'];
-  const ranked=lines.map((line,i)=>({line,i,rank:priority.indexOf(key(line))<0?priority.length:priority.indexOf(key(line))})).sort((a,b)=>a.rank-b.rank||a.i-b.i);
-  const included=new Set();let size=0;
-  for(const item of ranked){if(size+item.line.length+2<=4096){included.add(item.i);size+=item.line.length+2;}}
-  el.value=lines.filter((_,i)=>included.has(i)).join('\n\n');
+  el.value=lines.join('\n\n');
   const count=get('count');if(count)count.textContent=el.value.length+' / 4096 文字';
  };
  window.updatePrompt();
@@ -13394,21 +13356,6 @@ updatePrompt();</script>
    const seen=new Set();
    lines[i]='[EXPRESSION TECHNIQUE] '+all.filter(x=>{if(!x)return false;const k=x.toLowerCase().replace(/\s+/g,' ');if(seen.has(k))return false;seen.add(k);return true;}).join('; ');
    lines=lines.filter(line=>!remove[family].has(key(line)));
-   // Prioritize facial features and the selected visible clothing, while preserving all UI selections.
-   const essential=new Set(['STYLE','CHARACTER','FACE','EXPRESSION TECHNIQUE']);
-   const max=4096;
-   let length=lines.join('\n\n').length;
-   if(length>max){
-     const dropOrder=['SHOES','LEGS & HOSIERY','SKIRT','BACKGROUND','COMPOSITION','LIGHTING','EVENT FUSION','BASE THEME'];
-     for(const k of dropOrder){
-       if(length<=max)break;
-       const at=lines.findIndex(x=>key(x)===k);
-       if(at>=0){lines.splice(at,1);length=lines.join('\n\n').length;}
-     }
-     for(let j=lines.length-1;j>=0&&length>max;j--){
-       if(!essential.has(key(lines[j]))){lines.splice(j,1);length=lines.join('\n\n').length;}
-     }
-   }
    out.value=lines.join('\n\n');
    const count=get('count');if(count)count.textContent=out.value.length+' / 4096 文字';
  };
@@ -13829,55 +13776,27 @@ window.updatePrompt();
 })();
 </script>
 <script>
-/* v23.27: protect identity and technique; remove optional details in place. */
+/* v23.29: descriptive fidelity first; report length, never edit prompt text. */
 (function(){
 'use strict';
-const LIMIT=4096;
-function fit(text){
-  if(text.length<=LIMIT)return text;
-  const matches=[...text.matchAll(/^\[([A-Z][A-Z &]*)\]\s*/gm)];
-  if(!matches.length)return text;
-  const blocks=matches.map((m,i)=>({name:m[1],text:text.slice(m.index,matches[i+1]?.index??text.length)}));
-  const prefix=text.slice(0,matches[0].index);
-  const render=()=>prefix+blocks.map(b=>b.text).join('');
-  // Only this explicit allowlist may be shortened. All other bytes stay intact.
-  const order=['SCENE MOOD','EVENT FUSION','OUTFIT CONCEPT LINK','BACKGROUND','OUTFIT PATTERN','DESIGN LANGUAGE','OUTFIT MATERIAL','OUTFIT STRUCTURE','SKIRT','SHOULDERS & SLEEVES','COLLAR','WAIST DESIGN','LEGS & HOSIERY','GLOVES','SHOES','OUTFIT CONCEPT'];
-  for(const name of order){
-    for(const b of blocks.filter(b=>b.name===name)){
-      if(render().length<=LIMIT)return render();
-      if(name==='OUTFIT CONCEPT LINK'){b.text='';continue;}
-      const header=b.text.match(/^\[[^\]]+\]\s*/)[0];
-      const body=b.text.slice(header.length).trimEnd(),suffix=b.text.slice(header.length+body.length);
-      const parts=[];let start=0,round=0,square=0;
-      for(let i=0;i<body.length;i++){
-        const c=body[i];if(c==='(')round++;else if(c===')')round--;else if(c==='[')square++;else if(c===']')square--;
-        if((c===','||c===';')&&round===0&&square===0){parts.push(body.slice(start,i+1));start=i+1;}
-      }
-      if(start<body.length)parts.push(body.slice(start));
-      // Keep category identity, its first detail and background-only prop safeguards.
-      for(let i=parts.length-1;i>=2&&render().length>LIMIT;i--){
-        if(/props stay behind|not held or worn|no additional people|no extra characters|preserve selected|original subject colors/i.test(parts[i]))continue;
-        parts.splice(i,1);b.text=header+parts.join('')+suffix;
-      }
-    }
-  }
-  return render();
-}
-function enforce(){
- const main=document.getElementById('prompt'),negative=document.getElementById('negative');if(!main)return;
- const before=main.value.length;main.value=fit(main.value);
- // Negative safeguards are never silently removed.
- const blocked=main.value.length>LIMIT||(negative&&negative.value.length>LIMIT);
- for(const pair of [['copyPrompt',main],['copyNegative',negative]]){const button=document.getElementById(pair[0]);if(button)button.disabled=!!pair[1]&&pair[1].value.length>LIMIT;}
- const count=document.getElementById('count');if(count)count.textContent='メイン '+main.value.length+' / 4096 文字 ｜ ネガティブ '+(negative?negative.value.length:0)+' / 4096 文字'+(blocked?' ｜ 保護する指定だけで上限を超えています。イベント・衣装等の選択を減らしてください（超過側のコピー停止）':before>LIMIT?' ｜ 顔・表情・髪型・画風・照明・ポーズを保持／背景・衣装等の補足を整理':'');
+function reportLength(){
+ const main=document.getElementById('prompt'),neg=document.getElementById('negative');
+ if(!main)return;
+ const n=main.value.length,m=neg?neg.value.length:0;
+ const extra=[];if(n>4096)extra.push('メイン '+(n-4096)+'文字超過');if(m>4096)extra.push('ネガティブ '+(m-4096)+'文字超過');
+ const count=document.getElementById('count');
+ if(count){count.textContent='メイン '+n+' / 4096 文字 ｜ ネガティブ '+m+' / 4096 文字 ｜ 描写保持：自動短縮なし'+(extra.length?' ｜ ⚠ '+extra.join('・')+'。全文を保持しています。PixAIに貼り付ける前に選択項目を減らすか、コピー後に手動で調整してください。':'');count.setAttribute('role','status');}
+ for(const id of ['copyPrompt','copyNegative']){const b=document.getElementById(id);if(b)b.disabled=false;}
+ const copy=document.getElementById('copyPrompt');if(copy)copy.textContent=n>4096?'📋 メイン全文をコピー（上限超過）':'📋 メインプロンプトをコピー';
+ const copyNeg=document.getElementById('copyNegative');if(copyNeg)copyNeg.textContent=m>4096?'📋 ネガティブ全文をコピー（上限超過）':'📋 ネガティブをコピー';
 }
 const previous=window.updatePrompt;
-window.updatePrompt=function(){previous.apply(this,arguments);enforce();};
-const previousCopy=window.copyText;
-window.copyText=function(id,label){const el=document.getElementById(id);if(el&&el.value.length>LIMIT){alert('4,096文字を超えています。選択項目を減らしてください。');return;}return previousCopy.apply(this,arguments);};
+window.updatePrompt=function(){previous.apply(this,arguments);reportLength();};
+for(const id of ['prompt','negative']){const el=document.getElementById(id);if(el)el.addEventListener('input',reportLength);}
 window.updatePrompt();
 })();
 </script>
+
 
 </body>
 </html>
