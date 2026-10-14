@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.31｜2026-10-15 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.32｜2026-10-15 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.31｜2026-10-15 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.32｜2026-10-15 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12717,21 +12717,19 @@ updatePrompt();</script>
     const language=t.language || '';
     const pattern=t.pattern || '';
     const accessory=t.accessory || '';
-    // v23.31: concise event-fusion instructions; preserve every event-specific design field.
+    // v23.32: further concise event-fusion instructions; keep every event-specific design field and design variant.
     const fusion=[
-      'integrate '+eventName+' motifs throughout the '+baseIdentity+' garment; retain its recognizable silhouette',
-      'event palette: '+palette,
+      eventName+' motifs woven into '+baseIdentity+' garment, preserving its silhouette',
+      'palette: '+palette,
       'materials: '+materials,
-      'fabric, embroidery, lace, trim and panel motifs: '+motifs,
+      'motifs: '+motifs,
       'pattern: '+pattern,
-      'repeat event details across bodice, sleeves, waist and lower garment, not accessories alone',
+      'event details on bodice, sleeves, waist and skirt, not accessories alone',
       'accessories: '+accessory,
-      'distinct '+eventName+' identity within the BASE THEME',
       language
-    ];
-    if(base && theme!=='balloon_skirt') fusion.push('BASE THEME anchor remains dominant: '+base);
-    if(!parts.length && !fusion.length) return '';
-    return '[EVENT FUSION] '+eventName+'; '+fusion.join('; ')+(parts.length ? '; coordinated event design variant: '+parts.join('; ') : '');
+    ].filter(Boolean);
+    if(base && theme!=='balloon_skirt') fusion.push('base theme: '+base);
+    return '[EVENT FUSION] '+fusion.join('; ')+(parts.length ? '; design: '+parts.join('; ') : '');
   }
 
   function applyBaseThemeEmphasis(text){
