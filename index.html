@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜正規版 v23.29｜2026-10-14 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜正規版 v23.30｜2026-10-14 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜正規版 v23.29｜2026-10-14 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜正規版 v23.30｜2026-10-14 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -60,6 +60,16 @@ button.secondary,button.dice{background:#eee;color:#333}
 <button class="secondary" id="clearVariable" type="button">🧹 可変をクリア</button>
 </div>
 <div class="badge" id="count"></div>
+<details id="compactPanel" style="margin-top:16px">
+<summary style="cursor:pointer;font-weight:bold">📝 意味保持を目指した短縮版（比較用）</summary>
+<p class="note">通常版はそのまま残します。顔・表情・画風・髪・照明・ポーズ・画角・重み指定を保持し、説明表現と同じ項目内の完全一致した重複を整理します。生成画像が同じになる保証はありません。まず通常版と比較してご利用ください。</p>
+<label for="compactPrompt">短縮版プロンプト</label>
+<textarea id="compactPrompt" readonly spellcheck="false"></textarea>
+<p id="compactCount" class="note" role="status"></p>
+<button id="copyCompact" type="button">📋 短縮版をコピー</button>
+<details style="margin-top:12px"><summary>置換・統合した表現を確認</summary><ul id="compactChanges" style="overflow-wrap:anywhere;padding-left:24px"></ul></details>
+</details>
+
 </section>
 <section class="panel">
 <h2>🎲 ランダム設定</h2>
@@ -13797,6 +13807,94 @@ window.updatePrompt();
 })();
 </script>
 
+
+<script>
+/* v23.30: optional, auditable wording compression; original output untouched. */
+(function(){
+'use strict';
+const protectedNames=new Set(['STYLE','CHARACTER','FACE','EXPRESSION','EXPRESSION TECHNIQUE','HAIRSTYLE','HAIR COLOR','EYE COLOR','LIGHTING','COMPOSITION']);
+const rules=[
+ [/mandatory (.+?) integration into the (.+?) garment itself/g,'$1 integrated into $2 garments'],
+ [/preserve the recognizable (.+?) silhouette and construction/g,'retain $1 silhouette and construction'],
+ [/garment motifs visibly integrated into fabric, embroidery, print, jacquard, lace, trim and decorative panels:/g,'visible fabric/embroidery/print/jacquard/lace/trim/panel motifs:'],
+ [/materials and surface treatment:/g,'materials/finish:'],
+ [/clearly visible (.+?) pattern language:/g,'visible $1 patterns:'],
+ [/event-specific garment decoration and hardware throughout the outfit, not only on accessories/g,'event decoration/hardware throughout garments and accessories'],
+ [/event motifs repeated on major clothing areas such as bodice, sleeves, waist, skirt or lower garment/g,'repeat event motifs on bodice, sleeves, waist, skirt or lower garment'],
+ [/event-themed accessory details:/g,'event accessories:'],
+ [/cohesive (.+?) fashion fusion, unmistakable event identity while retaining the BASE THEME/g,'cohesive $1 fusion; distinct event identity; retain BASE THEME'],
+ [/BASE THEME anchor remains dominant:/g,'dominant BASE THEME:'],
+ [/coordinated event design variant:/g,'coordinated event design:'],
+ [/coordinated event-specific color placement/g,'coordinated event colors'],
+ [/premium event textile treatment/g,'premium event textiles'],
+ [/clearly distinct event silhouette/g,'distinct event silhouette'],
+ [/event-specific (.+?) hair ornament/g,'$1 hair ornament'],
+ [/preserve selected garment silhouette, colors, materials, accessories, hairstyle, background, pose and framing/g,'retain selected silhouette, colors, materials, accessories, hair, background, pose and framing'],
+ [/visible garment detail:/g,'garment detail:'],
+ [/accessory detailing:/g,'accessories:'],
+ [/background integration:/g,'background:'],
+ [/background decorations:/g,'background decor:'],
+ [/props stay behind the subject, not held or worn/g,'props behind subject; not held/worn'],
+ [/preserve selected outfit, pose, orientation and framing/g,'retain selected outfit, pose, orientation and framing'],
+ [/retain event decorations and original subject colors/g,'retain event decor and original subject colors'],
+ [/clearly visible gemstone ornaments repeated on two or three visible costume details/g,'visible gemstone ornaments on 2–3 visible costume details'],
+ [/additional elegant gem-encrusted architecture or crystal displays behind the character/g,'elegant gem-encrusted architecture or crystal displays behind subject'],
+ [/background secondary to the subject, no oversized foreground crystals/g,'secondary background; no oversized foreground crystals'],
+ [/preserve fine linework and avoid excessive glow or clutter/g,'retain fine linework; no excessive glow/clutter'],
+ [/authentic gemstone colors:/g,'authentic gem colors:'],
+ [/featured gemstone:/g,'gemstone:'],
+ [/retain selected pose and camera framing/g,'retain selected pose/framing'],
+ [/clearly defined /g,'defined '],
+ [/subtle decorative accents/g,'subtle decor'],
+ [/subtle ornamental styling/g,'subtle ornamentation'],
+ [/with (.+?) detailing(?=;|$)/g,'with $1 details'],
+ [/outfit color palette/g,'outfit colors'],
+ [/color palette:/g,'colors:']
+];
+function compact(text){
+ const log=[];let duplicates=0;
+ const blocks=text.split(/\n\s*\n|\n(?=\[[A-Z][A-Z &]*\])/);
+ const output=blocks.map(block=>{
+  const m=block.match(/^(\[([A-Z][A-Z &]*)\]\s*)([\s\S]*)$/);
+  if(!m||protectedNames.has(m[2]))return block;
+  const body=m[3],parts=[];let start=0,depth=0;
+  for(let i=0;i<body.length;i++){if(body[i]==='(')depth++;else if(body[i]===')')depth--;if(body[i]===';'&&depth===0){parts.push(body.slice(start,i));start=i+1;}}
+  parts.push(body.slice(start));
+  const seen=new Set(),result=[];
+  for(const original of parts){
+   // Weighted clauses are byte-for-byte intact, including repeated weights.
+   if(/[()]/.test(original)){result.push(original);continue;}
+   let p=original.trim();
+   for(const [pattern,replacement] of rules){const next=p.replace(pattern,replacement);if(next!==p){log.push({from:p,to:next});p=next;}}
+   // Internal variant indices are identifiers, not visual instructions.
+   const clean=p.replace(/,?\s*event-specific design family \d+\/20, variation \d+\/10/g,'');
+   if(clean!==p){log.push({from:p,to:clean});p=clean;}
+   const key=p.trim();
+   if(seen.has(key)){duplicates++;log.push({from:original.trim(),to:'（同じ項目内の完全一致した重複を統合）'});continue;}
+   seen.add(key);result.push(p);
+  }
+  return m[1]+result.join(';');
+ }).join('\n\n');
+ return {text:output.length<text.length?output:text,log:output.length<text.length?log:[],duplicates};
+}
+function refresh(){
+ const source=document.getElementById('prompt'),target=document.getElementById('compactPrompt');if(!source||!target)return;
+ const result=compact(source.value);target.value=result.text;
+ const n=result.text.length,over=Math.max(0,n-4096);
+ document.getElementById('compactCount').textContent='通常 '+source.value.length+'文字 → 短縮版 '+n+'文字（'+(source.value.length-n)+'文字短縮）'+(over?' ｜ ⚠ まだ'+over+'文字超過。指定は自動削除していません。':' ｜ 4,096文字以内');
+ document.getElementById('copyCompact').textContent=over?'📋 短縮版の全文をコピー（上限超過）':'📋 短縮版をコピー';
+ const list=document.getElementById('compactChanges');list.textContent='';
+ for(const entry of result.log){const li=document.createElement('li');li.textContent=entry.from+' → '+entry.to;list.appendChild(li);}
+ if(!result.log.length){const li=document.createElement('li');li.textContent='置換対象なし。通常出力と同じ内容です。';list.appendChild(li);}
+}
+window.__compactPromptV2330=compact;
+const previous=window.updatePrompt;
+window.updatePrompt=function(){previous.apply(this,arguments);refresh();};
+document.getElementById('prompt').addEventListener('input',refresh);
+document.getElementById('copyCompact').addEventListener('click',()=>window.copyText('compactPrompt','短縮版プロンプト'));
+refresh();
+})();
+</script>
 
 </body>
 </html>
