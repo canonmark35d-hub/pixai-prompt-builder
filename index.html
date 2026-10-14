@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜正規版 v23.22｜2026-10-13 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜正規版 v23.24｜2026-10-14 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜正規版 v23.22｜2026-10-13 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜正規版 v23.24｜2026-10-14 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -163,6 +163,21 @@ button.secondary,button.dice{background:#eee;color:#333}
 <section class="panel technique-panel" id="techniquePanel">
 <h2>📷 表現技法・大分類と明細設定</h2><p class="note" style="font-weight:700;color:#4432a5">前景ジェスチャーは「① ポーズ」→ 大分類「前景拡大・手のジェスチャー」→ 明細から選択できます。</p>
 <p class="note">大分類で絞り込み、明細で具体的な動作や写し方を選べます。選択は日本語、プロンプトは英語です。下の一括変更ボタンは表現技法の6項目だけが対象で、衣装・髪・背景などの可変カテゴリはそのまま保持します。</p>
+<div class="quick-pose-panel" style="padding:14px;border:1px solid #c5bcef;border-radius:12px;background:#f8f6ff;margin:14px 0">
+<h3 style="margin:0 0 10px">✨ かんたんポーズ選択</h3>
+<label for="quickPoseKeyword">どんなポーズにしますか？</label>
+<select id="quickPoseKeyword" style="display:block;width:100%;min-height:44px;margin:8px 0" aria-describedby="quickPoseNote">
+<option value="">使わない（大分類・明細で選択）</option>
+<option value="standing">立ち姿</option>
+<option value="sitting">座り姿</option>
+<option value="reclining">寝転ぶ・くつろぐ</option>
+<option value="moving">動きのある姿（歩く・走る・跳ぶ・踊る）</option>
+<option value="hands">手でアピール（ピース・手を振るなど）</option>
+</select>
+<button id="quickPoseAgain" type="button" disabled style="width:100%;min-height:44px;white-space:normal">🎲 同じキーワードで別のポーズ</button>
+<p class="note" id="quickPoseNote">変更するのは①ポーズの大分類・明細だけです。選ばれた内容は下の欄で確認・調整できます。目線・人物方向・画角・衣装などの設定は保持します。通常の一括変更を制限する機能ではありません。</p>
+<p class="status" id="quickPoseStatus" role="status" aria-live="polite">キーワードを選ぶと、対応する大分類と明細が自動で選ばれます。</p>
+</div>
 <div class="technique-grid">
   <div class="technique-row"><label for="techniquePoseMode">① ポーズ</label><select id="techniquePoseMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Standing">立つ</option><option value="Sitting">座る</option><option value="Kneeling">ひざをつく</option><option value="Lying / Reclining">寝転ぶ・横たわる</option><option value="Walking / Moving">歩く・移動する</option><option value="Running / Jumping">走る・ジャンプする</option><option value="Dancing">踊る</option><option value="Fashion Model">ファッションモデル風</option><option value="Cute / Idol">可愛い・アイドル風</option><option value="Dynamic / Special">しゃがむ・傾くなどの特殊ポーズ</option><option value="Hand Foreground Pose">手を前景にするポーズ</option><option value="Verified Foreground Gestures">前景拡大・手のジェスチャー</option><option value="Footwear Foreground Pose">靴を前景にするポーズ</option></select><label class="technique-detail-label" for="techniquePoseModeDetail">明細（具体的な表現）</label><select id="techniquePoseModeDetail"><option value="">選択なし（この技法は出力しない）</option><optgroup label="立つ"><option value="standing" data-group="Standing">立つ</option><option value="standing tall" data-group="Standing">背筋を伸ばして立つ</option><option value="relaxed standing" data-group="Standing">力を抜いて立つ</option><option value="graceful standing" data-group="Standing">優雅に立つ</option><option value="contrapposto stance" data-group="Standing">片脚に重心を置き腰を傾ける</option><option value="open stance" data-group="Standing">脚を開いて立つ</option><option value="one foot slightly forward" data-group="Standing">片足を少し前に出す</option><option value="one leg crossed in front" data-group="Standing">片脚を前で交差させる</option><option value="weight shifted to one leg" data-group="Standing">片脚に重心を移す</option><option value="poised standing pose" data-group="Standing">姿勢を整えて立つ</option><option value="fashion model standing pose" data-group="Standing">モデル風に立つ</option><option value="elegant standing pose" data-group="Standing">上品に立つ</option><option value="confident standing pose" data-group="Standing">自信を持って立つ</option><option value="soft feminine standing pose" data-group="Standing">柔らかく女性らしく立つ</option><option value="three-quarter standing pose" data-group="Standing">斜め向きに立つ</option></optgroup><optgroup label="前景拡大・手のジェスチャー"><option value="gesture:v_sign_foreground" data-group="Verified Foreground Gestures">前景拡大｜ピースサイン</option><option value="gesture:open_palm_foreground" data-group="Verified Foreground Gestures">前景拡大｜開いた手のひら</option><option value="gesture:index_point_foreground" data-group="Verified Foreground Gestures">前景拡大｜人差し指で指差す</option><option value="gesture:diagonal_arm_up" data-group="Verified Foreground Gestures">片腕を斜め上＋顔横に握りこぶし</option><option value="gesture:fist_foreground" data-group="Verified Foreground Gestures">前景拡大｜握りこぶしを突き出す</option><option value="gesture:fist_near_face" data-group="Verified Foreground Gestures">顔の横に握りこぶしを添える</option></optgroup><optgroup label="手を前景にするポーズ"><option value="seated on a chair, one open hand reaching toward the viewer" data-group="Hand Foreground Pose">椅子に座り片手を手前に差し出す</option><option value="standing with one open palm extended toward the viewer" data-group="Hand Foreground Pose">立って手のひらを手前に向ける</option><option value="sitting on a sofa, one hand extended toward the viewer" data-group="Hand Foreground Pose">ソファで座り片手を手前に伸ばす</option><option value="one hand pointing toward the viewer" data-group="Hand Foreground Pose">人差し指でこちらを指差す</option><option value="one hand making a peace sign close to the viewer" data-group="Hand Foreground Pose">手前でピースサイン</option><option value="one hand reaching forward with relaxed fingers" data-group="Hand Foreground Pose">指を自然に開いて手を差し伸べる</option></optgroup><optgroup label="座る"><option value="sitting on a chair" data-group="Sitting">椅子に座る</option><option value="sitting on a sofa" data-group="Sitting">ソファに座る</option><option value="sitting on the floor" data-group="Sitting">床に座る</option><option value="sitting on a bench" data-group="Sitting">ベンチに座る</option><option value="sitting cross-legged" data-group="Sitting">あぐらをかく</option><option value="sitting with legs crossed" data-group="Sitting">脚を組んで座る</option><option value="sitting with knees up" data-group="Sitting">ひざを立てて座る</option><option value="sitting with one leg extended" data-group="Sitting">片脚を伸ばして座る</option><option value="side sitting" data-group="Sitting">脚を横に流して座る</option><option value="sitting formally" data-group="Sitting">かしこまって座る</option><option value="sitting relaxed" data-group="Sitting">くつろいで座る</option><option value="sitting at a desk" data-group="Sitting">机に向かって座る</option><option value="seiza" data-group="Sitting">正座する</option><option value="wariza" data-group="Sitting">ぺたん座りする</option><option value="elegant seated pose" data-group="Sitting">優雅に座る</option></optgroup><optgroup label="ひざをつく"><option value="kneeling" data-group="Kneeling">ひざをつく</option><option value="kneeling down" data-group="Kneeling">ひざを落としてかがむ</option><option value="one knee down" data-group="Kneeling">片ひざをつく</option><option value="kneeling upright" data-group="Kneeling">上体を起こしてひざ立ち</option><option value="kneeling with one hand on the floor" data-group="Kneeling">ひざをついて片手を床に添える</option><option value="kneeling gracefully" data-group="Kneeling">優雅にひざをつく</option><option value="formal kneeling pose" data-group="Kneeling">かしこまったひざ立ち</option><option value="one-knee fashion pose" data-group="Kneeling">片ひざでモデル風ポーズ</option><option value="kneeling three-quarter pose" data-group="Kneeling">斜め向きでひざをつく</option><option value="kneeling with hands together" data-group="Kneeling">ひざをついて手を合わせる</option></optgroup><optgroup label="寝転ぶ・横たわる"><option value="lying down" data-group="Lying / Reclining">横たわる</option><option value="reclining" data-group="Lying / Reclining">もたれて寝そべる</option><option value="lying on the back" data-group="Lying / Reclining">仰向けに寝る</option><option value="lying on the stomach" data-group="Lying / Reclining">うつぶせに寝る</option><option value="lying on the side" data-group="Lying / Reclining">横向きに寝る</option><option value="lying on the left side" data-group="Lying / Reclining">左側を下にして寝る</option><option value="lying on the right side" data-group="Lying / Reclining">右側を下にして寝る</option><option value="lying stretched out" data-group="Lying / Reclining">身体を伸ばして寝る</option><option value="curled-up lying pose" data-group="Lying / Reclining">身体を丸めて寝る</option><option value="resting on one elbow" data-group="Lying / Reclining">片ひじをついて休む</option><option value="reclining on one elbow" data-group="Lying / Reclining">片ひじで支えて寝そべる</option><option value="sleeping posture" data-group="Lying / Reclining">眠る姿勢</option></optgroup><optgroup label="歩く・移動する"><option value="walking forward" data-group="Walking / Moving">前へ歩く</option><option value="walking toward the camera" data-group="Walking / Moving">こちらへ歩く</option><option value="walking away from the camera" data-group="Walking / Moving">こちらに背を向けて歩く</option><option value="slow walking" data-group="Walking / Moving">ゆっくり歩く</option><option value="casual strolling" data-group="Walking / Moving">気軽に散歩する</option><option value="mid-step walking" data-group="Walking / Moving">歩き途中の一歩</option><option value="turning while walking" data-group="Walking / Moving">歩きながら振り向く</option><option value="walking with natural arm swing" data-group="Walking / Moving">自然に腕を振って歩く</option><option value="light step-forward pose" data-group="Walking / Moving">軽く一歩踏み出す</option><option value="walking with a gentle stride" data-group="Walking / Moving">穏やかな足取りで歩く</option></optgroup><optgroup label="走る・ジャンプする"><option value="running" data-group="Running / Jumping">走る</option><option value="jogging" data-group="Running / Jumping">ジョギングする</option><option value="running toward the camera" data-group="Running / Jumping">こちらへ走る</option><option value="running past the camera" data-group="Running / Jumping">目の前を走り抜ける</option><option value="dynamic running stride" data-group="Running / Jumping">大きな歩幅で走る</option><option value="jumping" data-group="Running / Jumping">ジャンプする</option><option value="light jump" data-group="Running / Jumping">軽く跳ぶ</option><option value="jumping with one knee raised" data-group="Running / Jumping">片ひざを上げて跳ぶ</option><option value="jumping with both arms raised" data-group="Running / Jumping">両腕を上げて跳ぶ</option><option value="landing from a jump" data-group="Running / Jumping">ジャンプから着地する</option></optgroup><optgroup label="踊る"><option value="dancing" data-group="Dancing">踊る</option><option value="ballet-inspired pose" data-group="Dancing">バレエ風のポーズ</option><option value="twirling pose" data-group="Dancing">くるりと回る</option><option value="spinning pose" data-group="Dancing">回転する</option><option value="dance step pose" data-group="Dancing">ダンスのステップ</option><option value="arms raised while dancing" data-group="Dancing">腕を上げて踊る</option><option value="dynamic dance pose" data-group="Dancing">躍動感のあるダンス</option><option value="graceful dance pose" data-group="Dancing">優雅なダンス</option><option value="idol performance dance pose" data-group="Dancing">アイドルのダンスポーズ</option><option value="fashion dance pose" data-group="Dancing">ファッション撮影風のダンス</option></optgroup><optgroup label="ファッションモデル風"><option value="fashion runway pose" data-group="Fashion Model">ランウェイ風ポーズ</option><option value="editorial model pose" data-group="Fashion Model">ファッション誌風ポーズ</option><option value="red-carpet pose" data-group="Fashion Model">レッドカーペット風ポーズ</option><option value="formal presentation pose" data-group="Fashion Model">かしこまった紹介ポーズ</option><option value="three-quarter fashion pose" data-group="Fashion Model">斜め向きのモデルポーズ</option><option value="hand-on-hip fashion pose" data-group="Fashion Model">腰に手を置くモデルポーズ</option><option value="long-leg fashion pose" data-group="Fashion Model">脚を長く見せるポーズ</option><option value="crossed-leg fashion pose" data-group="Fashion Model">脚を交差させるモデルポーズ</option><option value="poised campaign pose" data-group="Fashion Model">広告風の整ったポーズ</option><option value="luxury fashion pose" data-group="Fashion Model">高級ファッション風ポーズ</option></optgroup><optgroup label="可愛い・アイドル風"><option value="finger-heart gesture" data-group="Cute / Idol">指ハート</option><option value="heart gesture near the chest" data-group="Cute / Idol">胸元でハートを作る</option><option value="gentle wave pose" data-group="Cute / Idol">優しく手を振る</option><option value="both hands framing the face" data-group="Cute / Idol">両手を顔の左右に添える</option><option value="one hand under the chin" data-group="Cute / Idol">片手をあごの下に添える</option><option value="one hand near the face" data-group="Cute / Idol">片手を顔の近くに置く</option><option value="hands clasped in front" data-group="Cute / Idol">前で両手を組む</option><option value="playful idol pose" data-group="Cute / Idol">遊び心のあるアイドルポーズ</option><option value="cute presentation pose" data-group="Cute / Idol">可愛く紹介するポーズ</option><option value="cheerful performance pose" data-group="Cute / Idol">元気なパフォーマンスポーズ</option></optgroup><optgroup label="しゃがむ・傾くなどの特殊ポーズ"><option value="squatting down" data-group="Dynamic / Special">しゃがむ</option><option value="crouching" data-group="Dynamic / Special">身を低くかがめる</option><option value="low squat" data-group="Dynamic / Special">深くしゃがむ</option><option value="bending forward" data-group="Dynamic / Special">身体を前に曲げる</option><option value="leaning forward" data-group="Dynamic / Special">上体を前に傾ける</option><option value="leaning backward" data-group="Dynamic / Special">上体を後ろに傾ける</option><option value="leaning against a wall" data-group="Dynamic / Special">壁にもたれる</option><option value="standing against a wall" data-group="Dynamic / Special">壁を背に立つ</option><option value="leaning against a railing" data-group="Dynamic / Special">手すりにもたれる</option><option value="stretching" data-group="Dynamic / Special">伸びをする</option><option value="arms raised overhead" data-group="Dynamic / Special">両腕を頭上に上げる</option><option value="looking over the shoulder pose" data-group="Dynamic / Special">肩越しに振り返る</option><option value="over-the-shoulder pose" data-group="Dynamic / Special">肩越しに顔を向ける</option><option value="one hand extended toward the viewer" data-group="Dynamic / Special">片手をこちらへ伸ばす</option><option value="both hands lightly extended" data-group="Dynamic / Special">両手を軽く前へ伸ばす</option></optgroup><optgroup label="靴を前景にするポーズ"><option value="seated on a chair, one boot extended toward the viewer in the near foreground" data-group="Footwear Foreground Pose">椅子に座り片足をカメラ手前に伸ばす</option><option value="seated on a sofa with crossed legs, nearest boot extended toward the camera" data-group="Footwear Foreground Pose">ソファで脚を組み手前の靴を強調</option><option value="reclining in a chair, one shoe sole angled toward the viewer in the foreground" data-group="Footwear Foreground Pose">椅子に深く座り靴底を手前へ</option><option value="sitting on the floor with one knee raised, shoe close to the camera" data-group="Footwear Foreground Pose">床に座り片膝を立て靴を手前へ</option><option value="deep crouching pose, one boot placed very close to the camera" data-group="Footwear Foreground Pose">低くしゃがみ片足をカメラ手前に</option><option value="one-knee kneeling pose, forward boot prominently in the foreground" data-group="Footwear Foreground Pose">片膝立ちで手前のブーツを強調</option><option value="sitting on stairs, one boot on the nearest lower step in the foreground" data-group="Footwear Foreground Pose">階段に座り下段の靴を手前に</option><option value="sitting on a bench, one shoe extended toward the lens" data-group="Footwear Foreground Pose">ベンチに腰掛け靴をカメラ側に</option><option value="standing with one foot stepping close toward the camera" data-group="Footwear Foreground Pose">立って片足を一歩大きく前へ</option><option value="relaxed seated pose, one leg extended forward with shoe in the near foreground" data-group="Footwear Foreground Pose">片足を前に投げ出したくつろぎ姿勢</option><option value="side-seated fashion pose with the nearest boot emphasized in foreground" data-group="Footwear Foreground Pose">靴を手前にした斜め座り</option><option value="one foot resting on a low step in front of the camera, confident standing pose" data-group="Footwear Foreground Pose">片足を台に乗せ靴を前面に</option></optgroup></select><button type="button" id="techniquePoseModeRandom">この項目の明細を変更</button></div>
   <div class="technique-row"><label for="techniqueGazeMode">② 目線</label><select id="techniqueGazeMode"><option value="AUTO_RANDOM">🎲 自動ランダム</option><option value="Direct / Viewer">こちらを見る</option><option value="Left / Right">左右を見る</option><option value="Over Shoulder">肩越しに振り返る</option><option value="Upward">上を見る</option><option value="Downward">下を見る</option><option value="Away / Distance">目線を外す・遠くを見る</option><option value="Object / Scene">物や周囲を見る</option></select><label class="technique-detail-label" for="techniqueGazeModeDetail">明細（具体的な表現）</label><select id="techniqueGazeModeDetail"><option value="">選択なし（この技法は出力しない）</option><optgroup label="こちらを見る"><option value="looking at viewer" data-group="Direct / Viewer">こちらを見る</option><option value="looking directly at the camera" data-group="Direct / Viewer">視点にまっすぐ目を向ける</option><option value="facing the viewer with direct eye contact" data-group="Direct / Viewer">こちらを向いて目を合わせる</option><option value="looking straight ahead" data-group="Direct / Viewer">まっすぐ前を見る</option><option value="soft direct gaze" data-group="Direct / Viewer">柔らかくこちらを見る</option><option value="calm direct gaze" data-group="Direct / Viewer">落ち着いてこちらを見る</option><option value="confident direct gaze" data-group="Direct / Viewer">自信のある目でこちらを見る</option><option value="gentle gaze toward the viewer" data-group="Direct / Viewer">優しくこちらを見る</option></optgroup><optgroup label="左右を見る"><option value="looking to the right" data-group="Left / Right">右を見る</option><option value="looking to the left" data-group="Left / Right">左を見る</option><option value="looking toward the right side" data-group="Left / Right">右側へ目を向ける</option><option value="looking toward the left side" data-group="Left / Right">左側へ目を向ける</option><option value="looking slightly left of camera" data-group="Left / Right">こちらより少し左を見る</option><option value="looking slightly right of camera" data-group="Left / Right">こちらより少し右を見る</option><option value="glancing sideways" data-group="Left / Right">横目でちらりと見る</option><option value="looking to the side" data-group="Left / Right">横を見る</option></optgroup><optgroup label="肩越しに振り返る"><option value="looking back over the shoulder" data-group="Over Shoulder">肩越しに振り返る</option><option value="looking over the right shoulder" data-group="Over Shoulder">右肩越しに見る</option><option value="looking over the left shoulder" data-group="Over Shoulder">左肩越しに見る</option><option value="looking back" data-group="Over Shoulder">後ろを振り返る</option><option value="looking behind" data-group="Over Shoulder">背後を見る</option><option value="back-facing gaze" data-group="Over Shoulder">後ろ向きの視線</option><option value="over-the-shoulder gaze" data-group="Over Shoulder">肩越しの視線</option></optgroup><optgroup label="上を見る"><option value="looking upward" data-group="Upward">上を見る</option><option value="looking slightly upward" data-group="Upward">少し上を見る</option><option value="looking high into the distance" data-group="Upward">遠くの高い場所を見る</option><option value="looking toward the sky" data-group="Upward">空の方を見る</option><option value="looking up at the sky" data-group="Upward">空を見上げる</option><option value="shy upward gaze" data-group="Upward">恥ずかしげに見上げる</option><option value="gentle upward gaze" data-group="Upward">優しく見上げる</option></optgroup><optgroup label="下を見る"><option value="looking down" data-group="Downward">下を見る</option><option value="looking slightly downward" data-group="Downward">少し下を見る</option><option value="looking toward the ground" data-group="Downward">地面を見る</option><option value="looking toward the floor" data-group="Downward">床を見る</option><option value="reserved downward gaze" data-group="Downward">控えめに目を伏せる</option><option value="soft downward gaze" data-group="Downward">柔らかく目を伏せる</option></optgroup><optgroup label="目線を外す・遠くを見る"><option value="looking away" data-group="Away / Distance">視線を外す</option><option value="looking into the distance" data-group="Away / Distance">遠くを見る</option><option value="looking toward the horizon" data-group="Away / Distance">地平線を見る</option><option value="gazing into the distance" data-group="Away / Distance">遠くをじっと眺める</option><option value="looking past the viewer" data-group="Away / Distance">こちらの向こうを見る</option><option value="distant contemplative gaze" data-group="Away / Distance">物思いにふけり遠くを見る</option></optgroup><optgroup label="物や周囲を見る"><option value="looking at a book" data-group="Object / Scene">本を見る</option><option value="looking at a phone" data-group="Object / Scene">スマホを見る</option><option value="looking at the raised hand" data-group="Object / Scene">上げた手を見る</option><option value="looking at the outfit" data-group="Object / Scene">衣装を見る</option><option value="looking at an accessory" data-group="Object / Scene">アクセサリーを見る</option><option value="looking at the flowers" data-group="Object / Scene">花を見る</option><option value="looking toward the light source" data-group="Object / Scene">光源の方を見る</option><option value="looking toward the window" data-group="Object / Scene">窓の方を見る</option><option value="looking toward the stage" data-group="Object / Scene">ステージを見る</option><option value="looking toward the audience" data-group="Object / Scene">観客を見る</option></optgroup></select><button type="button" id="techniqueGazeModeRandom">この項目の明細を変更</button></div>
@@ -9948,6 +9963,7 @@ function addSeasonalEventOptions(){
 }
 
 function getSeasonExtraOptions(key,eventIndex){
+  if(isDetailEventIndex(eventIndex)) return [];
   const cache=window.__seasonExtraCache || (window.__seasonExtraCache={});
   const cacheKey=eventIndex+"|"+key;
   if(!cache[cacheKey]) cache[cacheKey]=buildEventExtraOptionsFor(key,eventIndex);
@@ -9995,6 +10011,15 @@ function chooseCoordinatedEventFamily(eventIndex){
 function getSeasonBulkIndex(){
   const el=byId("seasonEventBulk");
   return el && el.value!=="" ? Number(el.value) : -1;
+}
+
+// Decoration-only themes add prompt detail, not seasonal preset pools.
+function isDetailEventIndex(index){
+  return index>=DETAIL_EVENT_START && index<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length;
+}
+function getPresetEventIndex(){
+  const index=getSeasonBulkIndex();
+  return isDetailEventIndex(index) ? -1 : index;
 }
 
 function seasonalOptionsFor(key,eventIndex){
@@ -10213,7 +10238,7 @@ function randomSelect(s){
 }
 
 function randomSeasonAwareCategory(key){
-  const eventIndex=getSeasonBulkIndex();
+  const eventIndex=getPresetEventIndex();
   if(eventIndex>=0){
     ensureSeasonExtraOptionsInSelect(key,eventIndex);
     const current=catSelect(key) ? catSelect(key).value : "";
@@ -10223,7 +10248,7 @@ function randomSeasonAwareCategory(key){
 }
 
 function randomVariables(){
-  const eventIndex=getSeasonBulkIndex();
+  const eventIndex=getPresetEventIndex();
   if(eventIndex>=0) chooseCoordinatedEventFamily(eventIndex);
   else CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
   updatePrompt();
@@ -10231,7 +10256,7 @@ function randomVariables(){
 }
 
 function randomAll(){
-  const eventIndex=getSeasonBulkIndex();
+  const eventIndex=getPresetEventIndex();
   if(eventIndex>=0) chooseCoordinatedEventFamily(eventIndex);
   else CAT_KEYS.forEach(function(key){ randomSeasonAwareCategory(key); });
   NEG_KEYS.forEach(function(key){ randomSelect(negSelect(key)); });
@@ -12301,7 +12326,7 @@ updatePrompt();</script>
   }
 
   function applyThreeAxes(randomize){
-    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    const theme=getThemeMode(), eventIndex=getPresetEventIndex(), scene=getSceneMode();
     if(theme!=='normal') ensureThemeOptions(theme);
     if(scene!=='normal') ensureSceneOptions(scene);
 
@@ -12385,6 +12410,7 @@ updatePrompt();</script>
   if(seasonSelect){
     seasonSelect.addEventListener('change',function(){
       const idx=getSeasonBulkIndex();
+      if(isDetailEventIndex(idx)) return; // The detail-only listener already updated the prompt.
       if(idx>=0){
         applySeasonEventBulk(idx);
         applyThreeAxes(true);
@@ -12401,7 +12427,7 @@ updatePrompt();</script>
   window.randomSelect=function(s){
     if(!s) return false;
     const key=s.getAttribute ? s.getAttribute('data-key') : '';
-    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getPresetEventIndex();
     // A category random action changes only its own axis; active BASE/EVENT/SCENE axes
     // remain intact instead of taking priority over one another.
     if(key==='BACKGROUND' && eventIndex>=0) return applyEventBackground(eventIndex,scene,true);
@@ -12421,7 +12447,7 @@ updatePrompt();</script>
 
   window.randomSeasonAwareCategory=function(key){
     const s=catSelect(key); if(!s) return false;
-    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getSeasonBulkIndex();
+    const scene=getSceneMode(), theme=getThemeMode(), eventIndex=getPresetEventIndex();
     if(theme==='balloon_skirt' && key==='SKIRT'){ enforceBalloonSkirtSelection(); return true; }
     if(key==='BACKGROUND' && eventIndex>=0) return applyEventBackground(eventIndex,scene,true);
     if(eventIndex>=0 && EVENT_OVERLAY_KEYS.indexOf(key)>=0){
@@ -12437,7 +12463,7 @@ updatePrompt();</script>
   };
 
   window.randomVariables=function(){
-    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    const theme=getThemeMode(), eventIndex=getPresetEventIndex(), scene=getSceneMode();
     if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
       randomThreeAxes();
       showStatus('BASE・EVENT・SCENEの選択範囲を同時に維持して可変カテゴリをランダム設定しました');
@@ -12447,7 +12473,7 @@ updatePrompt();</script>
     updatePrompt(); showStatus('通常モードの既存候補だけで27カテゴリをランダム設定しました');
   };
   window.randomAll=function(){
-    const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
+    const theme=getThemeMode(), eventIndex=getPresetEventIndex(), scene=getSceneMode();
     if(theme!=='normal' || eventIndex>=0 || scene!=='normal'){
       randomThreeAxes(); NEG_KEYS.forEach(function(key){originalRandomSelect(negSelect(key));});
       showStatus('BASE・EVENT・SCENEの組み合わせを維持して全カテゴリをランダム設定しました');
@@ -12964,6 +12990,51 @@ updatePrompt();</script>
     o.value=value;o.textContent=DETAIL_JA[value];s.value=value;
     state[d.key]={group,value,baseValue:''};
   }
+  // v23.24: select existing pose entries only; do not alter prompt text or other axes.
+  const QUICK_POSE_GROUPS={
+    standing:['Standing'],
+    sitting:['Sitting'],
+    reclining:['Lying / Reclining'],
+    moving:['Walking / Moving','Running / Jumping','Dancing'],
+    hands:['Cute / Idol','Hand Foreground Pose','Verified Foreground Gestures']
+  };
+  const quickPose=document.getElementById('quickPoseKeyword');
+  const quickAgain=document.getElementById('quickPoseAgain');
+  const quickStatus=document.getElementById('quickPoseStatus');
+  let quickPoseSelection=null;
+  function quickPosePool(keyword){
+    return (QUICK_POSE_GROUPS[keyword]||[]).flatMap(group=>{
+      const values=TECH.POSE.groups[group];
+      // Only the seven explicit hand gestures in this otherwise mixed group.
+      return (group==='Cute / Idol'?values.slice(0,7):values).map(value=>({group,value}));
+    });
+  }
+  function syncQuickPose(){
+    const current=state.POSE;
+    if(quickPoseSelection && (!current || current.group!==quickPoseSelection.group || current.value!==quickPoseSelection.value)){
+      quickPose.value='';quickPoseSelection=null;
+    }
+    quickAgain.disabled=!quickPose.value;
+    quickStatus.textContent=quickPose.value && current
+      ? '選択結果：'+TECH_LABELS_JA[current.group]+' ／ '+DETAIL_JA[current.value]
+      : 'キーワードを選ぶと、対応する大分類と明細が自動で選ばれます。';
+  }
+  function applyQuickPose(){
+    const pool=quickPosePool(quickPose.value);
+    if(!pool.length){quickPoseSelection=null;syncQuickPose();return;}
+    const current=state.POSE;
+    const alternatives=pool.filter(item=>!current || item.value!==current.value);
+    const candidates=alternatives.length?alternatives:pool;
+    const chosen=candidates[Math.floor(Math.random()*candidates.length)];
+    document.getElementById(TECH.POSE.select).value=chosen.group;
+    renderDetails(TECH.POSE,chosen.group,chosen.value);
+    commit(TECH.POSE,chosen.group,chosen.value);
+    quickPoseSelection={group:chosen.group,value:chosen.value};
+    finish();
+  }
+  quickPose.addEventListener('change',applyQuickPose);
+  quickAgain.addEventListener('click',applyQuickPose);
+
   function choose(d,changeGroup){
     const sel=document.getElementById(d.select);
     let group=sel.value;
@@ -12973,6 +13044,7 @@ updatePrompt();</script>
     renderDetails(d,sel.value,value);commit(d,group,value);
   }
   function status(){
+    syncQuickPose();
     document.getElementById('techniqueStatus').textContent=Object.values(TECH).map(d=>{
       const label=document.querySelector('label[for="'+d.select+'"]');const v=state[d.key];
       return label.textContent+'：'+(v?DETAIL_JA[v.value]:'未選択');
@@ -13002,6 +13074,7 @@ updatePrompt();</script>
   if(typeof oldRandomVariables==='function')window.randomVariables=function(){oldRandomVariables();finish();};
   if(typeof oldRandomAll==='function')window.randomAll=function(){oldRandomAll();applyAll(true);finish();};
   ['themeModeBulk','seasonEventBulk','sceneModeBulk'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{
+    if(id==='seasonEventBulk' && isDetailEventIndex(getSeasonBulkIndex())) return;
     setTimeout(()=>{applyAll(false);finish();},0);
   }));
   // v22.2: independent bulk mode, no changes to the established prompt compiler.
