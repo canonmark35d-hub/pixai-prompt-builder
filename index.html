@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.33｜2026-10-15 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.34｜2026-10-15 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.33｜2026-10-15 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.34｜2026-10-15 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -111,7 +111,7 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="27">🖋️ アーティスティック・タトゥー</option>
     <option value="28">🌸 フローラル・ファンタジー</option>
     <option value="29">🧸 プラッシュ・ドールファンタジー</option>
-<option value="30">🎉 仮面舞踏会</option><option value="31">🎉 薔薇の祭典</option><option value="32">🎉 藤まつり</option><option value="33">🎉 紫陽花まつり</option><option value="34">🎉 ひまわりフェスティバル</option><option value="35">🎉 ラベンダーフェスティバル</option><option value="36">🎉 ランタン祭り</option><option value="37">🎉 キャンドルナイト</option><option value="38">🎉 イルミネーション祭典</option><option value="39">🎉 雪と氷の祭典</option><option value="40">🎉 星まつり・天体観測会</option><option value="41">🎉 お茶会・アフタヌーンティー</option><option value="42">🎉 スイーツフェスティバル</option><option value="43">🎉 アンティークマーケット</option><option value="44">🎉 芸術祭・ギャラリー展</option><option value="45">🎉 音楽祭・コンサート</option><option value="46">🎉 ファッションショー</option><option value="47">🎉 映画祭・レッドカーペット</option><option value="48">🎉 王宮の祝宴</option><option value="49">🎉 魔法祭・魔術博覧会</option></select>
+<option value="30">🎉 仮面舞踏会</option><option value="31">🎉 薔薇の祭典</option><option value="32">🎉 藤まつり</option><option value="33">🎉 紫陽花まつり</option><option value="34">🎉 ひまわりフェスティバル</option><option value="35">🎉 ラベンダーフェスティバル</option><option value="36">🎉 ランタン祭り</option><option value="37">🎉 キャンドルナイト</option><option value="38">🎉 イルミネーション祭典</option><option value="39">🎉 雪と氷の祭典</option><option value="40">🎉 星まつり・天体観測会</option><option value="41">🎉 お茶会・アフタヌーンティー</option><option value="42">🎉 スイーツフェスティバル</option><option value="43">🎉 アンティークマーケット</option><option value="44">🎉 芸術祭・ギャラリー展</option><option value="45">🎉 音楽祭・コンサート</option><option value="46">🎉 ファッションショー</option><option value="47">🎉 映画祭・レッドカーペット</option><option value="48">🎉 王宮の祝宴</option><option value="49">🎉 魔法祭・魔術博覧会</option><option value="50">🌸 フラワーイベント（100種類）</option></select>
 </div>
 <p class="note">一括設定中は、選択したイベントの候補だけを各カテゴリへ自動適用します。ランダム設定でも他の季節・通常候補には切り替わりません。個別カテゴリは引き続き変更できます。</p>
 <div id="gemstoneSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
@@ -121,6 +121,14 @@ button.secondary,button.dice{background:#eee;color:#333}
 <select id="gemstoneIntensityBulk" aria-label="宝石の反映度"><option value="standard">標準｜衣装中心・自然な装飾</option><option value="strong" selected>強調｜衣装＋背景・画質優先（おすすめ）</option><option value="fantasy">幻想的｜宝石建築と結晶演出</option></select>
 <p class="note">強調でも人物・顔・衣装の質感を優先し、結晶や光の過剰演出を避けます。ポーズ・構図の選択は維持します。</p>
 </div>
+<div id="flowerSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
+<label for="flowerTypeBulk" style="display:block;font-weight:700;margin-bottom:6px">🌸 花の種類（100種類）</label>
+<select id="flowerTypeBulk" aria-label="花の種類"><option value="random">🎲 花を自動選択</option><option value="0">薔薇</option><option value="1">青薔薇</option><option value="2">白薔薇</option><option value="3">黒薔薇</option><option value="4">桜</option><option value="5">八重桜</option><option value="6">梅</option><option value="7">桃の花</option><option value="8">藤</option><option value="9">紫陽花</option><option value="10">百合</option><option value="11">カサブランカ</option><option value="12">カラー</option><option value="13">チューリップ</option><option value="14">ラナンキュラス</option><option value="15">アネモネ</option><option value="16">ポピー</option><option value="17">コスモス</option><option value="18">向日葵</option><option value="19">ガーベラ</option><option value="20">ダリア</option><option value="21">牡丹</option><option value="22">芍薬</option><option value="23">椿</option><option value="24">山茶花</option><option value="25">菊</option><option value="26">桔梗</option><option value="27">撫子</option><option value="28">カーネーション</option><option value="29">マーガレット</option><option value="30">デイジー</option><option value="31">カモミール</option><option value="32">スズラン</option><option value="33">勿忘草</option><option value="34">ネモフィラ</option><option value="35">ブルースター</option><option value="36">デルフィニウム</option><option value="37">ルピナス</option><option value="38">ラベンダー</option><option value="39">ライラック</option><option value="40">スミレ</option><option value="41">パンジー</option><option value="42">ビオラ</option><option value="43">アイリス</option><option value="44">花菖蒲</option><option value="45">フリージア</option><option value="46">水仙</option><option value="47">ヒヤシンス</option><option value="48">ムスカリ</option><option value="49">クロッカス</option><option value="50">スノードロップ</option><option value="51">クリスマスローズ</option><option value="52">ポインセチア</option><option value="53">シクラメン</option><option value="54">プリムラ</option><option value="55">ストック</option><option value="56">スイートピー</option><option value="57">ニゲラ</option><option value="58">クレマチス</option><option value="59">トケイソウ</option><option value="60">ハイビスカス</option><option value="61">プルメリア</option><option value="62">ブーゲンビリア</option><option value="63">ジャスミン</option><option value="64">クチナシ</option><option value="65">金木犀</option><option value="66">沈丁花</option><option value="67">ミモザ</option><option value="68">アカシア</option><option value="69">藤袴</option><option value="70">彼岸花</option><option value="71">蓮</option><option value="72">睡蓮</option><option value="73">オーキッド</option><option value="74">胡蝶蘭</option><option value="75">シンビジウム</option><option value="76">デンドロビウム</option><option value="77">アンスリウム</option><option value="78">プロテア</option><option value="79">キングプロテア</option><option value="80">バンクシア</option><option value="81">エリンジウム</option><option value="82">アストランティア</option><option value="83">アリウム</option><option value="84">アガパンサス</option><option value="85">ブルーベル</option><option value="86">ジギタリス</option><option value="87">キンギョソウ</option><option value="88">トルコキキョウ</option><option value="89">アルストロメリア</option><option value="90">グラジオラス</option><option value="91">フクシア</option><option value="92">ベゴニア</option><option value="93">インパチェンス</option><option value="94">ペチュニア</option><option value="95">サルビア</option><option value="96">ケイトウ</option><option value="97">千日紅</option><option value="98">スターチス</option><option value="99">カスミソウ</option></select>
+<label for="flowerIntensityBulk" style="display:block;font-weight:700;margin:9px 0 6px">🌷 花の反映度</label>
+<select id="flowerIntensityBulk"><option value="standard">標準｜繊細な花装飾</option><option value="strong" selected>強調｜衣装の複数箇所に花装飾</option><option value="fantasy">幻想的｜立体花弁と背景演出</option></select>
+<label for="flowerDesignBulk" style="display:block;font-weight:700;margin:9px 0 6px">✨ デザイン方向</label>
+<select id="flowerDesignBulk"><option value="couture">オートクチュール</option><option value="fantasy">ファンタジー</option><option value="delicate">繊細・エレガント</option></select>
+<p class="note">既存衣装・ポーズ・画角を保持。花の特徴を短い英語プロンプトで衣装に融合します。</p></div>
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
@@ -9852,7 +9860,7 @@ SEASONAL_EVENT_OPTIONS["OUTFIT PATTERN"] = [
 // 既存300種類（20イベント×15）を変更せず、追加分は必要時に遅延生成する。
 // これによりDOMを巨大化させず、iPhone/Safariでも扱いやすくする。
 // ============================================================
-const SEASON_EVENT_NAMES = ["Halloween", "Christmas", "New Year", "Valentine's Day", "White Day", "Hinamatsuri", "Tanabata", "Cherry Blossom Season", "Summer Festival", "Fireworks Night", "Moon Viewing", "Autumn Leaves Season", "Harvest Season", "Snow Season", "Rainy Season", "Spring Season", "Easter", "Birthday Celebration", "Anniversary Celebration", "Golden Week", "Gemstone Jewelry", "Luxury Detail", "Royal Ornament", "Ethereal Fabric", "Botanical Art Nouveau", "Antique Mechanical", "Prismatic Luminance", "Artistic Tattoo", "Floral Fantasy", "Plush Doll Fantasy", "Masquerade Ball", "Rose Festival", "Wisteria Festival", "Hydrangea Festival", "Sunflower Festival", "Lavender Festival", "Lantern Festival", "Candlelight Festival", "Illumination Festival", "Snow and Ice Festival", "Stargazing Festival", "Afternoon Tea Gathering", "Sweets Festival", "Antique Market", "Art Festival", "Music Festival", "Fashion Show", "Film Festival", "Royal Banquet", "Magic Exhibition"];
+const SEASON_EVENT_NAMES = ["Halloween", "Christmas", "New Year", "Valentine's Day", "White Day", "Hinamatsuri", "Tanabata", "Cherry Blossom Season", "Summer Festival", "Fireworks Night", "Moon Viewing", "Autumn Leaves Season", "Harvest Season", "Snow Season", "Rainy Season", "Spring Season", "Easter", "Birthday Celebration", "Anniversary Celebration", "Golden Week", "Gemstone Jewelry", "Luxury Detail", "Royal Ornament", "Ethereal Fabric", "Botanical Art Nouveau", "Antique Mechanical", "Prismatic Luminance", "Artistic Tattoo", "Floral Fantasy", "Plush Doll Fantasy", "Masquerade Ball", "Rose Festival", "Wisteria Festival", "Hydrangea Festival", "Sunflower Festival", "Lavender Festival", "Lantern Festival", "Candlelight Festival", "Illumination Festival", "Snow and Ice Festival", "Stargazing Festival", "Afternoon Tea Gathering", "Sweets Festival", "Antique Market", "Art Festival", "Music Festival", "Fashion Show", "Film Festival", "Royal Banquet", "Magic Exhibition", "Flower Couture"];
 // v22.6: Non-destructive detail themes. These are not outfit/pose presets.
 const DETAIL_EVENT_START = 21;
 const NEW_SCENE_MOODS = {"dawn": {"label": "夜明け・薄明", "prompt": "pale blue and soft pink dawn ambience in the background, gentle neutral light on the subject"}, "morning_mist": {"label": "朝霧・幻想", "prompt": "thin morning mist behind the subject, softly diffused light, crisp facial and garment detail"}, "leaf_light": {"label": "木漏れ日", "prompt": "gentle sunlight filtered through leaves, delicate patches of light in the background"}, "midsummer": {"label": "真夏・まぶしい陽光", "prompt": "clear midsummer sunlight and defined background shadows, controlled highlights on skin"}, "overcast_soft": {"label": "曇天・柔らかな光", "prompt": "soft overcast illumination, even light revealing the original clothing colors and textures"}, "golden_hour": {"label": "夕陽・ゴールデンアワー", "prompt": "warm golden-hour light in the background, gentle neutral fill preserving skin and clothing colors"}, "blue_hour": {"label": "日没後・ブルーアワー", "prompt": "deep blue twilight ambience behind the subject, soft neutral illumination on the face"}, "moon_silence": {"label": "月明かり・静寂", "prompt": "quiet silver-blue moonlight in the background, subtle neutral fill on the subject"}, "clear_stars": {"label": "星空・透明感", "prompt": "a clear starry atmosphere behind the subject, delicate distant starlight and clean subject lighting"}, "light_rain": {"label": "小雨・しっとり", "prompt": "fine rain visible behind the subject, subdued ambient light, intact clothing and clear face"}, "after_rain": {"label": "雨上がり・きらめき", "prompt": "small water droplets and wet-ground reflections behind the subject, gentle light after rain"}, "misty_drizzle": {"label": "霧雨・ミステリアス", "prompt": "fine misty drizzle softening the distant background, restrained ambient light, crisp subject detail"}, "soft_snow": {"label": "雪・柔らかな静けさ", "prompt": "soft drifting snowflakes behind the subject, pale reflected light and quiet winter ambience"}, "clear_frost": {"label": "霜・凛とした冷気", "prompt": "delicate frost on background surfaces, clear cool air and subtle crystalline highlights"}, "candle_warm": {"label": "キャンドル・暖かな陰影", "prompt": "warm light from background candles, gentle shadows and balanced neutral light on the face"}, "window_soft": {"label": "窓辺・自然光", "prompt": "soft window light from the side, natural tonal gradients and carefully exposed face"}, "neon_color": {"label": "ネオン・夜の彩り", "prompt": "colorful neon lights and restrained reflections in the background, neutral subject lighting"}, "retro_sepia": {"label": "レトロ・セピア調", "prompt": "warm sepia tones confined to the background, original hair, skin and clothing colors retained"}, "fantasy_particles": {"label": "幻想的な光粒", "prompt": "small luminous particles behind the subject, restrained glow, no floating rings above the head"}, "dark_grandeur": {"label": "ダーク・荘厳", "prompt": "dark stately background ambience and restrained illumination, readable face and garment detail"}};
@@ -10046,7 +10054,7 @@ function getSeasonBulkIndex(){
 
 // Decoration-only themes add prompt detail, not seasonal preset pools.
 function isDetailEventIndex(index){
-  return index>=DETAIL_EVENT_START && index<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length;
+  return index===50 || (index>=DETAIL_EVENT_START && index<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length);
 }
 function getPresetEventIndex(){
   const index=getSeasonBulkIndex();
@@ -10067,6 +10075,10 @@ function applySeasonEventBulk(eventIndex){
     CAT_KEYS.forEach(function(key){
       const s=catSelect(key); if(s) Array.from(s.options).forEach(function(o){if(o.dataset.seasonExtra==='1') o.remove();});
     });
+    updatePrompt(); return;
+  }
+  if(eventIndex===50){
+    if(status) status.textContent='季節・イベント一括設定：ON｜🌸 フラワーイベント｜既存衣装・ポーズ・画角を保持';
     updatePrompt(); return;
   }
   if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
@@ -12668,7 +12680,34 @@ updatePrompt();</script>
     return text;
   }
 
+
+  // v23.34: 100-flower detail event; do not replace any selected outfit or technique.
+  const FLOWER_DETAILS = [["Rose", "rose red"], ["Blue rose", "blue"], ["White rose", "ivory"], ["Black rose", "deep burgundy"], ["Cherry blossom", "blush pink"], ["Double cherry blossom", "soft pink"], ["Plum blossom", "rose pink"], ["Peach blossom", "peach pink"], ["Wisteria", "lavender"], ["Hydrangea", "blue violet"], ["Lily", "ivory"], ["Casa Blanca lily", "white"], ["Calla lily", "ivory"], ["Tulip", "coral"], ["Ranunculus", "apricot"], ["Anemone", "violet"], ["Poppy", "scarlet"], ["Cosmos", "pink"], ["Sunflower", "sunflower yellow"], ["Gerbera", "coral orange"], ["Dahlia", "burgundy"], ["Peony", "rose pink"], ["Chinese peony", "blush pink"], ["Camellia", "crimson"], ["Sasanqua camellia", "pink"], ["Chrysanthemum", "gold"], ["Balloon flower", "indigo"], ["Dianthus", "pink"], ["Carnation", "rose red"], ["Marguerite daisy", "white yellow"], ["Daisy", "white yellow"], ["Chamomile", "cream"], ["Lily of the valley", "ivory"], ["Forget-me-not", "sky blue"], ["Nemophila", "sky blue"], ["Tweedia", "pale blue"], ["Delphinium", "cobalt blue"], ["Lupine", "violet blue"], ["Lavender", "lavender"], ["Lilac", "lilac"], ["Violet", "purple"], ["Pansy", "purple gold"], ["Viola", "violet"], ["Iris", "royal purple"], ["Japanese iris", "blue purple"], ["Freesia", "butter yellow"], ["Daffodil", "yellow"], ["Hyacinth", "blue violet"], ["Grape hyacinth", "cobalt"], ["Crocus", "purple"], ["Snowdrop", "snow white"], ["Hellebore", "dusty mauve"], ["Poinsettia", "crimson"], ["Cyclamen", "magenta"], ["Primrose", "yellow"], ["Stock flower", "lavender pink"], ["Sweet pea", "pastel pink"], ["Love-in-a-mist", "pale blue"], ["Clematis", "violet"], ["Passion flower", "purple white"], ["Hibiscus", "coral red"], ["Plumeria", "ivory yellow"], ["Bougainvillea", "magenta"], ["Jasmine", "white"], ["Gardenia", "ivory"], ["Sweet osmanthus", "amber orange"], ["Daphne", "pink white"], ["Mimosa", "golden yellow"], ["Acacia blossom", "pale yellow"], ["Thoroughwort", "dusty pink"], ["Red spider lily", "scarlet"], ["Lotus", "lotus pink"], ["Water lily", "soft pink"], ["Orchid", "orchid purple"], ["Phalaenopsis orchid", "white lilac"], ["Cymbidium orchid", "sage green"], ["Dendrobium orchid", "lavender"], ["Anthurium", "red"], ["Protea", "dusty rose"], ["King protea", "blush coral"], ["Banksia", "ochre gold"], ["Sea holly", "steel blue"], ["Astrantia", "dusty pink"], ["Allium", "lilac"], ["Agapanthus", "periwinkle"], ["Bluebell", "blue"], ["Foxglove", "pink purple"], ["Snapdragon", "coral"], ["Lisianthus", "lavender"], ["Alstroemeria", "peach"], ["Gladiolus", "crimson"], ["Fuchsia", "magenta purple"], ["Begonia", "coral pink"], ["Impatiens", "salmon pink"], ["Petunia", "violet"], ["Salvia", "scarlet"], ["Cockscomb", "deep red"], ["Globe amaranth", "magenta"], ["Statice", "violet"], ["Baby's breath", "white"]];
+  function selectedFlower(){
+    const el=byId('flowerTypeBulk');
+    const v=el ? el.value : 'random';
+    if(v!=='random' && FLOWER_DETAILS[Number(v)]) return FLOWER_DETAILS[Number(v)];
+    const d=window.__activeEventDesign || {family:0,variant:0};
+    return FLOWER_DETAILS[((Number(d.family)||0)*10+(Number(d.variant)||0))%FLOWER_DETAILS.length];
+  }
+  function flowerEventBlock(){
+    const flower=selectedFlower(),level=byId('flowerIntensityBulk')?.value||'strong';
+    const mode=byId('flowerDesignBulk')?.value||'couture';
+    const fashion=mode==='fantasy'?'fantasy couture':mode==='delicate'?'elegant fashion':'haute couture';
+    const detail=level==='standard'?'fine floral embroidery':level==='fantasy'?'sculpted petals, floral embroidery':'petal appliqués, floral embroidery';
+    return '[EVENT FUSION] '+flower[0]+' '+fashion+'; recognizable '+flower[0].toLowerCase()+' motifs on bodice, sleeves and skirt; '+detail+'; '+flower[1]+' floral accents; coordinated floral background; preserve chosen outfit, pose and framing';
+  }
+  function updateFlowerVisibility(){
+    const p=byId('flowerSelectorPanel');if(p)p.style.display=getSeasonBulkIndex()===50?'block':'none';
+  }
+  ['flowerTypeBulk','flowerIntensityBulk','flowerDesignBulk'].forEach(function(id){
+    const el=byId(id);if(el)el.addEventListener('change',function(){updatePrompt();});
+  });
+  const flowerSeason=byId('seasonEventBulk');
+  if(flowerSeason)flowerSeason.addEventListener('change',updateFlowerVisibility);
+  updateFlowerVisibility();
   function getActiveEventPromptBlock(existingPrompt){
+    if(getSeasonBulkIndex()===50) return flowerEventBlock();
     const eventIndex=getSeasonBulkIndex();
     if(eventIndex<0) return '';
     if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
@@ -12717,8 +12756,8 @@ updatePrompt();</script>
     const language=t.language || '';
     const pattern=t.pattern || '';
     const accessory=t.accessory || '';
-    // v23.33: further concise event-fusion instructions; keep every event-specific design field and design variant.
-    // v23.33: avoid repeating descriptions already present in selected category blocks.
+    // v23.34: further concise event-fusion instructions; keep every event-specific design field and design variant.
+    // v23.34: avoid repeating descriptions already present in selected category blocks.
     // The existing category output remains unchanged; only redundant EVENT FUSION text is omitted.
     const already=(value)=>value && (existingPrompt || '').includes(value);
     const fusion=[
