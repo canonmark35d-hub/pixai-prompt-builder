@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.0｜2026-10-09 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜画角・人物方向調整版 v22.1｜2026-10-08 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜9テーマ装飾融合・全テーマ共通画角制御版 v23.0｜2026-10-09 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -63,6 +63,16 @@ button.secondary,button.dice{background:#eee;color:#333}
 </section>
 <section class="panel">
 <h2>🎲 ランダム設定</h2>
+<div class="bulk-mode-v222" style="padding:12px;border:1px solid #aaa;border-radius:12px;margin:10px 0 14px">
+<label for="bulkModeV222"><strong>🔒 一括変更の対象（固定する側を選択）</strong></label>
+<select id="bulkModeV222" style="width:100%;margin:8px 0">
+<option value="variables">① 表現技法を固定 → 可変カテゴリだけ変更</option>
+<option value="technique">② 可変カテゴリを固定 → 表現技法の大分類＋明細だけ変更</option>
+<option value="all">③ 全カテゴリ変更（表現技法＋可変カテゴリ）</option>
+</select>
+<button type="button" id="bulkExecuteV222" style="width:100%">🎲 選択した対象だけ一括変更</button>
+<p class="note" id="bulkModeNoteV222" aria-live="polite">表現技法6項目を保持し、可変カテゴリだけを変更します。モード切替だけでは選択値は変わりません。</p>
+</div>
 <p class="note">固定プロンプトは変更されません。</p>
 <div class="actions">
 <button id="randomAll" onclick="randomAll()" type="button">🎲 全カテゴリランダム</button>
@@ -80,10 +90,27 @@ button.secondary,button.dice{background:#eee;color:#333}
     <option value="0">Halloween</option><option value="1">Christmas</option><option value="2">New Year</option><option value="3">Valentine's Day</option><option value="4">White Day</option>
     <option value="5">Hinamatsuri</option><option value="6">Tanabata</option><option value="7">Cherry Blossom Season</option><option value="8">Summer Festival</option><option value="9">Fireworks Night</option>
     <option value="10">Moon Viewing</option><option value="11">Autumn Leaves Season</option><option value="12">Harvest Season</option><option value="13">Snow Season</option><option value="14">Rainy Season</option>
-    <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option>
-  </select>
+    <option value="15">Spring Season</option><option value="16">Easter</option><option value="17">Birthday Celebration</option><option value="18">Anniversary Celebration</option><option value="19">Golden Week</option><option value="20">💎 宝石イベント（Gemstone Jewelry）</option>
+  
+    <option value="21">✨ ラグジュアリー・ディテール</option>
+    <option value="22">👑 ロイヤル・オーナメント</option>
+    <option value="23">🪽 エーテリアル・ファブリック</option>
+    <option value="24">🌿 ボタニカル・アールヌーヴォー</option>
+    <option value="25">⚙️ アンティーク・メカニカル</option>
+    <option value="26">🌈 プリズマティック・ルミナンス</option>
+    <option value="27">🖋️ アーティスティック・タトゥー</option>
+    <option value="28">🌸 フローラル・ファンタジー</option>
+    <option value="29">🧸 プラッシュ・ドールファンタジー</option>
+</select>
 </div>
 <p class="note">一括設定中は、選択したイベントの候補だけを各カテゴリへ自動適用します。ランダム設定でも他の季節・通常候補には切り替わりません。個別カテゴリは引き続き変更できます。</p>
+<div id="gemstoneSelectorPanel" style="display:none;margin:10px 0;padding:11px;border:1px solid #ddd;border-radius:10px;background:#fafafa">
+<label for="gemstoneTypeBulk" style="display:block;font-weight:700;margin-bottom:6px">💎 宝石の種類（イベント専用）</label>
+<select id="gemstoneTypeBulk" aria-label="宝石の種類"><option value="random">🎲 宝石を自動選択</option><option value="diamond">ダイヤモンド</option><option value="ruby">ルビー</option><option value="sapphire">サファイア</option><option value="emerald">エメラルド</option><option value="amethyst">アメジスト</option><option value="opal">オパール</option><option value="pearl">パール</option><option value="aquamarine">アクアマリン</option><option value="topaz">トパーズ</option><option value="garnet">ガーネット</option><option value="peridot">ペリドット</option><option value="tanzanite">タンザナイト</option><option value="tourmaline">トルマリン</option><option value="moonstone">ムーンストーン</option><option value="alexandrite">アレキサンドライト</option><option value="lapis">ラピスラズリ</option></select>
+<label for="gemstoneIntensityBulk" style="display:block;font-weight:700;margin:9px 0 6px">✨ 宝石の反映度</label>
+<select id="gemstoneIntensityBulk" aria-label="宝石の反映度"><option value="standard">標準｜衣装中心・自然な装飾</option><option value="strong" selected>強調｜衣装＋背景・画質優先（おすすめ）</option><option value="fantasy">幻想的｜宝石建築と結晶演出</option></select>
+<p class="note">強調でも人物・顔・衣装の質感を優先し、結晶や光の過剰演出を避けます。ポーズ・構図の選択は維持します。</p>
+</div>
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel">
@@ -9800,7 +9827,20 @@ SEASONAL_EVENT_OPTIONS["OUTFIT PATTERN"] = [
 // 既存300種類（20イベント×15）を変更せず、追加分は必要時に遅延生成する。
 // これによりDOMを巨大化させず、iPhone/Safariでも扱いやすくする。
 // ============================================================
-const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week"];
+const SEASON_EVENT_NAMES = ["Halloween","Christmas","New Year","Valentine's Day","White Day","Hinamatsuri","Tanabata","Cherry Blossom Season","Summer Festival","Fireworks Night","Moon Viewing","Autumn Leaves Season","Harvest Season","Snow Season","Rainy Season","Spring Season","Easter","Birthday Celebration","Anniversary Celebration","Golden Week","Gemstone Jewelry","Luxury Detail","Royal Ornament","Ethereal Fabric","Botanical Art Nouveau","Antique Mechanical","Prismatic Luminance","Artistic Tattoo","Floral Fantasy","Plush Doll Fantasy"];
+// v22.6: Non-destructive detail themes. These are not outfit/pose presets.
+const DETAIL_EVENT_START = 21;
+const DETAIL_EVENT_THEMES = [
+  {name:'Luxury Detail',focus:'fine fabric weave, precise embroidery threads, elegant lace edges, carefully finished hardware',accent:'refined stitching on existing hair ornaments and accessories',setting:'material-rich architectural surfaces and crafted furnishings',light:'controlled natural material highlights'},
+  {name:'Royal Ornament',focus:'delicate gold and silver filigree embroidery, ornamental trims and engraved fasteners',accent:'fine filigree on existing jewelry and hair accessories, no added crown',setting:'tasteful carved decorative details matching the chosen architecture',light:'subtle metallic glints'},
+  {name:'Ethereal Fabric',focus:'delicate fabric drape, fine lace edges and softly translucent layers only where suitable to the chosen fabric',accent:'soft textile detail on existing ribbons and accessories',setting:'gentle atmospheric depth without changing the selected scene',light:'soft transmitted light through existing translucent materials'},
+  {name:'Botanical Art Nouveau',focus:'elegant flowing botanical embroidery and subtle vine-shaped trim',accent:'fine leaf and vine ornament on existing accessories',setting:'restrained botanical curves in the chosen setting',light:'balanced light on curved ornament'},
+  {name:'Antique Mechanical',focus:'precisely engraved antique-metal clasps, subtle clockwork-inspired ornament on garment hardware',accent:'small mechanical detailing on existing accessory fittings, no extra props',setting:'tasteful engraved mechanical ornament integrated into existing architecture',light:'controlled warm metallic reflections'},
+  {name:'Prismatic Luminance',focus:'subtle pearlescent fabric sheen and fine iridescent stitching without recoloring the outfit',accent:'small prismatic reflections on existing accessory surfaces',setting:'restrained spectral reflections on suitable existing surfaces',light:'gentle prismatic glints, natural skin tones'},
+  {name:'Artistic Tattoo',focus:'coordinated fine-line ornamental motifs echoed in garment embroidery',accent:'small matching motifs on existing accessories',setting:'subtle decorative motifs matching the selected background',light:'clean skin detail without visual noise',special:'delicate decorative tattoo only on already exposed skin, never on clothing, no added skin exposure'},
+  {name:'Floral Fantasy',focus:'distinct sculpted flower embroidery and delicate floral appliques following the selected garment design',accent:'small coordinated blossoms on existing hair ornaments and accessories',setting:'recognizable flowers naturally integrated into the selected background',light:'soft natural highlights on petals'},
+  {name:'Plush Doll Fantasy',focus:'fine plush-toy motifs and soft stitched applique on selected garments',accent:'small teddy bear or rabbit plush charm on an existing bag or accessory if compatible',setting:'one or two tasteful plush toys placed in the background, not extra characters',light:'soft textile texture and balanced illumination'}
+];
 const EVENT_SILHOUETTES = [
   "structured corset mini dress", "cropped jacket + pleated mini skirt", "fitted blouse + high-waisted tailored shorts", "fitted vest + wide-leg trousers", "cape + fitted mini dress", "peplum top + flared mini skirt", "off-shoulder top + layered mini skirt", "asymmetric tunic + slim trousers", "cropped bolero + tiered mini skirt", "fitted fashion jumpsuit", "bustier top + tailored trousers", "structured collar top + A-line mini skirt", "babydoll mini dress", "longline coat + fitted mini dress", "cropped jacket + high-waisted mini skirt", "halter top + wrap mini skirt", "tailored blazer mini dress", "fitted knit top + pleated mini skirt", "draped fitted top + flared mini skirt", "ornamental bodice + tailored shorts"
 ];
@@ -9827,6 +9867,7 @@ const EVENT_THEME_LIBRARY = {
   "Easter": {palette:"lavender, mint, butter yellow, blush pink, ivory",materials:"tulle, satin, cotton, lace, soft knit",motifs:"rabbit, egg, tulip, ribbon, carrot, spring flower",hair:"rabbit-ear-inspired ribbon styling, pastel braids, soft curls, playful half-up hair",accessory:"rabbit clip, pastel bow, egg ornament, flower crown accent",shoes:"pastel Mary Janes, ribbon pumps, ankle boots, spring sandals",pattern:"rabbit, decorated egg, tulip, ribbon, spring floral motif",background:"Easter garden, pastel tea party room, flower meadow, decorated spring salon",lighting:"soft pastel daylight, cheerful spring glow, warm garden light",language:"Easter couture, playful pastel fashion, refined spring celebration styling"},
   "Birthday Celebration": {palette:"lilac, champagne, pastel blue, hot pink, ivory",materials:"satin, tulle, sequins, silk, chiffon",motifs:"cake, candle, balloon, ribbon, confetti, gift",hair:"party curls, ribboned ponytail, elegant half-up hair, playful bun",accessory:"birthday bow, crystal clip, mini crown, ribbon ornament",shoes:"party pumps, glitter heels, ribbon Mary Janes, crystal sandals",pattern:"confetti, candle, balloon, gift ribbon, cake motif",background:"luxury birthday salon, decorated party room, elegant cake table, rooftop celebration",lighting:"soft party lights, champagne glow, sparkling bokeh",language:"luxury birthday couture, celebratory fashion, glamorous party styling"},
   "Anniversary Celebration": {palette:"ruby, ivory, champagne gold, rose pink, black",materials:"velvet, silk, satin, lace, sequins",motifs:"rose, ribbon, crystal, champagne motif, anniversary seal",hair:"elegant anniversary waves, polished bun, rose-adorned half-up hair, refined ponytail",accessory:"rose hair ornament, crystal clip, gold ribbon, pearl comb",shoes:"luxury pumps, satin heels, crystal sandals, elegant ankle boots",pattern:"rose, ribbon, crystal, champagne motif, ornamental seal",background:"luxury anniversary salon, candlelit dining room, grand ballroom, rose-filled terrace",lighting:"champagne golden light, candlelight, romantic evening glow",language:"anniversary luxury couture, elegant celebration fashion, refined romantic styling"},
+  "Gemstone Jewelry": {palette:"diamond white, ruby red, sapphire blue, emerald green, amethyst violet, precious metal accents",materials:"silk, satin, velvet, jacquard, crystal beading",motifs:"faceted gemstones, gem cuts, jewel settings, prismatic facets, crystal embroidery",hair:"polished updo, jewel-accented braid, soft glamorous waves",accessory:"delicate gemstone hairpin, faceted jewel clip, refined jeweled ribbon",shoes:"gem-buckle pumps, jewel-trimmed heels, refined metallic shoes",pattern:"faceted gemstone, prismatic geometry, jewel embroidery",background:"jewel gallery, crystalline palace, elegant gemstone exhibition, luxury jewelry atelier",lighting:"prismatic highlights, soft jewel reflections, refined studio glow",language:"gemstone-inspired luxury couture, elegant jeweled fashion"},
   "Golden Week": {palette:"sunny yellow, red, white, blue, gold",materials:"linen, cotton, satin, lightweight twill, woven textile",motifs:"sun, travel badge, ribbon, bunting, landmark-inspired emblem",hair:"travel-ready ponytail, casual waves, braided half-up hair, cheerful bun",accessory:"travel ribbon, sun clip, small badge ornament, floral clip",shoes:"comfortable fashion sneakers, loafers, sandals, ankle boots",pattern:"sun, bunting, travel emblem, stripe, celebratory graphic",background:"Japanese travel destination, sunny landmark plaza, scenic garden, lively holiday street",lighting:"bright holiday daylight, clear blue-sky light, warm sunset",language:"Golden Week travel couture, polished holiday fashion, modern Japanese leisure styling"}
 };
 
@@ -9970,6 +10011,11 @@ function applySeasonEventBulk(eventIndex){
     CAT_KEYS.forEach(function(key){
       const s=catSelect(key); if(s) Array.from(s.options).forEach(function(o){if(o.dataset.seasonExtra==='1') o.remove();});
     });
+    updatePrompt(); return;
+  }
+  if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
+    // Preserve all current category values, pose and framing.
+    if(status) status.textContent='季節・イベント一括設定：ON｜'+DETAIL_EVENT_THEMES[eventIndex-DETAIL_EVENT_START].name+'｜選択済みカテゴリは固定';
     updatePrompt(); return;
   }
   chooseCoordinatedEventFamily(eventIndex);
@@ -12500,9 +12546,71 @@ updatePrompt();</script>
   window.isBalloonSkirtThemeActive=isBalloonSkirtThemeActive;
   window.enforceBalloonSkirtCategory=enforceBalloonSkirtCategory;
 
+  // v22.3: Gemstone selection is an additive EVENT overlay, independent of pose/framing.
+  // Each gem uses restrained, identifiable design motifs. Avoid forcing all gems into crystals.
+  const GEMSTONE_DETAILS={
+    diamond:['diamond','clear white and platinum','precise brilliant-cut clear stones in silver filigree','faceted diamond showcases and discreet prismatic reflections'],
+    ruby:['ruby','deep crimson and antique gold','oval ruby cabochons set in ornate golden clasps','ruby-set decorative panels and warm crimson jewel glints'],
+    sapphire:['sapphire','royal blue and silver','deep blue cushion-cut sapphire ornaments and fine silver settings','sapphire-inlaid architectural details and small blue jewel displays'],
+    emerald:['emerald','rich emerald green and antique gold','rectangular emerald-cut green stones set in ornate gold fittings','emerald-inlaid Chinese architectural panels and elegant gemstone displays'],
+    amethyst:['amethyst','violet and cool silver','amethyst geode-inspired faceted violet ornaments','amethyst geode displays and soft violet reflections'],
+    opal:['opal','milky ivory and subtle spectral colors','opal cabochons with delicate shifting iridescence','opalescent inlays and subtle rainbow reflections'],
+    pearl:['pearl','ivory and champagne','lustrous rounded pearls in elegant clustered embroidery','pearl strands and shell-inspired ornamental displays'],
+    aquamarine:['aquamarine','clear aqua blue and silver','transparent pale-blue step-cut stones in refined silver settings','aquamarine gem displays and gentle watery reflections'],
+    topaz:['topaz','warm amber and champagne gold','faceted golden topaz ornaments in delicate metalwork','warm golden gem showcases and restrained amber reflections'],
+    garnet:['garnet','wine red and antique bronze','dark garnet cabochons and intricate bronze jewel settings','garnet-inlaid furniture and deep wine-red jewel highlights'],
+    peridot:['peridot','fresh olive green and pale gold','small bright peridot stones in leaf-shaped settings','peridot-studded botanical ornaments and green gem displays'],
+    tanzanite:['tanzanite','blue violet and platinum','faceted blue-violet tanzanite ornaments','tanzanite jewel displays with subtle blue-violet highlights'],
+    tourmaline:['tourmaline','pink and green bicolor','bicolor tourmaline stones with visible pink-green zoning','bicolor gem displays and gentle dual-color reflections'],
+    moonstone:['moonstone','milky white and cool blue','smooth moonstone cabochons with soft blue adularescence','moonstone-inlaid moon motifs and pearly blue glows'],
+    alexandrite:['alexandrite','teal green and muted violet','faceted alexandrite stones showing restrained teal-violet color shift','alexandrite jewel exhibits with selective color-shift glints'],
+    lapis:['lapis lazuli','ultramarine and antique gold','opaque lapis lazuli inlays with tiny natural gold pyrite flecks','lapis-inlaid decorative walls and gold-flecked stone displays']
+  };
+  function selectedGemstone(){
+    const select=byId('gemstoneTypeBulk');
+    const value=select ? select.value : 'random';
+    if(value!=='random' && GEMSTONE_DETAILS[value]) return GEMSTONE_DETAILS[value];
+    const keys=Object.keys(GEMSTONE_DETAILS);
+    const design=window.__activeEventDesign || {family:0,variant:0};
+    return GEMSTONE_DETAILS[keys[((Number(design.family)||0)*10+(Number(design.variant)||0))%keys.length]];
+  }
+  function updateGemstoneVisibility(){
+    const panel=byId('gemstoneSelectorPanel');
+    if(panel) panel.style.display=getSeasonBulkIndex()===20?'block':'none';
+  }
+  const gemstoneSelect=byId('gemstoneTypeBulk');
+  if(gemstoneSelect) gemstoneSelect.addEventListener('change',function(){updatePrompt();});
+  const gemstoneIntensity=byId('gemstoneIntensityBulk');
+  if(gemstoneIntensity) gemstoneIntensity.addEventListener('change',function(){updatePrompt();});
+  const gemstoneSeason=byId('seasonEventBulk');
+  if(gemstoneSeason) gemstoneSeason.addEventListener('change',function(){updateGemstoneVisibility();});
+  updateGemstoneVisibility();
+
+  // v22.5: gemstone-only localized overlays. Keep the original category selections intact.
+  function applyGemstoneCategoryFusion(text){
+    if(getSeasonBulkIndex()!==20) return text;
+    const gem=selectedGemstone();
+    const level=gemstoneIntensity ? gemstoneIntensity.value : 'strong';
+    const stone=gem[0], cut=gem[2], backdrop=gem[3];
+    const garment='visible '+stone+' gemstone settings in garment fasteners and embroidered trim; '+cut;
+    const background='visible '+stone+' gemstone display on an ornate pedestal; '+backdrop;
+    const add=(name,detail)=>{
+      const re=new RegExp('(^\\['+name+'\\]\\s*)([^\\n]*)','m');
+      text=text.replace(re,(all,head,body)=>head+body+'; '+detail);
+    };
+    // Avoid appending lengthy motifs to many sections; two short targeted edits suffice.
+    add('OUTFIT STRUCTURE',level==='standard'?'gemstone-set decorative garment fasteners':garment);
+    add('BACKGROUND',level==='standard'?'small '+stone+' gemstone display in the setting':background+(level==='fantasy'?'; gem-inlaid architectural ornament behind the subject':''));
+    return text;
+  }
+
   function getActiveEventPromptBlock(){
     const eventIndex=getSeasonBulkIndex();
     if(eventIndex<0) return '';
+    if(eventIndex>=DETAIL_EVENT_START && eventIndex<DETAIL_EVENT_START+DETAIL_EVENT_THEMES.length){
+      const t=DETAIL_EVENT_THEMES[eventIndex-DETAIL_EVENT_START];
+      return '[EVENT FUSION] '+t.name+'; preserve selected garment silhouette, colors, materials, accessories, hairstyle, background, pose and framing; visible garment detail: '+t.focus+'; accessory detailing: '+t.accent+'; background integration: '+t.setting+'; lighting: '+t.light+(t.special?'; '+t.special:'')+'; balanced detail density; crisp face and natural skin; no extra characters';
+    }
     const design=window.__activeEventDesign || {eventIndex:eventIndex,family:0,variant:0};
     const f=Math.max(0,Math.min(19,Number(design.family)||0));
     const v=Math.max(0,Math.min(9,Number(design.variant)||0));
@@ -12515,6 +12623,16 @@ updatePrompt();</script>
       if(opts.length) parts.push(opts[0].value);
     });
     const eventName=SEASON_EVENT_NAMES[eventIndex];
+    if(eventIndex===20){
+      const gem=selectedGemstone();
+      const theme=getThemeMode();
+      const identity=theme==='normal'?'selected fashion design':(THEME_MODES[theme] && THEME_MODES[theme].label || 'selected fashion design');
+      const level=gemstoneIntensity ? gemstoneIntensity.value : 'strong';
+      const base='[EVENT FUSION] Gemstone Jewelry; featured gemstone: '+gem[0]+'; authentic gemstone colors: '+gem[1]+'; preserve '+identity+' garment silhouette and selected colors; realistic gemstone details, natural skin tones, fine textile rendering; retain selected pose and camera framing';
+      if(level==='standard') return base+'; selective gemstone details; clean background with small matching jewel accents';
+      if(level==='fantasy') return base+'; prominent but balanced gemstone ornaments on the visible costume; gemstone-themed environment: '+gem[3]+'; additional elegant gem-encrusted architecture or crystal displays behind the character; subtle controlled gem-colored light; background secondary to the subject, no oversized foreground crystals';
+      return base+'; clearly visible gemstone ornaments repeated on two or three visible costume details; gemstone-themed background elements: '+gem[3]+'; modest jewel sparkle and restrained reflected light; preserve fine linework and avoid excessive glow or clutter';
+    }
     const theme=getThemeMode();
     const t=EVENT_THEME_LIBRARY[eventName] || {};
     const base=BASE_THEME_EMPHASIS[theme] || '';
@@ -12634,7 +12752,7 @@ updatePrompt();</script>
       // Keep the six UI controls, but never emit their legacy six standalone
       // blocks. The final PIXAI prompt uses one integrated EXPRESSION TECHNIQUE block.
       promptEl.value=promptEl.value.replace(/\n\[(POSE|GAZE|SUBJECT ORIENTATION|CAMERA ANGLE|SHOT TYPE|FRAMING)\][^\n]*/g,'');
-      promptEl.value=fitPromptToPixAI4096(applyBaseThemeEmphasis(promptEl.value));
+      promptEl.value=fitPromptToPixAI4096(applyGemstoneCategoryFusion(applyBaseThemeEmphasis(promptEl.value)));
     }
     const theme=getThemeMode(), eventIndex=getSeasonBulkIndex(), scene=getSceneMode();
     const st=byId('themeModeStatus');
@@ -12823,11 +12941,22 @@ updatePrompt();</script>
   window.__applyTechniqueModes=function(changeGroup){applyAll(!!changeGroup);finish();};
   window.__randomizeTechniqueConcrete=function(){applyAll(false);};
   const oldRandomVariables=window.randomVariables,oldRandomAll=window.randomAll;
-  if(typeof oldRandomVariables==='function')window.randomVariables=function(){oldRandomVariables();applyAll(true);finish();};
+  if(typeof oldRandomVariables==='function')window.randomVariables=function(){oldRandomVariables();finish();};
   if(typeof oldRandomAll==='function')window.randomAll=function(){oldRandomAll();applyAll(true);finish();};
   ['themeModeBulk','seasonEventBulk','sceneModeBulk'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{
     setTimeout(()=>{applyAll(false);finish();},0);
   }));
+  // v22.2: independent bulk mode, no changes to the established prompt compiler.
+  const bulkMode=document.getElementById('bulkModeV222');
+  const bulkNote=document.getElementById('bulkModeNoteV222');
+  const descriptions={variables:'表現技法6項目を固定し、可変カテゴリだけ変更します。',technique:'可変カテゴリをすべて固定し、表現技法6項目の大分類＋明細だけ変更します。',all:'可変カテゴリと表現技法6項目を両方変更します。'};
+  bulkMode.addEventListener('change',()=>{bulkNote.textContent=descriptions[bulkMode.value]+' モード切替だけでは選択値は変わりません。';});
+  document.getElementById('bulkExecuteV222').addEventListener('click',()=>{
+    if(bulkMode.value==='variables'){window.randomVariables();}
+    else if(bulkMode.value==='technique'){applyAll(true);finish();}
+    else {window.randomVariables();applyAll(true);finish();}
+    bulkNote.textContent=descriptions[bulkMode.value]+' 一括変更を実行しました。';
+  });
   const oldClearVariables=window.clearVariables;
   if(typeof oldClearVariables==='function')window.clearVariables=function(){
     Object.values(TECH).forEach(d=>{delete state[d.key];document.getElementById(d.select).value='AUTO_RANDOM';renderDetails(d,'AUTO_RANDOM','');});
@@ -12898,6 +13027,244 @@ updatePrompt();</script>
    out=lines.filter(x=>keep.includes(x)).join('\n\n');
   }
   el.value=out;
+ };
+ window.updatePrompt();
+})();
+</script>
+<script>
+/* v22.7: close-framing output reconciliation only; never mutates selection state. */
+(function(){
+ const previous=window.updatePrompt;
+ const near=new Set(['portrait','chest','waist','face','detail']);
+ function selected(k){return (window.__expressionTechniqueState||{})[k]?.value||'';}
+ function family(v){
+  v=(v||'').toLowerCase();
+  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+  if(/portrait|headshot|medium close|head-and-shoulders/.test(v))return 'portrait';
+  if(/chest.up|bust shot/.test(v))return 'chest';
+  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+  return 'other';
+ }
+ function visiblePose(v,f){
+  if(!v)return '';
+  if(/sitt|seiza|wariza|kneel|cross.leg/i.test(v))return 'seated upper-body posture';
+  if(/lying|reclin/i.test(v))return 'reclining upper-body posture';
+  if(/run|jump|walk|long.leg|foot|feet|squat|crouch/i.test(v))return f==='waist'?'natural upper-body posture':'natural shoulder posture';
+  return v;
+ }
+ function visibleFraming(v){
+  if(!v)return '';
+  if(/environment|wide|full.body|head.to.toe|full.length|entire figure|negative.space|open space/i.test(v))return 'subtle background context, tightly cropped portrait';
+  return v;
+ }
+ window.updatePrompt=function(){
+  previous();
+  const el=document.getElementById('prompt');if(!el)return;
+  const f=family(selected('SHOT TYPE')||document.getElementById('techniqueShotModeDetail')?.value);
+  if(!near.has(f))return;
+  const lines=el.value.split(/\n+/).filter(Boolean);
+  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+  if(idx<0)return;
+  const raw=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  const parts=raw.split(';').map(x=>x.trim()).filter(Boolean);
+  const pose=selected('POSE'), framing=selected('FRAMING');
+  const seen=new Set(),result=[];
+  for(const part of parts){
+   let val=part;
+   if(pose&&part===pose)val=visiblePose(pose,f);
+   if(framing&&part===framing)val=visibleFraming(framing);
+   if(/^(?:sitting with legs crossed|sitting cross-legged|long-leg fashion pose)$/i.test(val))val=visiblePose(val,f);
+   if(/balanced character-and-environment framing|wide environmental framing/i.test(val))val=visibleFraming(val);
+   const key=val.toLowerCase().replace(/\s+/g,' ');
+   if(!seen.has(key)){seen.add(key);result.push(val);}
+  }
+  lines[idx]='[EXPRESSION TECHNIQUE] '+result.join('; ');
+  const out=lines.join('\n\n');
+  // Keep the established output limit and do not truncate any category.
+  if(out.length<=4096)el.value=out;
+ };
+ window.updatePrompt();
+})();
+</script>
+
+<script>
+/* v23.0: final-output-only close-shot stabilization.
+   Keep selected UI values, theme, outfits and rear-view behavior unchanged. */
+(function(){
+  const previous = window.updatePrompt;
+  const get = id => document.getElementById(id);
+  const selected = key => (window.__expressionTechniqueState || {})[key]?.value || '';
+  function shotFamily(value){
+    const v = (value || '').toLowerCase();
+    if (/eye close|lips close|macro|zoomed|enlarged/.test(v)) return 'detail';
+    if (/extreme close|face close|close-up shot|intense close/.test(v)) return 'face';
+    if (/portrait|headshot|medium close|head.and.shoulders/.test(v)) return 'portrait';
+    if (/chest.up|bust shot/.test(v)) return 'chest';
+    if (/waist.up|upper.body|medium shot/.test(v)) return 'waist';
+    return '';
+  }
+  const anchors = {
+    portrait:'((tight head-and-shoulders portrait:1.6)); close camera distance; head and shoulders occupy almost the entire image; bottom frame edge just below shoulders; no waist or hips in view',
+    chest:'((chest-up portrait:1.6)); close camera distance; head and upper chest fill the image; bottom frame edge at chest level; no waist or hips in view',
+    waist:'((waist-up portrait:1.6)); medium-close camera distance; head through waist fill the image; bottom frame edge at waist level; no thighs or footwear in view',
+    face:'((face close-up:1.6)); very close camera distance; face fills almost the entire image; shoulders only at the edges; no waist or legs in view',
+    detail:'((extreme facial detail close-up:1.6)); selected facial detail fills the image; no body or environment visible'
+  };
+  window.updatePrompt = function(){
+    previous();
+    const el = get('prompt');
+    if (!el) return;
+    const family = shotFamily(selected('SHOT TYPE') || get('techniqueShotModeDetail')?.value);
+    if (!anchors[family]) return;
+    let lines = el.value.split(/\n+/).filter(Boolean);
+    const index = lines.findIndex(line => line.startsWith('[EXPRESSION TECHNIQUE]'));
+    if (index < 0) return;
+    let text = lines[index].replace(/^\[EXPRESSION TECHNIQUE\]\s*/, '');
+    // Replace only the existing crop prefix, preserving pose, direction, gaze and angle.
+    text = text.replace(/^\(\([^;]*?(?:framing|portrait|close-up)[^;]*\)\);?\s*(?:[^;]*;\s*){0,3}/i, '');
+    // Remove repeated crop instructions from previous compiler layers.
+    text = text.split(';').map(x => x.trim()).filter(x =>
+      x && !/^(?:face and shoulders dominate|lower body outside|upper body fills|lower image edge|head, shoulders and chest fill|waist and legs outside|legs and footwear outside|torso and legs outside|face fills nearly|selected facial detail fills|rest of body outside)/i.test(x)
+    ).join('; ');
+    lines[index] = '[EXPRESSION TECHNIQUE] ' + anchors[family] + (text ? '; ' + text : '');
+    // At portrait distance, long-leg anatomy keywords compete with the requested crop.
+    if (family === 'portrait' || family === 'chest' || family === 'face' || family === 'detail') {
+      lines = lines.map(line => line.startsWith('[CHARACTER]')
+        ? line.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs|compact pelvis|slim hips|balanced model-like body proportions)\b/gi, '')
+        : line);
+    }
+    // Preserve all outfit choices; only omit lines for completely out-of-frame items.
+    const output = lines.join('\n\n');
+    if (output.length <= 4096) {
+      el.value = output;
+    } else {
+      const essential = new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
+      const key = line => (line.match(/^\[([^\]]+)\]/) || [])[1] || '';
+      const kept = lines.filter(line => essential.has(key(line)));
+      for (const line of lines) {
+        if (essential.has(key(line))) continue;
+        if ((kept.join('\n\n') + '\n\n' + line).length <= 4096) kept.push(line);
+      }
+      el.value = lines.filter(line => kept.includes(line)).join('\n\n');
+    }
+  };
+  window.updatePrompt();
+})();
+</script>
+
+<script>
+/* v23.0 cross-theme crop policy; final output only, original UI selections untouched. */
+(function(){
+ const previous=window.updatePrompt;
+ const get=id=>document.getElementById(id);
+ const chosen=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
+ function family(v){
+  v=(v||'').toLowerCase();
+  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+  if(/head.and.shoulders|headshot|tight portrait|portrait shot|medium close/.test(v))return 'portrait';
+  if(/chest.up|bust shot/.test(v))return 'chest';
+  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+  if(/thigh.up|mid.thigh/.test(v))return 'thigh';
+  if(/knee.up|knees/.test(v))return 'knee';
+  if(/full.body|full.length|head.to.toe/.test(v))return 'full';
+  return '';
+ }
+ const anchor={
+  detail:'((extreme facial detail close-up:1.6)); only the selected facial detail visible; no body visible',
+  face:'((face close-up:1.6)); face occupies almost the entire frame; no waist or legs visible',
+  portrait:'((tight head-and-shoulders portrait:1.6)); head and shoulders fill the frame; bottom edge immediately below shoulders; waist and hips outside frame',
+  chest:'((chest-up portrait:1.6)); head and upper chest fill the frame; bottom edge at chest level; waist and hips outside frame',
+  waist:'((waist-up portrait:1.6)); head through waist fill the frame; bottom edge at waist level; thighs, knees and shoes outside frame',
+  thigh:'((thigh-up framing:1.6)); head through mid-thigh fill the frame; bottom edge at mid-thigh; knees and shoes outside frame',
+  knee:'((knee-up framing:1.6)); head through knees fill the frame; bottom edge at knees; shoes outside frame',
+  full:'((full-body framing:1.5)); head and footwear entirely visible within frame'
+ };
+ const removeCrop=t=>t.split(';').map(x=>x.trim()).filter(x=>x&&!/^(?:\(\(?(?:tight head|chest-up|waist-up|thigh-up|knee-up|full-body|face close|extreme facial|head-and-shoulders)|close camera distance|medium-close camera distance|very close camera distance|head and shoulders|head and upper chest|head through|bottom (?:frame )?edge|lower image edge|no (?:waist|thighs|hips|legs|body)|waist and hips outside|thighs, knees and shoes outside|knees and shoes outside|shoes outside|footwear outside|legs and footwear outside|lower body outside|face fills|selected facial detail fills|rest of body outside|upper body fills|character fully visible)/i.test(x)).join('; ');
+ window.updatePrompt=function(){
+  previous();
+  const el=get('prompt');if(!el)return;
+  const f=family(chosen('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
+  if(!anchor[f])return;
+  let lines=el.value.split(/\n+/).filter(Boolean);
+  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));
+  if(idx<0)return;
+  const old=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  lines[idx]='[EXPRESSION TECHNIQUE] '+anchor[f]+'; '+removeCrop(old);
+  // For short shots suppress only out-of-frame standalone blocks, not stored UI choices.
+  const hidden={detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:['SHOES'],full:[]};
+  const blocked=new Set(hidden[f]);
+  lines=lines.filter(x=>!blocked.has((x.match(/^\[([^\]]+)\]/)||[])[1]));
+  if(['detail','face','portrait','chest','waist'].includes(f)){
+   lines=lines.map(x=>x.startsWith('[CHARACTER]')?x.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs)\b/gi,''):x);
+  }
+  // Avoid discarding outfit information when approaching PixAI limit: keep source order.
+  const required=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
+  const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
+  const selectedLines=[];let total=0;
+  for(const x of lines.filter(x=>required.has(key(x))).concat(lines.filter(x=>!required.has(key(x))))){
+   if(total+x.length+2<=4096){selectedLines.push(x);total+=x.length+2;}
+  }
+  el.value=lines.filter(x=>selectedLines.includes(x)).join('\n\n');
+ };
+ window.updatePrompt();
+})();
+</script>
+<script>
+/* v23.0: shot-size authority layer. Do not mutate selection state. */
+(function(){
+ const previous=window.updatePrompt;
+ const get=id=>document.getElementById(id);
+ const chosen=k=>(window.__expressionTechniqueState||{})[k]?.value||'';
+ function family(v){
+  v=(v||'').toLowerCase();
+  if(/eye close|lips close|macro|zoomed|enlarged/.test(v))return 'detail';
+  if(/extreme close|face close|close-up shot|intense close/.test(v))return 'face';
+  if(/head.and.shoulders|headshot|tight portrait|portrait shot|medium close/.test(v))return 'portrait';
+  if(/chest.up|bust shot/.test(v))return 'chest';
+  if(/waist.up|upper.body|medium shot/.test(v))return 'waist';
+  if(/thigh.up|mid.thigh/.test(v))return 'thigh';
+  if(/knee.up|knees/.test(v))return 'knee';
+  if(/full.body|full.length|head.to.toe/.test(v))return 'full';
+  return '';
+ }
+ const shots={
+  detail:'((extreme close-up of the selected facial detail:1.7)); detail occupies the entire image; extreme magnification; all other body parts outside the image',
+  face:'((extreme close-up portrait:1.7)); face dominates the image from edge to edge; top of hair and chin near image boundaries; torso entirely outside image',
+  portrait:'((head-and-shoulders close crop:1.7)); ((large face and shoulders in foreground:1.5)); image shows head, neck and shoulders only; lower image boundary directly below shoulders; chest, waist, skirt and legs entirely beyond image boundary',
+  chest:'((upper-bust close crop:1.7)); ((large head and upper torso in foreground:1.5)); image shows head, shoulders and upper chest only; lower image boundary crosses upper chest; waist, skirt and legs entirely beyond image boundary',
+  waist:'((waist-level close crop:1.7)); ((large upper body in foreground:1.5)); image shows head through waist only; lower image boundary crosses waistline; skirt hem, thighs, knees and footwear beyond image boundary',
+  thigh:'((mid-thigh crop:1.7)); ((large subject in foreground:1.4)); image shows head through mid-thigh only; lower image boundary crosses mid-thigh; knees and footwear beyond image boundary',
+  knee:'((knee-level crop:1.7)); ((large subject in foreground:1.4)); image shows head through knees only; lower image boundary crosses the knees; calves, ankles and footwear beyond image boundary',
+  full:'((full-length head-to-toe framing:1.5)); complete figure including shoes visible'
+ };
+ const cropPart=/^(?:\(\(?(?:tight head|chest-up|waist-up|thigh-up|knee-up|full-body|face close|extreme facial|head-and-shoulders|upper-bust|waist-level|mid-thigh|knee-level)|(?:close|medium-close|very close) camera distance|(?:head|face|upper body|lower body|selected facial detail|bottom edge|lower image edge|lower frame|footwear|waist and hips|waist and legs|torso and legs|thighs|knees and shoes|legs and footwear|shoes outside|no waist|no thighs|no body|character fills|subject fills|frame tightly|cropped at|camera framing|visible from head|image shows|image boundary))/i;
+ window.updatePrompt=function(){
+  previous();
+  const el=get('prompt');if(!el)return;
+  const f=family(chosen('SHOT TYPE')||get('techniqueShotModeDetail')?.value);
+  if(!shots[f])return;
+  let lines=el.value.split(/\n+/).filter(Boolean);
+  const idx=lines.findIndex(x=>x.startsWith('[EXPRESSION TECHNIQUE]'));if(idx<0)return;
+  let old=lines[idx].replace(/^\[EXPRESSION TECHNIQUE\]\s*/,'');
+  // Preserve direction, gaze, posture and camera angle; discard only stale crop fragments.
+  old=old.split(';').map(x=>x.trim()).filter(x=>x&&!cropPart.test(x)).join('; ');
+  lines[idx]='[EXPRESSION TECHNIQUE] '+shots[f]+(old?'; '+old:'');
+  // A separate composition instruction should not contradict the chosen shot size.
+  lines=lines.map(x=>x.startsWith('[COMPOSITION]')&&f!=='full'?'[COMPOSITION] '+x.replace(/^\[COMPOSITION\]\s*/,'').replace(/\b(?:full.body|full.length|head.to.toe|wide shot|long shot|distant view|balanced full.body|entire figure)\b/gi,'editorial').replace(/\s*;\s*/g,'; ')+'; tight framing consistent with selected crop':x);
+  // Hide blocks entirely beyond the crop in the final prompt, not in saved UI selections.
+  const hidden={detail:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],face:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES','GLOVES'],portrait:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],chest:['WAIST DESIGN','SKIRT','LEGS & HOSIERY','SHOES'],waist:['LEGS & HOSIERY','SHOES'],thigh:['SHOES'],knee:['SHOES'],full:[]};
+  const blocked=new Set(hidden[f]);lines=lines.filter(x=>!blocked.has((x.match(/^\[([^\]]+)\]/)||[])[1]));
+  // Avoid lower-body anatomy keywords pulling a close shot outward.
+  if(['detail','face','portrait','chest','waist'].includes(f))lines=lines.map(x=>x.startsWith('[CHARACTER]')?x.replace(/;\s*(?:long legs|elongated lower-body proportions|long femur proportion|long shin proportion|slender calves|refined ankles|lean lower body|elegant straight leg line|slender thighs|compact pelvis|slim hips|balanced model-like body proportions)(?=;|\.|$)/gi,''):x);
+  const key=x=>(x.match(/^\[([^\]]+)\]/)||[])[1]||'';
+  const must=new Set(['STYLE','CHARACTER','FACE','BASE THEME','EVENT FUSION','EXPRESSION TECHNIQUE','OUTFIT CONCEPT']);
+  const included=new Set();let length=0;
+  for(const line of lines.filter(x=>must.has(key(x))).concat(lines.filter(x=>!must.has(key(x))))){
+   if(length+line.length+2<=4096){included.add(line);length+=line.length+2;}
+  }
+  el.value=lines.filter(x=>included.has(x)).join('\n\n');
  };
  window.updatePrompt();
 })();
