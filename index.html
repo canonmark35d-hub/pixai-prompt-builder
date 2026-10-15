@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.35｜2026-10-15 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜花背景描写強化検証版 v23.36｜2026-10-15 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜季節イベント短縮検証版 v23.35｜2026-10-15 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜花背景描写強化検証版 v23.36｜2026-10-15 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -132,7 +132,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 <div class="status" id="seasonEventStatus">季節・イベント一括設定：OFF（個別設定）</div>
 </section>
 <section class="panel" id="floralBackgroundPanel"><h2>🌷 花の背景設定（衣装とは独立）</h2>
-<p class="note">ONにすると背景だけを花の景色へ置換します。衣装用フラワーイベントとは別の花を選べます。OFFでは従来の背景を維持します。</p>
+<p class="note">ONにすると花の種類に合った咲き方・花畑の奥行きを背景へ反映します。衣装用フラワーイベントとは別の花を選べます。OFFでは従来の背景を維持します。</p>
 <div class="grid">
 <div class="cat"><label for="floralBgEnabled">背景モード</label><select id="floralBgEnabled"><option value="off">OFF｜既存の背景を使用</option><option value="on">ON｜花の背景を使用</option></select></div>
 <div class="cat"><label for="floralBgFlower">背景の花（100種類）</label><select id="floralBgFlower"><option value="random">🎲 自動選択</option><option value="0">薔薇</option><option value="1">青薔薇</option><option value="2">白薔薇</option><option value="3">黒薔薇</option><option value="4">桜</option><option value="5">八重桜</option><option value="6">梅</option><option value="7">桃の花</option><option value="8">藤</option><option value="9">紫陽花</option><option value="10">百合</option><option value="11">カサブランカ</option><option value="12">カラー</option><option value="13">チューリップ</option><option value="14">ラナンキュラス</option><option value="15">アネモネ</option><option value="16">ポピー</option><option value="17">コスモス</option><option value="18">向日葵</option><option value="19">ガーベラ</option><option value="20">ダリア</option><option value="21">牡丹</option><option value="22">芍薬</option><option value="23">椿</option><option value="24">山茶花</option><option value="25">菊</option><option value="26">桔梗</option><option value="27">撫子</option><option value="28">カーネーション</option><option value="29">マーガレット</option><option value="30">デイジー</option><option value="31">カモミール</option><option value="32">スズラン</option><option value="33">勿忘草</option><option value="34">ネモフィラ</option><option value="35">ブルースター</option><option value="36">デルフィニウム</option><option value="37">ルピナス</option><option value="38">ラベンダー</option><option value="39">ライラック</option><option value="40">スミレ</option><option value="41">パンジー</option><option value="42">ビオラ</option><option value="43">アイリス</option><option value="44">花菖蒲</option><option value="45">フリージア</option><option value="46">水仙</option><option value="47">ヒヤシンス</option><option value="48">ムスカリ</option><option value="49">クロッカス</option><option value="50">スノードロップ</option><option value="51">クリスマスローズ</option><option value="52">ポインセチア</option><option value="53">シクラメン</option><option value="54">プリムラ</option><option value="55">ストック</option><option value="56">スイートピー</option><option value="57">ニゲラ</option><option value="58">クレマチス</option><option value="59">トケイソウ</option><option value="60">ハイビスカス</option><option value="61">プルメリア</option><option value="62">ブーゲンビリア</option><option value="63">ジャスミン</option><option value="64">クチナシ</option><option value="65">金木犀</option><option value="66">沈丁花</option><option value="67">ミモザ</option><option value="68">アカシア</option><option value="69">藤袴</option><option value="70">彼岸花</option><option value="71">蓮</option><option value="72">睡蓮</option><option value="73">オーキッド</option><option value="74">胡蝶蘭</option><option value="75">シンビジウム</option><option value="76">デンドロビウム</option><option value="77">アンスリウム</option><option value="78">プロテア</option><option value="79">キングプロテア</option><option value="80">バンクシア</option><option value="81">エリンジウム</option><option value="82">アストランティア</option><option value="83">アリウム</option><option value="84">アガパンサス</option><option value="85">ブルーベル</option><option value="86">ジギタリス</option><option value="87">キンギョソウ</option><option value="88">トルコキキョウ</option><option value="89">アルストロメリア</option><option value="90">グラジオラス</option><option value="91">フクシア</option><option value="92">ベゴニア</option><option value="93">インパチェンス</option><option value="94">ペチュニア</option><option value="95">サルビア</option><option value="96">ケイトウ</option><option value="97">千日紅</option><option value="98">スターチス</option><option value="99">カスミソウ</option></select></div>
@@ -13946,7 +13946,7 @@ refresh();
 </script>
 
 <script>
-/* v23.35 floral background: independently replace only the final BACKGROUND block. */
+/* v23.36 floral background: stronger scenery, flower-specific shapes, complete background replacement. */
 (function(){
 'use strict';
 const flowers=[["Rose", "rose red"], ["Blue rose", "blue"], ["White rose", "ivory"], ["Black rose", "deep burgundy"], ["Cherry blossom", "blush pink"], ["Double cherry blossom", "soft pink"], ["Plum blossom", "rose pink"], ["Peach blossom", "peach pink"], ["Wisteria", "lavender"], ["Hydrangea", "blue violet"], ["Lily", "ivory"], ["Casa Blanca lily", "white"], ["Calla lily", "ivory"], ["Tulip", "coral"], ["Ranunculus", "apricot"], ["Anemone", "violet"], ["Poppy", "scarlet"], ["Cosmos", "pink"], ["Sunflower", "sunflower yellow"], ["Gerbera", "coral orange"], ["Dahlia", "burgundy"], ["Peony", "rose pink"], ["Chinese peony", "blush pink"], ["Camellia", "crimson"], ["Sasanqua camellia", "pink"], ["Chrysanthemum", "gold"], ["Balloon flower", "indigo"], ["Dianthus", "pink"], ["Carnation", "rose red"], ["Marguerite daisy", "white yellow"], ["Daisy", "white yellow"], ["Chamomile", "cream"], ["Lily of the valley", "ivory"], ["Forget-me-not", "sky blue"], ["Nemophila", "sky blue"], ["Tweedia", "pale blue"], ["Delphinium", "cobalt blue"], ["Lupine", "violet blue"], ["Lavender", "lavender"], ["Lilac", "lilac"], ["Violet", "purple"], ["Pansy", "purple gold"], ["Viola", "violet"], ["Iris", "royal purple"], ["Japanese iris", "blue purple"], ["Freesia", "butter yellow"], ["Daffodil", "yellow"], ["Hyacinth", "blue violet"], ["Grape hyacinth", "cobalt"], ["Crocus", "purple"], ["Snowdrop", "snow white"], ["Hellebore", "dusty mauve"], ["Poinsettia", "crimson"], ["Cyclamen", "magenta"], ["Primrose", "yellow"], ["Stock flower", "lavender pink"], ["Sweet pea", "pastel pink"], ["Love-in-a-mist", "pale blue"], ["Clematis", "violet"], ["Passion flower", "purple white"], ["Hibiscus", "coral red"], ["Plumeria", "ivory yellow"], ["Bougainvillea", "magenta"], ["Jasmine", "white"], ["Gardenia", "ivory"], ["Sweet osmanthus", "amber orange"], ["Daphne", "pink white"], ["Mimosa", "golden yellow"], ["Acacia blossom", "pale yellow"], ["Thoroughwort", "dusty pink"], ["Red spider lily", "scarlet"], ["Lotus", "lotus pink"], ["Water lily", "soft pink"], ["Orchid", "orchid purple"], ["Phalaenopsis orchid", "white lilac"], ["Cymbidium orchid", "sage green"], ["Dendrobium orchid", "lavender"], ["Anthurium", "red"], ["Protea", "dusty rose"], ["King protea", "blush coral"], ["Banksia", "ochre gold"], ["Sea holly", "steel blue"], ["Astrantia", "dusty pink"], ["Allium", "lilac"], ["Agapanthus", "periwinkle"], ["Bluebell", "blue"], ["Foxglove", "pink purple"], ["Snapdragon", "coral"], ["Lisianthus", "lavender"], ["Alstroemeria", "peach"], ["Gladiolus", "crimson"], ["Fuchsia", "magenta purple"], ["Begonia", "coral pink"], ["Impatiens", "salmon pink"], ["Petunia", "violet"], ["Salvia", "scarlet"], ["Cockscomb", "deep red"], ["Globe amaranth", "magenta"], ["Statice", "violet"], ["Baby's breath", "white"]];
@@ -13958,15 +13958,50 @@ function getFlower(){
  const v=selected('floralBgFlower');
  return flowers[v==='random'?randomFlowerIndex:Number(v)]||flowers[34];
 }
+// Describe the actual landscape, not clothing decoration. Keep descriptions compact.
+const special={
+  0:'layered rose bushes',1:'rare blue rose bushes',2:'white rose hedges',3:'dark rose bushes',
+  4:'flowering cherry trees and fallen petals',5:'dense double-petal cherry blossom trees',
+  8:'cascading hanging flower clusters',9:'round clusters of hydrangea blooms',
+  13:'rows of upright tulip blooms',18:'tall sunflowers facing the light',
+  21:'large layered peony blossoms',32:'tiny bell-shaped blooms',
+  34:'carpets of tiny sky-blue five-petal flowers',38:'long rows of purple lavender spikes',
+  60:'large tropical hibiscus flowers',70:'scarlet spider-like blooms',
+  71:'lotus blossoms above water',72:'floating blossoms and lily pads',
+  73:'orchid blooms on flowering stems',74:'arching orchid flower sprays',
+  85:'clusters of drooping blue bellflowers',99:'clouds of tiny white blossoms'
+};
+const sceneDescriptions={
+  'vast blooming flower field':'vast flower fields stretching to the horizon',
+  'luxurious botanical garden':'lush formal garden with flowerbeds and paths',
+  'flower-covered archway and winding path':'flower-draped arches over a winding garden path',
+  'enchanted flowering woodland':'flowering woodland with sunlit clearings',
+  'flower field beside a reflective lake':'flower-covered lakeshore and reflective water',
+  'castle garden filled with flowers':'grand castle gardens and flowering borders',
+  'flower-filled terrace':'flower-filled terrace with distant garden views',
+  'hillside covered in flowers':'rolling hills carpeted with blossoms',
+  'flower-lined riverside':'riverbanks thick with blooming flowers',
+  'traditional Japanese flower garden':'Japanese garden with flowering paths and stonework',
+  'flower-filled greenhouse':'glass conservatory overflowing with blooms',
+  'floral courtyard with stone fountain':'flower-filled courtyard surrounding a stone fountain'
+};
 function replaceBackground(prompt){
  if(selected('floralBgEnabled')!=='on')return prompt;
- const flower=getFlower();
- const detail='[BACKGROUND] '+selected('floralBgScene')+' of '+flower[0].toLowerCase()+'; '+selected('floralBgDensity')+'; '+selected('floralBgLight')+'; layered floral depth; beautiful natural scenery';
- // Replace, rather than append to, existing background. Keep other categories untouched.
- const re=/\[BACKGROUND\][^\n]*/;
- if(re.test(prompt))prompt=prompt.replace(re,()=>detail);
+ const index=selected('floralBgFlower')==='random'?randomFlowerIndex:Number(selected('floralBgFlower'));
+ const flower=getFlower(),name=flower[0].toLowerCase();
+ const scene=sceneDescriptions[selected('floralBgScene')]||selected('floralBgScene');
+ const shape=special[index]||('distinct '+name+' blossoms');
+ const density=selected('floralBgDensity')==='natural bloom density'?'naturally blooming':selected('floralBgDensity')==='lush blooms and drifting petals'?'dense blooms, drifting petals':'flowers in full bloom';
+ const light=selected('floralBgLight');
+ const water=/lake|lakeshore|river|fountain|water/i.test(scene);
+ const aquatic=index===71||index===72;
+ const landscape=(aquatic&&!water)?'flowering ponds amid '+scene:scene;
+ const detail='[BACKGROUND] '+landscape+'; '+flower[1]+' '+name+'; '+shape+'; '+density+'; visible flowers in foreground and distance; '+light+'; detailed scenic depth';
+ // Replace all lines of the existing BACKGROUND category, stopping at the next category header.
+ // Avoid retaining old background clauses that compete with the selected floral landscape.
+ const re=/(^|\n)\[BACKGROUND\][\s\S]*?(?=\n\[[A-Z][A-Z0-9 &/\-]*\]|$)/m;
+ if(re.test(prompt))prompt=prompt.replace(re,(_match,prefix)=>prefix+detail);
  else prompt+=(prompt?'\n':'')+detail;
- // Outfit flower and background flower are independent: no generic background clause in outfit fusion.
  prompt=prompt.replace(/; coordinated floral background(?=;|\n|$)/g,'');
  return prompt;
 }
