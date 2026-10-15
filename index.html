@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<title>PIXAI Prompt Builder｜季節イベント圧縮検証版 v23.40｜2026-10-15 / 日本語選択・英語出力</title>
+<title>PIXAI Prompt Builder｜ステンドグラス衣装限定修正版 v23.39｜2026-10-15 / 日本語選択・英語出力</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f5f5f7;color:#222;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -48,7 +48,7 @@ button.secondary,button.dice{background:#eee;color:#333}
 </head>
 <body>
 <div class="wrap">
-<h1>PIXAI Prompt Builder｜季節イベント圧縮検証版 v23.40｜2026-10-15 / 日本語選択・英語出力</h1>
+<h1>PIXAI Prompt Builder｜ステンドグラス衣装限定修正版 v23.39｜2026-10-15 / 日本語選択・英語出力</h1>
 <p class="note">固定プロンプトは自動で常時含まれます。固定部分を選択する必要はありません。通常の27カテゴリは既存選択肢を維持し、季節・イベント一括設定では各イベントに追加200種類（20デザイン系統×10変奏）を遅延生成します。</p>
 <section class="panel">
 <h2>📝 メインプロンプト（固定＋可変）</h2>
@@ -12834,17 +12834,17 @@ updatePrompt();</script>
     // v23.35: avoid repeating descriptions already present in selected category blocks.
     // The existing category output remains unchanged; only redundant EVENT FUSION text is omitted.
     const already=(value)=>value && (existingPrompt || '').includes(value);
-    // v23.40: event-only compact wording; retain palette/material/motif/pattern/accessory and selected design.
     const fusion=[
-      eventName+' on '+baseIdentity+' garments (bodice/sleeves/waist/skirt); retain silhouette',
+      eventName+' motifs integrated into '+baseIdentity+' garments; retain silhouette',
       !already(palette) && palette ? 'colors: '+palette : '',
-      !already(materials) && materials ? 'fabric: '+materials : '',
+      !already(materials) && materials ? 'materials: '+materials : '',
       !already(motifs) && motifs ? 'motifs: '+motifs : '',
-      !already(pattern) && pattern ? 'patterns: '+pattern : '',
+      !already(pattern) && pattern ? 'pattern: '+pattern : '',
+      'event details on bodice, sleeves, waist and skirt',
       !already(accessory) && accessory ? 'accessories: '+accessory : '',
       !already(language) ? language : ''
     ].filter(Boolean);
-    // BASE THEME already has its own block. Do not repeat it here.
+    if(base && theme!=='balloon_skirt') fusion.push('base theme: '+base);
     return '[EVENT FUSION] '+fusion.join('; ')+(parts.length ? '; design: '+parts.join('; ') : '');
   }
 
@@ -13966,29 +13966,6 @@ const rules=[
 ];
 function compact(text){
  const log=[];let duplicates=0;
- // v23.40: additional event-only compression without touching identity, costume or camera blocks.
- // Remove exact duplicate event clauses, and avoid repeating a selected design value already
- // present elsewhere in the generated prompt. Never truncate a clause or remove unique motifs.
- const eventOnly=(source)=>{
-  const other=source.replace(/^\[EVENT FUSION\][^\n]*/gm,'');
-  return source.replace(/^(\[EVENT FUSION\]\s*)([^\n]*)/gm,(full,head,body)=>{
-   const clauses=body.split(';').map(x=>x.trim()).filter(Boolean);
-   const kept=[],seen=new Set();
-   for(const clause of clauses){
-    const key=clause.toLowerCase().replace(/\s+/g,' ');
-    if(seen.has(key)){log.push({from:clause,to:'（イベント内の重複を統合）'});continue;}
-    seen.add(key);
-    // Only remove whole design segments if verbatim repeated outside EVENT FUSION.
-    if(clause.startsWith('design: ')){
-     const design=clause.slice(8);
-     if(other.includes(design)){log.push({from:clause,to:'（既存の衣装カテゴリと完全一致）'});continue;}
-    }
-    kept.push(clause);
-   }
-   return head+kept.join('; ');
-  });
- };
- text=eventOnly(text);
  const blocks=text.split(/\n\s*\n|\n(?=\[[A-Z][A-Z &]*\])/);
  const output=blocks.map(block=>{
   const m=block.match(/^(\[([A-Z][A-Z &]*)\]\s*)([\s\S]*)$/);
